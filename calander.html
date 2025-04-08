@@ -8,18 +8,18 @@
 </head>
 <body>
     <!-- Header -->
-    <header class="bg-blue-800 shadow-md fixed top-0 left-0 right-0 z-10 py-4 px-6">
-        <nav class="my-2">
-            <ul class="flex space-x-4 justify-between items-center">
-                <li><a href="#" class="text-black hover:text-white">Home</a></li>
-                <li><a href="#" class="text-black hover:text-white">Event Calender</a></li>
-                <li><a href="#" class="text-black hover:text-white">Study Group Finder</a></li>
-                <li><a href="#" class="text-black hover:text-white">Course Reviews</a></li>
-                <li><a href="#" class="text-black hover:text-white">Course Note</a></li>
-                <li><a href="#" class="text-black hover:text-white">Club Activities</a></li>
-            </ul>
-        </nav>
-    </header>
+  <header class= " fixed top-0 left-0 right-0 z-10 py-4 px-6">
+    <nav class="my-2">
+      <ul class="flex space-x-6 justify-center items-center text-blue-800 font-bold ">
+        <li><a href="#" class="hover:text-blue-800 transition duration-300">Home</a></li>
+        <li><a href="calander.html" class="hover:text-blue-800 transition duration-300">Event Calendar</a></li>
+        <li><a href="#" class="hover:text-blue-800 transition duration-300">Study Group Finder</a></li>
+        <li><a href="#" class="hover:text-blue-800 transition duration-300">Course Reviews</a></li>
+        <li><a href="#" class="hover:text-blue-800 transition duration-300">Course Note</a></li>
+        <li><a href="#" class="hover:text-blue-800 transition duration-300">Club Activities</a></li>
+      </ul>
+    </nav>
+  </header>
 
     <div class="flex flex-col min-h-screen pt-24">
         <main class="flex-grow flex">
@@ -80,11 +80,11 @@
 
                 <!-- Buttons -->
                 <div class="text-center mb-4">
-                    <button class="bg-blue-800 text-white font-bold py-2 px-4 rounded m-1 hover:bg-blue-500">Add Event</button>
-                    <button class="bg-blue-800 text-white font-bold py-2 px-4 rounded m-1 hover:bg-blue-500">Edit Event</button>
+                    <button class="bg-blue-800 text-white font-bold py-2 px-4  m-1 rounded-full hover:bg-orange-500">Add Event</button>
+                    <button class="bg-blue-800 text-white font-bold py-2 px-4 rounded-full m-1 hover:bg-orange-500">Edit Event</button>
                 </div>
                 <div class="text-center mb-10">
-                    <button class="bg-blue-800 text-white font-bold py-2 px-4 rounded m-1 hover:bg-blue-500">Delete Event</button>
+                    <button class="bg-blue-800 text-white font-bold py-2 px-4 rounded-full m-1 hover:bg-orange-500">Delete Event</button>
                 </div>
             </div>
 
@@ -100,21 +100,45 @@
                     </ul>
                 </div>
             </div>
+            <!--Adding event-editing event section -->
+            <div class="w-3/5 p-4">
+                <div class="bg-white p-4 border border-gray-300 rounded-lg shadow-md">
+                    <h2 class="text-2xl font-bold mb-2">Add/Edit Event</h2>
+                    <p class="mb-4">Please note that for deleteing event click on the day in the Calendar and then click delete button .</p>
+                    <!-- Form for adding/editing event -->
+                    <form action="#" method="POST">
+                        <div class="mb-4">
+                            <label for="event-name" class="block font-semibold text-gray-700">Event Name:</label>
+                            <input type="text" id="event-name" name="event-name" class="border border-gray-300 rounded-lg p-2 w-full" required>
+                        </div>
+                        <div class="mb-4">
+                            <label for="event-date" class="block font-semibold text-gray-700">Event Date:</label>
+                            <input type="date" id="event-date" name="event-date" class="border border-gray-300 rounded-lg p-2 w-full" required>
+                        </div>
+                        <div class="mb-4">
+                            <label for="event-time" class="block font-semibold text-gray-700">Event Time:</label>
+                            <input type="time" id="event-time" name="event-time" class="border border-gray-300 rounded-lg p-2 w-full" required>
+                        </div>
+                        <button type="submit" class="bg-blue-800 text-white font-bold py-2 px-4 rounded-full center hover:bg-blue-500">Submit</button>
+                    </form>
+                </div>
+            </div>
+            
         </main>
 
         <!-- Footer -->
-        <footer class="bg-orange-400 text-white p-4 fixed bottom-0 w-full">
-            <div class="container mx-auto">
-                <div class="flex justify-between items-center flex-wrap">
-                    <div>&copy; 2025 ITCS333 Project</div>
-                    <div><a href="#" class="hover:underline">Club Policy</a></div>
-                    <div><a href="#" class="hover:underline">Terms of Service</a></div>
-                    <div><a href="#" class="hover:underline">Contact Us</a></div>
-                    <div><a href="#" class="hover:underline">About Us</a></div>
-                    <div><a href="#" class="hover:underline">Help</a></div>
-                </div>
-            </div>
-        </footer>
+  <footer class="bg-blue-800 text-white shadow-inner p-4 fixed bottom-0 w-full">
+    <div class="container mx-auto flex justify-between items-center flex-wrap text-sm">
+      <div>&copy; 2025 ITCS333 Project</div>
+      <div class="flex gap-4">
+        <a href="#" class="hover:text-orange-500 transition duration-300">Club Policy</a>
+        <a href="#" class="hover:text-orange-500 transition duration-300">Terms</a>
+        <a href="#" class="hover:text-orange-500 transition duration-300">Contact</a>
+        <a href="#" class="hover:text-orange-500 transition duration-300">About</a>
+        <a href="#" class="hover:text-orange-500 transition duration-300">Help</a>
+      </div>
+    </div>
+  </footer>
     </div>
 </body>
 </html>
