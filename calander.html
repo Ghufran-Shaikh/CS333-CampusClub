@@ -1,120 +1,117 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Event Calnder</title>
+    <title>Event Calender</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/x-icon" href="Calander-icon.jpeg">
-
 </head>
-<body > 
-    <header class="bg-blue-800 shadow-md fixed top-0 left-0 right-0 z-10 py -4 px-6 "> 
+<body>
+    <!-- Header -->
+    <header class="bg-blue-800 shadow-md fixed top-0 left-0 right-0 z-10 py-4 px-6">
         <nav class="my-2">
             <ul class="flex space-x-4 justify-between items-center">
-                <li>
-                    <a href="#" class="text-black hover:text-white">Home</a>
-                </li>
-                <li>
-                    <a href="#" class="text-black hover:text-white">Event Calander</a>
-                </li>
-                <li>
-                    <a href="#" class="text-black hover:text-white">Study Group Finder</a>
-                </li>
-                <li>
-                    <a href="#" class="text-black hover:text-white">Course Reviews</a>
-                </li>
-                <li>
-                    <a href="#" class="text-black hover:text-white">Course Note</a>
-                </li>
-                <li>
-                    <a href="#" class="text-black hover:text-white">Club Activites</a>
-                </li>
+                <li><a href="#" class="text-black hover:text-white">Home</a></li>
+                <li><a href="#" class="text-black hover:text-white">Event Calender</a></li>
+                <li><a href="#" class="text-black hover:text-white">Study Group Finder</a></li>
+                <li><a href="#" class="text-black hover:text-white">Course Reviews</a></li>
+                <li><a href="#" class="text-black hover:text-white">Course Note</a></li>
+                <li><a href="#" class="text-black hover:text-white">Club Activities</a></li>
             </ul>
         </nav>
     </header>
 
-    <div class=" flex flex-col min-h-screen">
-        <main class="flex-grow">
-            <br>
-            <br>
-            <!---Calander title--->    
-            <div class="text-center text-4xl my-4">
-                <H1 class="font-bold text-blue-800 ">Event Calander </H1>    
-            </div>
-    
-            <!---Calander content--->   
-            <div class="bg-orange-400 p-4 m-2">
-                    <!---Calander days--->   
-                <div class="grid grid-cols-7 gap-2">
-                    <div class="text-center font-semibold text-black ">Sun</div>
-                    <div class="text-center font-semibold text-black">Mon</div>
-                    <div class="text-center font-semibold text-black">Tue</div>
-                    <div class="text-center font-semibold text-black">Wed</div>
-                    <div class="text-center font-semibold text-black">Thu</div>
-                    <div class="text-center font-semibold text-black">Fri</div>
-                    <div class="text-center font-semibold text-black">Sat</div>
+    <div class="flex flex-col min-h-screen pt-24">
+        <main class="flex-grow flex">
+            <!-- Left side: Calendar -->
+            <div class="w-2/5 ml-6">
+                <!-- Title -->
+                <div class="text-4xl mb-4">
+                    <h1 class="font-bold text-blue-800">Event Calender</h1>
+                </div>
+
+                <!-- Calendar -->
+                <div class="bg-orange-400 p-4 mb-2">
+                    <div class="grid grid-cols-7 gap-2">
+                        <div class="text-center font-semibold text-black">Sun</div>
+                        <div class="text-center font-semibold text-black">Mon</div>
+                        <div class="text-center font-semibold text-black">Tue</div>
+                        <div class="text-center font-semibold text-black">Wed</div>
+                        <div class="text-center font-semibold text-black">Thu</div>
+                        <div class="text-center font-semibold text-black">Fri</div>
+                        <div class="text-center font-semibold text-black">Sat</div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-7 gap-0 p-4 bg-white border border-gray-300 mb-4">
+                    <!-- Calendar days (copy-pasted from original) -->
+                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300 ">1</div>
+                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300 ">2</div>
+                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">3</div>
+                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">4</div>
+                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">5</div>
+                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">6</div>
+                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">7</div>
+                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">8</div>
+                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">9</div>
+                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">10</div>
+                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">11</div>
+                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">12</div>
+                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">13</div>
+                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">14</div>
+                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">15</div>
+                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">16</div>
+                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">17</div>
+                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">18</div>
+                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">19</div>
+                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">20</div>
+                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">21</div>
+                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">22</div>
+                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">23</div>
+                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">24</div>
+                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">25</div>
+                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">26</div>
+                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">27</div>
+                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">28</div>
+                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">29</div>
+                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">30</div>
+                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">31</div>
+                </div>
+
+                <!-- Buttons -->
+                <div class="text-center mb-4">
+                    <button class="bg-blue-800 text-white font-bold py-2 px-4 rounded m-1 hover:bg-blue-500">Add Event</button>
+                    <button class="bg-blue-800 text-white font-bold py-2 px-4 rounded m-1 hover:bg-blue-500">Edit Event</button>
+                </div>
+                <div class="text-center mb-10">
+                    <button class="bg-blue-800 text-white font-bold py-2 px-4 rounded m-1 hover:bg-blue-500">Delete Event</button>
                 </div>
             </div>
-                <div class="grid grid-cols-7 p-4 m-2 gap-0 mt-2">
-                    <!---Calander week 1--->   
-                    <div class="border border-gray-400 text-center bg-white p-2">1</div>
-                    <div class="border border-gray-400 text-center bg-white p-2">2</div>
-                    <div class="border border-gray-400 text-center bg-white p-2">3</div>
-                    <div class="border border-gray-400 text-center bg-white p-2">4</div>
-                    <div class="border border-gray-400 text-center bg-white p-2">5</div>
-                    <div class="border border-gray-400 text-center bg-white p-2">6</div>
-                    <div class="border border-gray-400 text-center bg-white p-2">7</div>
-                    <!---Calander week 2---> 
-                    <div class="border border-gray-400 text-center bg-white p-2">8</div>
-                    <div class="border border-gray-400 text-center bg-white p-2">9</div>
-                    <div class="border border-gray-400 text-center bg-white p-2">10</div>
-                    <div class="border border-gray-400 text-center bg-white p-2">11</div>
-                    <div class="border border-gray-400 text-center bg-white p-2">12</div>
-                    <div class="border border-gray-400 text-center bg-white p-2">13</div>
-                    <div class="border border-gray-400 text-center bg-white p-2">14</div>
-                    <!---Calander week 3---> 
-                    <div class="border border-gray-400 text-center bg-white p-2">15</div>
-                    <div class="border border-gray-400 text-center bg-white p-2">16</div>
-                    <div class="border border-gray-400 text-center bg-white p-2">17</div>
-                    <div class="border border-gray-400 text-center bg-white p-2">18</div>
-                    <div class="border border-gray-400 text-center bg-white p-2">19</div>
-                    <div class="border border-gray-400 text-center bg-white p-2">20</div>
-                    <div class="border border-gray-400 text-center bg-white p-2">21</div>
-                    <!---Calander week 4---> 
-                    <div class="border border-gray-400 text-center bg-white p-2">22</div>
-                    <div class="border border-gray-400 text-center bg-white p-2">23</div>
-                    <div class="border border-gray-400 text-center bg-white p-2">24</div>
-                    <div class="border border-gray-400 text-center bg-white p-2">25</div>
-                    <div class="border border-gray-400 text-center bg-white p-2">26</div>
-                    <div class="border border-gray-400 text-center bg-white p-2">27</div>
-                    <div class="border border-gray-400 text-center bg-white p-2">28</div>
-                    <!---Calander week 4.1---> 
-                    <div class="border border-gray-400 text-center bg-white p-2">29</div>
-                    <div class="border border-gray-400 text-center bg-white p-2">30</div>
-                    <div class="border border-gray-400 text-center bg-white p-2">31</div>
-                    
+
+            <!-- Upcoming Event -->
+            <div class="w-3/5 p-4">
+                <div class="bg-white p-4 border border-gray-300 rounded-lg shadow-md">
+                    <h2 class="text-2xl font-bold mb-4">Upcoming Events</h2>
+                    <ul class="list-disc pl-5">
+                        <li class="mb-2 font-semibold">Chese Club Event: 3 April 2025 13:00-15:00</li>
+                        <li class="mb-2 font-semibold">Tennis Club Event : 14 April 2025 13:00-15:00</li>
+                        <li class="mb-2 font-semibold">Football Club Event : 12 May 2025 13:00-15:00</li>
+                        <li class="mb-2 font-semibold">CyberSecurity Club Event : 20 May 2025 13:00-15:00</li>
+                    </ul>
                 </div>
-                <!---Calander Add/edit Event Buttton---> 
-            <div class="text-center mt-4 mb-10">
-                <button class="bg-blue-800 text-white font-bold py-2 px-4 rounded">Add Event</button>
-                <button class="bg-blue-800 text-white font-bold py-2 px-4 rounded">Edit Event</button>
-            </div>
-            <div class="text-center mb-10 ">
-                <button class="bg-blue-800 text-white font-bold py-2 px-4 rounded">Delete Event</button>
-                <button class="bg-blue-800 text-white font-bold py-2 px-4 rounded">View Event</button>
             </div>
         </main>
 
-        <!---Sticky Footer For the Page---> 
+        <!-- Footer -->
         <footer class="bg-orange-400 text-white p-4 fixed bottom-0 w-full">
-            <div class="conatiner mx-auto">
-                <div class="flex justify-between items-center">
-                    <div>&copy 2025 ITCS333 Project</div>
-                    <div><a href="#" class="hover:underline" >Club Policy</div>
-                    <div><a href="#" class="hover:underline" >Terms of Service</div>
-                    <div><a href="#" class="hover:underline" >Contact Us </div>
-                    <div><a href="#" class="hover:underline" >About us </div>
-                    <div><a href="#" class="hover:underline" >Help </div>
+            <div class="container mx-auto">
+                <div class="flex justify-between items-center flex-wrap">
+                    <div>&copy; 2025 ITCS333 Project</div>
+                    <div><a href="#" class="hover:underline">Club Policy</a></div>
+                    <div><a href="#" class="hover:underline">Terms of Service</a></div>
+                    <div><a href="#" class="hover:underline">Contact Us</a></div>
+                    <div><a href="#" class="hover:underline">About Us</a></div>
+                    <div><a href="#" class="hover:underline">Help</a></div>
                 </div>
             </div>
         </footer>
