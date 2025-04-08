@@ -1,6 +1,38 @@
 <!DOCTYPE html>
-<html>
-    <table>
-
-    </table>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="CourseNotes.css">
+    <title>Course Notes</title>
+</head>
+<body>
+    <header>
+        <h1>Course Notes</h1>
+        <nav>
+            <a href="#add-note">Add New Note</a>
+        </nav>
+    </header>
+    <main>
+        <section id="search">
+            <input type="text" placeholder="Search notes..." aria-label="Search notes">
+            <button>Filter</button>
+        </section>
+        <section id="notes-list">
+            <article class="note">
+                <h2>Course Title</h2>
+                <p>Brief description of the note.</p>
+                <a href="#note-detail" class="button">View Details</a>
+            </article>
+            <!-- Repeat for more notes -->
+        </section>
+        <nav class="pagination">
+            <button>Previous</button>
+            <button>Next</button>
+        </nav>
+    </main>
+    <footer>
+        <p>&copy; 2025 Campus Hub</p>
+    </footer>
+</body>
 </html>
