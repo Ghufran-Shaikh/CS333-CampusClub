@@ -3,36 +3,359 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="CourseNotes.css">
-    <title>Course Notes</title>
+    <title>UOB CLUB - Courses Notes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            500: '#1e3a8a',
+                            600: '#1d4ed8',
+                            700: '#1e40af'
+                        },
+                        orange: {
+                            500: '#ea580c',
+                            600: '#c2410c',
+                            700: '#9a3412'
+                        },
+                        teal: {
+                            100: '#ccfbf1',
+                            500: '#0d9488',
+                            600: '#0d9488'
+                        },
+                        purple: {
+                            100: '#f3e8ff',
+                            500: '#7e22ce',
+                            600: '#7e22ce'
+                        },
+                        pink: {
+                            100: '#fce7f3',
+                            500: '#db2777',
+                            600: '#db2777'
+                        },
+                        indigo: {
+                            100: '#e0e7ff',
+                            500: '#4f46e5',
+                            600: '#4f46e5'
+                        },
+                        cyan: {
+                            100: '#cffafe',
+                            500: '#0891b2',
+                            600: '#0891b2'
+                        },
+                        lime: {
+                            100: '#ecfccb',
+                            500: '#65a30d',
+                            600: '#65a30d'
+                        },
+                        blue: {
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb'
+                        },
+                        green: {
+                            100: '#dcfce7',
+                            500: '#10b981',
+                            600: '#10b981'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body>
-    <header>
-        <h1>Course Notes</h1>
-        <nav>
-            <a href="#add-note">Add New Note</a>
-        </nav>
+<body class="bg-gray-50 font-sans">
+    <!-- Header (Navy Blue) -->
+    <header class="bg-gray-100 text-navy-500 shadow-sm">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <h1 class="text-xl font-bold">
+                    <i class="fas fa-book-open mr-2"></i> Courses Notes
+                </h1>
+                <!-- Orange Add Notes Button -->
+                <button class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg transition">
+                    <i class="fas fa-plus mr-2"></i> Add Notes
+                </button>
+            </div>
+        </div>
     </header>
-    <main>
-        <section id="search">
-            <input type="text" placeholder="Search notes..." aria-label="Search notes">
-            <button>Filter</button>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-6">
+        <!-- Search and Filters -->
+        <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
+            <div class="flex flex-col md:flex-row gap-4">
+                <!-- Search Bar -->
+                <div class="relative flex-1">
+                    <input type="text" placeholder="Search notes..." 
+                        class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-navy-500">
+                    <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                </div>
+                
+                <!-- Sorting -->
+                <select class="px-3 py-2 border border-gray-300 rounded-lg bg-white">
+                    <option>Sort by: Newest</option>
+                    <option>Most Downloaded</option>
+                    <option>Highest Rated</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- College Categories with Fixed Colors -->
+        <section class="mb-8">
+            <h2 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Colleges</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <!-- Engineering -->
+                <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition">
+                    <div class="bg-blue-100 w-10 h-10 rounded-full flex items-center justify-center mb-3">
+                        <i class="fas fa-cog text-blue-600"></i>
+                    </div>
+                    <h3 class="font-medium mb-1">Engineering</h3>
+                    <button class="text-navy-500 hover:underline text-sm text-gray-600">View all 8 courses, 142 notes →</button>
+                </div>
+                
+                <!-- Science -->
+                <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition">
+                    <div class="bg-green-100 w-10 h-10 rounded-full flex items-center justify-center mb-3">
+                        <i class="fas fa-flask text-green-600"></i>
+                    </div>
+                    <h3 class="font-medium mb-1">Science</h3>
+                    <button class="text-navy-500 hover:underline text-sm text-gray-600">View all 6 courses, 98 notes →</button>
+                </div>
+                
+                <!-- Arts -->
+                <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition">
+                    <div class="bg-purple-100 w-10 h-10 rounded-full flex items-center justify-center mb-3">
+                        <i class="fas fa-palette text-purple-600"></i>
+                    </div>
+                    <h3 class="font-medium mb-1">Arts</h3>
+                    <button class="text-navy-500 hover:underline text-sm text-gray-600">View all 5 courses, 76 notes →</button>
+                </div>
+                
+                <!-- Information Technologies -->
+                <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition">
+                    <div class="bg-indigo-100 w-10 h-10 rounded-full flex items-center justify-center mb-3">
+                        <i class="fas fa-laptop-code text-indigo-600"></i>
+                    </div>
+                    <h3 class="font-medium mb-1">Information Technologies</h3>
+                    <button class="text-navy-500 hover:underline text-sm text-gray-600">View all 9 courses, 154 notes →</button>
+                </div>
+
+                <!-- Medicine -->
+                <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition">
+                    <div class="bg-pink-100 w-10 h-10 rounded-full flex items-center justify-center mb-3">
+                        <i class="fas fa-heart-pulse text-pink-600"></i>
+                    </div>
+                    <h3 class="font-medium mb-1">Health and Sports Science</h3>
+                    <button class="text-navy-500 hover:underline text-sm text-gray-600">View all 7 courses, 132 notes →</button>
+                </div>
+
+                <!-- Law -->
+                <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition">
+                    <div class="bg-cyan-100 w-10 h-10 rounded-full flex items-center justify-center mb-3">
+                        <i class="fas fa-gavel text-cyan-600"></i>
+                    </div>
+                    <h3 class="font-medium mb-1">Law</h3>
+                    <button class="text-navy-500 hover:underline text-sm text-gray-600">View all 4 courses, 68 notes →</button>
+                </div>
+
+                <!-- Business -->
+                <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition">
+                    <div class="bg-lime-100 w-10 h-10 rounded-full flex items-center justify-center mb-3">
+                        <i class="fas fa-chart-line text-lime-600"></i>
+                    </div>
+                    <h3 class="font-medium mb-1">Business Administration</h3>
+                    <button class="text-navy-500 hover:underline text-sm text-gray-600">View all 6 courses, 112 notes →</button>
+                </div>
+
+                <!-- Education -->
+                <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition">
+                    <div class="bg-teal-100 w-10 h-10 rounded-full flex items-center justify-center mb-3">
+                        <i class="fas fa-graduation-cap text-teal-600"></i>
+                    </div>
+                    <h3 class="font-medium mb-1">Teachers</h3>
+                    <button class="text-navy-500 hover:underline text-sm text-gray-600">View all 5 courses, 89 notes →</button>
+                </div>
+            </div>
         </section>
-        <section id="notes-list">
-            <article class="note">
-                <h2>Course Title</h2>
-                <p>Brief description of the note.</p>
-                <a href="#note-detail" class="button">View Details</a>
-            </article>
-            <!-- Repeat for more notes -->
+
+        <!-- Popular Notes Section -->
+        <section class="mb-8">
+            <h2 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Popular Notes</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Note 1 -->
+                <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-200 hover:shadow-md transition">
+                   <div class="flex justify-between items-start mb-2">
+                        <span class="bg-indigo-100 font-bold text-indigo-600 text-xs px-2 py-1 rounded">ITCS214</span>
+                        <span class="text-gray-500 text-sm">1.2k downloads</span>
+                    </div>
+                    <button class="font-bold text-gray-800 mb-2 hover:underline text-gray-900">Data Structures</button>
+                    <p class="text-gray-600 text-sm mb-3">Complete guide to arrays and linked lists</p>
+                    <div class="flex items-center text-sm text-gray-500 mb-3">
+                        <i class="fas fa-user mr-2"></i> Maryam Ali
+                    </div>
+                    
+                    <!-- Student Comments -->
+                    <div class="border-t pt-3">
+                        <div class="flex items-center text-sm mb-2">
+                            <div class="w-6 h-6 rounded-full bg-gray-200 mr-2 flex items-center justify-center">
+                                <i class="fas fa-user text-xs text-gray-500"></i>
+                            </div>
+                            <span class="font-medium">Sarah M.</span>
+                            <span class="text-gray-400 mx-1">•</span>
+                            <span class="text-yellow-400">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                            </span>
+                        </div>
+                        <p class="text-sm text-gray-600">"These notes saved my midterm! The diagrams make complex concepts so clear."</p>
+                    </div>
+                </div>
+                
+                <!-- Note 2 -->
+                <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-200 hover:shadow-md transition">
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="bg-green-100 font-bold text-green-800 text-xs px-2 py-1 rounded">MATHS211</span>
+                        <span class="text-gray-500 text-sm">856 downloads</span>
+                    </div>
+                    <button class="font-bold text-gray-800 mb-2 hover:underline text-gray-900">Linear Algebra</button>
+                    <p class="text-gray-600 text-sm mb-3">Matrix operations and vector spaces</p>
+                    <div class="flex items-center text-sm text-gray-500 mb-3">
+                        <i class="fas fa-user mr-2"></i> Dr. Mostafa Mohammed
+                    </div>
+                    
+                    <!-- Student Comments -->
+                    <div class="border-t pt-3">
+                        <div class="flex items-center text-sm mb-2">
+                            <div class="w-6 h-6 rounded-full bg-gray-200 mr-2 flex items-center justify-center">
+                                <i class="fas fa-user text-xs text-gray-500"></i>
+                            </div>
+                            <span class="font-medium">Rashid I.</span>
+                            <span class="text-gray-400 mx-1">•</span>
+                            <span class="text-yellow-400">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </span>
+                        </div>
+                        <p class="text-sm text-gray-600">"Perfect summary before finals. The practice problems were exactly what we needed."</p>
+                    </div>
+                </div>
+                
+                <!-- Note 3 -->
+                <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-200 hover:shadow-md transition">
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="bg-pink-100 font-bold text-pink-600 text-xs px-2 py-1 rounded">LFS217</span>
+                        <span class="text-gray-500 text-sm">742 downloads</span>
+                    </div>
+                    <button class="font-bold text-gray-800 mb-2 hover:underline text-gray-900">Microbiology</button>
+                    <p class="text-gray-600 text-sm mb-3">Microscopic Organism and Bacteria</p>
+                    <div class="flex items-center text-sm text-gray-500 mb-3">
+                        <i class="fas fa-user mr-2"></i> Prof. Dana Alshaikh
+                    </div>
+                    
+                    <!-- Student Comments -->
+                    <div class="border-t pt-3">
+                        <div class="flex items-center text-sm mb-2">
+                            <div class="w-6 h-6 rounded-full bg-gray-200 mr-2 flex items-center justify-center">
+                                <i class="fas fa-user text-xs text-gray-500"></i>
+                            </div>
+                            <span class="font-medium">Fajer K.</span>
+                            <span class="text-gray-400 mx-1">•</span>
+                            <span class="text-yellow-400">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </span>
+                        </div>
+                        <p class="text-sm text-gray-600">"The clearest explanation of quantum principles I've found. Highly recommend!"</p>
+                    </div>
+                </div>
+            </div>
         </section>
-        <nav class="pagination">
-            <button>Previous</button>
-            <button>Next</button>
-        </nav>
+
+        <!-- Course Lectures Section -->
+        <section class="mb-8">
+            <h2 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Course Lectures</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Lecture 1 -->
+                <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-200 hover:shadow-md transition">
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="bg-cyan-100 font-bold text-cyan-600 text-xs px-2 py-1 rounded">LAW109</span>
+                        <span class="text-gray-500 text-sm">45 min</span>
+                    </div>
+                    <h3 class="font-bold text-gray-800 mb-2">Human Rights</h3>
+                    <div class="flex items-center text-sm text-gray-500 mb-3">
+                        <i class="fas fa-user mr-2"></i> Prof. Ali Abdulla
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-600">
+                            <i class="fas fa-calendar-alt mr-1"></i> Week 3 Lecture
+                        </span>
+                        <button class="text-primary hover:text-blue-700 text-sm font-medium">
+                            Watch <i class="fas fa-play ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Lecture 2 -->
+                <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-200 hover:shadow-md transition">
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="bg-green-100 font-bold text-green-800 text-xs px-2 py-1 rounded">MATHS211</span>
+                        <span class="text-gray-500 text-sm">52 min</span>
+                    </div>
+                    <h3 class="font-bold text-gray-800 mb-2">Matrix Operations</h3>
+                    <div class="flex items-center text-sm text-gray-500 mb-3">
+                        <i class="fas fa-user mr-2"></i> Yousif Younis
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-600">
+                            <i class="fas fa-calendar-alt mr-1"></i> Week 5 Lecture
+                        </span>
+                        <button class="text-primary hover:text-blue-700 text-sm font-medium">
+                            Watch <i class="fas fa-play ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Lecture 3 -->
+                <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-200 hover:shadow-md transition">
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="bg-lime-100 font-bold text-lime-600 text-xs px-2 py-1 rounded">ACC102</span>
+                        <span class="text-gray-500 text-sm">38 min</span>
+                    </div>
+                    <h3 class="font-bold text-gray-800 mb-2">Finanial Principles</h3>
+                    <div class="flex items-center text-sm text-gray-500 mb-3">
+                        <i class="fas fa-user mr-2"></i> Prof. Khalid Abdulrahman
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-600">
+                            <i class="fas fa-calendar-alt mr-1"></i> Week 2 Lecture
+                        </span>
+                        <button class="text-primary hover:text-blue-700 text-sm font-medium">
+                            Watch <i class="fas fa-play ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
-    <footer>
-        <p>&copy; 2025 Campus Hub</p>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t mt-8 py-6">
+        <div class="container mx-auto px-4 text-center text-gray-600 text-sm">
+            <p>© 2025 UOB CLUB. All rights reserved.</p>
+        </div>
     </footer>
 </body>
 </html>
