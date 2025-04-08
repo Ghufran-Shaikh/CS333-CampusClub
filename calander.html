@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Event Calnder</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="Calander-icon.jpeg">
+
+</head>
+<body > 
+    <header class="bg-blue-800 shadow-md fixed top-0 left-0 right-0 z-10 py -4 px-6 "> 
+        <nav class="my-2">
+            <ul class="flex space-x-4 justify-between items-center">
+                <li>
+                    <a href="#" class="text-black hover:text-white">Home</a>
+                </li>
+                <li>
+                    <a href="#" class="text-black hover:text-white">Event Calander</a>
+                </li>
+                <li>
+                    <a href="#" class="text-black hover:text-white">Study Group Finder</a>
+                </li>
+                <li>
+                    <a href="#" class="text-black hover:text-white">Course Reviews</a>
+                </li>
+                <li>
+                    <a href="#" class="text-black hover:text-white">Course Note</a>
+                </li>
+                <li>
+                    <a href="#" class="text-black hover:text-white">Club Activites</a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class=" flex flex-col min-h-screen">
+        <main class="flex-grow">
+            <br>
+            <br>
+            <!---Calander title--->    
+            <div class="text-center text-4xl my-4">
+                <H1 class="font-bold text-blue-800 ">Event Calander </H1>    
+            </div>
+    
+            <!---Calander content--->   
+            <div class="bg-orange-400 p-4 m-2">
+                    <!---Calander days--->   
+                <div class="grid grid-cols-7 gap-2">
+                    <div class="text-center font-semibold text-black ">Sun</div>
+                    <div class="text-center font-semibold text-black">Mon</div>
+                    <div class="text-center font-semibold text-black">Tue</div>
+                    <div class="text-center font-semibold text-black">Wed</div>
+                    <div class="text-center font-semibold text-black">Thu</div>
+                    <div class="text-center font-semibold text-black">Fri</div>
+                    <div class="text-center font-semibold text-black">Sat</div>
+                </div>
+            </div>
+                <div class="grid grid-cols-7 p-4 m-2 gap-0 mt-2">
+                    <!---Calander week 1--->   
+                    <div class="border border-gray-400 text-center bg-white p-2">1</div>
+                    <div class="border border-gray-400 text-center bg-white p-2">2</div>
+                    <div class="border border-gray-400 text-center bg-white p-2">3</div>
+                    <div class="border border-gray-400 text-center bg-white p-2">4</div>
+                    <div class="border border-gray-400 text-center bg-white p-2">5</div>
+                    <div class="border border-gray-400 text-center bg-white p-2">6</div>
+                    <div class="border border-gray-400 text-center bg-white p-2">7</div>
+                    <!---Calander week 2---> 
+                    <div class="border border-gray-400 text-center bg-white p-2">8</div>
+                    <div class="border border-gray-400 text-center bg-white p-2">9</div>
+                    <div class="border border-gray-400 text-center bg-white p-2">10</div>
+                    <div class="border border-gray-400 text-center bg-white p-2">11</div>
+                    <div class="border border-gray-400 text-center bg-white p-2">12</div>
+                    <div class="border border-gray-400 text-center bg-white p-2">13</div>
+                    <div class="border border-gray-400 text-center bg-white p-2">14</div>
+                    <!---Calander week 3---> 
+                    <div class="border border-gray-400 text-center bg-white p-2">15</div>
+                    <div class="border border-gray-400 text-center bg-white p-2">16</div>
+                    <div class="border border-gray-400 text-center bg-white p-2">17</div>
+                    <div class="border border-gray-400 text-center bg-white p-2">18</div>
+                    <div class="border border-gray-400 text-center bg-white p-2">19</div>
+                    <div class="border border-gray-400 text-center bg-white p-2">20</div>
+                    <div class="border border-gray-400 text-center bg-white p-2">21</div>
+                    <!---Calander week 4---> 
+                    <div class="border border-gray-400 text-center bg-white p-2">22</div>
+                    <div class="border border-gray-400 text-center bg-white p-2">23</div>
+                    <div class="border border-gray-400 text-center bg-white p-2">24</div>
+                    <div class="border border-gray-400 text-center bg-white p-2">25</div>
+                    <div class="border border-gray-400 text-center bg-white p-2">26</div>
+                    <div class="border border-gray-400 text-center bg-white p-2">27</div>
+                    <div class="border border-gray-400 text-center bg-white p-2">28</div>
+                    <!---Calander week 4.1---> 
+                    <div class="border border-gray-400 text-center bg-white p-2">29</div>
+                    <div class="border border-gray-400 text-center bg-white p-2">30</div>
+                    <div class="border border-gray-400 text-center bg-white p-2">31</div>
+                    
+                </div>
+                <!---Calander Add/edit Event Buttton---> 
+            <div class="text-center mt-4 mb-10">
+                <button class="bg-blue-800 text-white font-bold py-2 px-4 rounded">Add Event</button>
+                <button class="bg-blue-800 text-white font-bold py-2 px-4 rounded">Edit Event</button>
+            </div>
+        </main>
+
+        <!---Sticky Footer For the Page---> 
+        <footer class="bg-orange-400 text-white p-4 fixed bottom-0 w-full">
+            <div class="conatiner mx-auto">
+                <div class="flex justify-between items-center">
+                    <div>&copy 2025 ITCS333 Project</div>
+                    <div><a href="#" class="hover:underline" >Club Policy</div>
+                    <div><a href="#" class="hover:underline" >Terms of Service</div>
+                    <div><a href="#" class="hover:underline" >Contact Us </div>
+                    <div><a href="#" class="hover:underline" >About us </div>
+                    <div><a href="#" class="hover:underline" >Help </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>
