@@ -29,7 +29,7 @@
         <!-- Search and Filter Section -->
         <section class="mb-8">
             <div class="bg-orange-400 rounded-3xl shadow p-6">
-                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div class="flex gap-4">
                     <!-- Search Bar -->
                     <div class="relative flex-1">
                         <input type="text" placeholder="Search courses..." 
@@ -37,7 +37,7 @@
                         <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
                     </div>
                     
-                    <!-- Filters -->
+                    <!-- Filter notes -->
                     <div class="flex space-x-2">
                         <select class="px-3 py-2 pr-4 border border-gray-300 rounded-2xl bg-white text-sm">
                             <option>Colleges</option>
@@ -47,103 +47,95 @@
                             <option>Z-A</option>
                         </select>
                     </div>
-                    <button class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 pr-4  rounded-2xl text-sm font-medium">
+
+                    <!-- add note button -->
+                    <button class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 pr-4 rounded-2xl text-sm font-medium">
                         <i class="fas fa-plus mr-1"></i> Add Note
                     </button>
                 </div>
             </div>
         </section>
 
-        <!-- Colleges -->
-        <section mb-8>
-           <h2 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Colleges</h2>
-           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-
-                <!-- Engineering -->
-                <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition">
-                <div class="bg-blue-100 w-10 h-10 rounded-full flex items-center justify-center mb-3">
-                    <i class="fas fa-cog text-blue-600"></i>
+      <!-- Colleges Section -->
+      <section class="mb-12">
+        <h2 class="text-2xl font-bold text-blue-950 mb-6 border-b pb-2">Colleges</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <!-- Engineering -->
+            <div class="bg-white rounded-xl shadow p-4 hover:shadow-md transition cursor-pointer">
+                <div class="bg-blue-100 w-12 h-12 rounded-full flex items-center justify-center mb-3 mx-auto">
+                    <i class="fas fa-cog text-blue-600 text-xl"></i>
                 </div>
-                <h3 class="font-medium mb-1">Engineering</h3>
-                <button class="text-navy-500 hover:underline text-sm text-gray-600">View all 8 courses, 142 notes →</button>
+                <h3 class="text-center text-blue-950 font-medium mb-1">Engineering</h3>
+                <p class="text-center text-sm text-gray-600 hover:underline hover:text-gray-800">8 courses, 142 notes</p>
             </div>
-        
+            
             <!-- Science -->
-            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition">
-                <div class="bg-green-100 w-10 h-10 rounded-full flex items-center justify-center mb-3">
-                    <i class="fas fa-flask text-green-600"></i>
+            <div class="bg-white rounded-xl shadow p-4 hover:shadow-md transition cursor-pointer">
+                <div class="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center mb-3 mx-auto">
+                    <i class="fas fa-flask text-green-600 text-xl"></i>
                 </div>
-                <h3 class="font-medium mb-1">Science</h3>
-                <button class="text-navy-500 hover:underline text-sm text-gray-600">View all 6 courses, 98 notes →</button>
+                <h3 class="text-center text-blue-950 font-medium mb-1">Science</h3>
+                <p class="text-center text-sm text-gray-600 hover:underline hover:text-gray-800">6 courses, 98 notes</p>
             </div>
-        
+            
+            <!-- Business Administration-->
+            <div class="bg-white rounded-xl shadow p-4 hover:shadow-md transition cursor-pointer">
+                <div class="bg-lime-100 w-12 h-12 rounded-full flex items-center justify-center mb-3 mx-auto">
+                    <i class="fas fa-chart-line text-lime-600 text-xl"></i>
+                </div>
+                <h3 class="text-center text-blue-950 font-medium mb-1">Business Administration</h3>
+                <p class="text-center text-sm text-gray-600 hover:underline hover:text-gray-800">6 courses, 112 notes</p>
+            </div>
+            
             <!-- Arts -->
-            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition">
-                <div class="bg-purple-100 w-10 h-10 rounded-full flex items-center justify-center mb-3">
-                    <i class="fas fa-palette text-purple-600"></i>
+            <div class="bg-white rounded-xl shadow p-4 hover:shadow-md transition cursor-pointer">
+                <div class="bg-pink-100 w-12 h-12 rounded-full flex items-center justify-center mb-3 mx-auto">
+                    <i class="fas fa-palette text-pink-600 text-xl"></i>
                 </div>
-                <h3 class="font-medium mb-1">Arts</h3>
-                <button class="text-navy-500 hover:underline text-sm text-gray-600">View all 5 courses, 76 notes →</button>
-            </div>
-        
-            <!-- Information Technologies -->
-            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition">
-                <div class="bg-indigo-100 w-10 h-10 rounded-full flex items-center justify-center mb-3">
-                    <i class="fas fa-laptop-code text-indigo-600"></i>
-                </div>
-                <h3 class="font-medium mb-1">Information Technologies</h3>
-                <button class="text-navy-500 hover:underline text-sm text-gray-600">View all 9 courses, 154 notes →</button>
+                <h3 class="text-center text-blue-950 font-medium mb-1">Arts</h3>
+                <p class="text-center text-sm text-gray-600 hover:underline hover:text-gray-800">5 courses, 76 notes</p>
             </div>
 
-            <!-- Medicine -->
-            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition">
-                <div class="bg-pink-100 w-10 h-10 rounded-full flex items-center justify-center mb-3">
-                    <i class="fas fa-heart-pulse text-pink-600"></i>
+            <!-- Health and Sports Science -->
+            <div class="bg-white rounded-xl shadow p-4 hover:shadow-md transition cursor-pointer">
+                <div class="bg-purple-100 w-12 h-12 rounded-full flex items-center justify-center mb-3 mx-auto">
+                    <i class="fas fa-heart-pulse text-purple-600 text-xl"></i>
                 </div>
-               <h3 class="font-medium mb-1">Health and Sports Science</h3>
-                <button class="text-navy-500 hover:underline text-sm text-gray-600">View all 7 courses, 132 notes →</button>
+                <h3 class="text-center text-blue-950 font-medium mb-1">Health and Sports Science</h3>
+                <p class="text-center text-sm text-gray-600 hover:underline hover:text-gray-800">7 courses, 132 notes</p>
             </div>
 
             <!-- Law -->
-            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition">
-                <div class="bg-cyan-100 w-10 h-10 rounded-full flex items-center justify-center mb-3">
-                    <i class="fas fa-gavel text-cyan-600"></i>
+            <div class="bg-white rounded-xl shadow p-4 hover:shadow-md transition cursor-pointer">
+                <div class="bg-cyan-100 w-12 h-12 rounded-full flex items-center justify-center mb-3 mx-auto">
+                    <i class="fas fa-gavel text-cyan-600 text-xl"></i>
                 </div>
-                <h3 class="font-medium mb-1">Law</h3>
-                <button class="text-navy-500 hover:underline text-sm text-gray-600">View all 4 courses, 68 notes →</button>
+                <h3 class="text-center text-blue-950 font-medium mb-1">Law</h3>
+                <p class="text-center text-sm text-gray-600 hover:underline hover:text-gray-800">4 courses, 68 notes</p>
             </div>
 
-            <!-- Business -->
-            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition">
-                <div class="bg-lime-100 w-10 h-10 rounded-full flex items-center justify-center mb-3">
-                    <i class="fas fa-chart-line text-lime-600"></i>
+            <!-- Information Technologies -->
+            <div class="bg-white rounded-xl shadow p-4 hover:shadow-md transition cursor-pointer">
+                <div class="bg-orange-100 w-12 h-12 rounded-full flex items-center justify-center mb-3 mx-auto">
+                    <i class="fas fa-laptop-code text-orange-600 text-xl"></i>
                 </div>
-                <h3 class="font-medium mb-1">Business Administration</h3>
-                <button class="text-navy-500 hover:underline text-sm text-gray-600">View all 6 courses, 112 notes →</button>
-            </div>
-
-            <!-- Education -->
-            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition">
-                <div class="bg-teal-100 w-10 h-10 rounded-full flex items-center justify-center mb-3">
-                    <i class="fas fa-graduation-cap text-teal-600"></i>
-                </div>
-                <h3 class="font-medium mb-1">Teachers</h3>
-                <button class="text-navy-500 hover:underline text-sm text-gray-600">View all 5 courses, 89 notes →</button>
+                <h3 class="text-center text-blue-950 font-medium mb-1">Information Technologies</h3>
+                <p class="text-center text-sm text-gray-600 hover:underline hover:text-gray-800">9 courses, 154 notes</p>
             </div>
         </div>
     </section>
 
     <!-- Top Rated -->
     <section class="mb-8">
-        <h2 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Top Rated</h2>
+        <h2 class="text-2xl font-bold text-blue-950 mb-6 border-b pb-2">Top Rated</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <!-- Note 1 -->
-            <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-200 hover:shadow-md transition">
+            <div class="bg-white rounded-xl shadow-sm p-4 border border-gray-200 hover:shadow-md transition">
                <div class="flex justify-between items-start mb-2">
                     <h3 class="bg-indigo-100 font-bold text-indigo-600 text-xs px-2 py-1 rounded">ITCS214</h3>
                     <h3 class="text-gray-500 text-sm">1.2k downloads</h3>
                 </div>
-                <button class="font-bold text-gray-800 mb-2 hover:underline text-gray-900">Data Structures</button>
+                <button class="font-bold text-blue-950 mb-2 hover:underline text-gray-900">Data Structures</button>
                 <h2 class="text-gray-600 text-sm mb-3">Topic: Complete guide to arrays and linked lists</h2>
                 <div class="flex items-center text-sm text-gray-500 mb-3">
                     <i class="fas fa-user mr-2"></i> Maryam Ali
@@ -155,7 +147,7 @@
                         <div class="w-6 h-6 rounded-full bg-gray-200 mr-2 flex items-center justify-center">
                             <i class="fas fa-user text-xs text-gray-500"></i>
                         </div>
-                        <h2 class="font-semibold">Sarah M.</h2>
+                        <h2 class="text-blue-950 font-semibold">Sarah M.</h2>
                         <h2 class="text-gray-400 mx-1">•</h2>
                         <h2 class="text-yellow-400">
                             <i class="fas fa-star"></i>
@@ -169,9 +161,9 @@
             </div>
             
             <!-- Note 2 -->
-            <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-200 hover:shadow-md transition">
+            <div class="bg-white rounded-xl shadow-sm p-4 border border-gray-200 hover:shadow-md transition">
                 <div class="flex justify-between items-start mb-2">
-                    <p class="bg-green-100 font-bold text-green-800 text-xs px-2 py-1 rounded">MATHS211</p>
+                    <p class="bg-green-100 font-bold text-blue-950 text-xs px-2 py-1 rounded">MATHS211</p>
                     <span class="text-gray-500 text-sm">856 downloads</span>
                 </div>
                 <button class="font-bold text-gray-800 mb-2 hover:underline text-gray-900">Linear Algebra</button>
@@ -186,7 +178,7 @@
                         <div class="w-6 h-6 rounded-full bg-gray-200 mr-2 flex items-center justify-center">
                             <i class="fas fa-user text-xs text-gray-500"></i>
                         </div>
-                        <span class="font-medium">Rashid I.</span>
+                        <span class="text-blue-950 font-medium">Rashid I.</span>
                         <span class="text-gray-400 mx-1">•</span>
                         <span class="text-yellow-400">
                             <i class="fas fa-star"></i>
@@ -200,12 +192,12 @@
             </div>
             
             <!-- Note 3 -->
-            <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-200 hover:shadow-md transition">
+            <div class="bg-white rounded-xl shadow-sm p-4 border border-gray-200 hover:shadow-md transition">
                 <div class="flex justify-between items-start mb-2">
                     <span class="bg-pink-100 font-bold text-pink-600 text-xs px-2 py-1 rounded">LFS217</span>
                     <span class="text-gray-500 text-sm">742 downloads</span>
                 </div>
-                <button class="font-bold text-gray-800 mb-2 hover:underline text-gray-900">Microbiology</button>
+                <button class="font-bold text-blue-950 mb-2 hover:underline text-gray-900">Microbiology</button>
                 <p class="text-gray-600 text-sm mb-3">Microscopic Organism and Bacteria</p>
                 <div class="flex items-center text-sm text-gray-500 mb-3">
                     <i class="fas fa-user mr-2"></i> Prof. Dana Alshaikh
@@ -217,7 +209,7 @@
                         <div class="w-6 h-6 rounded-full bg-gray-200 mr-2 flex items-center justify-center">
                             <i class="fas fa-user text-xs text-gray-500"></i>
                         </div>
-                        <span class="font-medium">Fajer K.</span>
+                        <span class="text-blue-950 font-medium">Fajer K.</span>
                         <span class="text-gray-400 mx-1">•</span>
                         <span class="text-yellow-400">
                             <i class="fas fa-star"></i>
