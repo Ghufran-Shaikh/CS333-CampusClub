@@ -31,4 +31,25 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Render events to the list
+    // 🔥 Render events
+    function renderEvents() {
+        const filteredEvents = filterEvents();
+        const paginatedEvents = paginateEvents(filteredEvents);
+
+        eventList.innerHTML = '';
+        if (paginatedEvents.length === 0) {
+            eventList.innerHTML = `<li class="text-gray-500">لا توجد أحداث مطابقة.</li>`;
+            return;
+        }
+
+        paginatedEvents.forEach(event => {
+            const li = document.createElement('li');
+            li.className = "mb-2 font-semibold";
+            li.textContent = `${event.name}: ${event.date} ${event.time}`;
+            eventList.appendChild(li);
+        });
+        renderPagination(filteredEvents.length);
+    }
+
 </script>
