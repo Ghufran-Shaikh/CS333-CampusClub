@@ -161,7 +161,7 @@ function openDetailView(id) {
   `;
 }
 
-// Form validation
+//Form validation
 function addFormValidation() {
   form.addEventListener('submit', function(event) {
     event.preventDefault();
