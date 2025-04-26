@@ -1,0 +1,15 @@
+[
+    {
+      "courseTitle": "Data Structures",
+      "courseCode": "ITCS214",
+      "instructor": "Dr. Ahmed",
+      "semester": "First Semester",
+      "rating": 5,
+      "reviewer": "Sarah Ali",
+      "shortReview": "Excellent course, learned a lot.",
+      "fullReview": "The course was detailed and challenging. Highly recommend!",
+      "department": "Computer Science",
+      "date": "2025-01-15"
+    }
+  ]
+  
