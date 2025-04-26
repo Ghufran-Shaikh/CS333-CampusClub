@@ -102,6 +102,17 @@ document.addEventListener('DOMContentLoaded', () => {
     function hideLoading() {
         // handled automatically
     }
+    // 🛠 Form submit
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = eventNameInput.value.trim();
+        const date = eventDateInput.value.trim();
+        const time = eventTimeInput.value.trim();
+
+        if (!name || !date || !time) {
+            alert('All fields are requried ✅');
+            return;
+        }
 
 
 
