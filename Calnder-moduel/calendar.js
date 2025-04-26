@@ -6,8 +6,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const eventNameInput = document.getElementById('event-name');
     const eventDateInput = document.getElementById('event-date');
     const eventTimeInput = document.getElementById('event-time');
-    const sortSelect = createSortSelect(); // انشاء خيار الترتيب
-    const detailBox = createDetailBox(); // انشاء صندوق تفاصيل الحدث
+    const sortSelect = createSortSelect(); 
+    const detailBox = createDetailBox(); 
 
     let allEvents = [];
     let currentPage = 1;
@@ -18,13 +18,13 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             showLoading();
             const response = await fetch(API_URL);
-            if (!response.ok) throw new Error('فشل في جلب الأحداث');
+            if (!response.ok) throw new Error('Failed to fetch events');
             const data = await response.json();
             allEvents = data;
             renderEvents();
         } catch (error) {
             console.error('Fetch error:', error);
-            eventList.innerHTML = `<li class="text-red-500">خطأ في تحميل الأحداث ❌</li>`;
+            eventList.innerHTML = `<li class="text-red-500">failed in loading events❌</li>`;
         }
     }
 
@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         eventList.innerHTML = '';
         if (paginatedEvents.length === 0) {
-            eventList.innerHTML = `<li class="text-gray-500">لا توجد أحداث مطابقة.</li>`;
+            eventList.innerHTML = `<li class="text-gray-500">There are no matching events.</li>`;
             return;
         }
 
@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const li = document.createElement('li');
             li.className = "mb-2 font-semibold cursor-pointer hover:underline";
             li.textContent = `${event.name}: ${event.date} ${event.time}`;
-            li.addEventListener('click', () => showEventDetails(event)); // 📋 عرض تفاصيل عند الضغط
+            li.addEventListener('click', () => showEventDetails(event)); // Show details on click
             eventList.appendChild(li);
         });
         renderPagination(filteredEvents.length);
@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ✅ Show loading
     function showLoading() {
-        eventList.innerHTML = `<li class="text-gray-500">جارٍ تحميل الأحداث...</li>`;
+        eventList.innerHTML = `<li class="text-gray-500">Loading events...</li>`;
     }
 
     // ✅ Create Sort Select dropdown
@@ -113,9 +113,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const select = document.createElement('select');
         select.className = 'border p-2 rounded';
         select.innerHTML = `
-            <option value="">ترتيب حسب...</option>
-            <option value="name">ترتيب بالاسم</option>
-            <option value="date">ترتيب بالتاريخ</option>
+            <option value="">sort by...</option>
+            <option value="name">Sort by name/option>
+            <option value="date">Sort by date/option>
         `;
 
         select.addEventListener('change', () => {
@@ -139,7 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ✅ Show Event Details
     function showEventDetails(event) {
         detailBox.innerHTML = `
-            <h3 class="font-bold text-lg mb-2">تفاصيل الحدث</h3>
+            <h3 class="font-bold text-lg mb-2"> Event details</h3>
             <p><strong>الاسم:</strong> ${event.name}</p>
             <p><strong>التاريخ:</strong> ${event.date}</p>
             <p><strong>الوقت:</strong> ${event.time}</p>
@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const time = eventTimeInput.value.trim();
 
         if (!name || !date || !time) {
-            alert('جميع الحقول مطلوبة ✅');
+            alert('All fields are required✅');
             return;
         }
 
