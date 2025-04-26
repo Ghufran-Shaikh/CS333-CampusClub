@@ -1,12 +1,163 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Campus Hub - Club Activities</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="script.js" defer></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+
+    header {
+      background-color: #4a90e2;
+      padding: 20px 0;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 2.5rem;
+      color: #fff;
+    }
+
+    main {
+      max-width: 1200px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+
+    section {
+      margin-bottom: 40px;
+    }
+
+    .filters {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    input[type="text"] {
+      width: 70%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+
+    button {
+      background-color: #4a90e2;
+      color: white;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #357ab8;
+    }
+
+    .activity-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    .activity-card {
+      background-color: white;
+      padding: 15px;
+      border-radius: 8px;
+      border: 1px solid #eee;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .activity-card img {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+    }
+
+    .activity-card h2 {
+      margin: 10px 0;
+      font-size: 1.5rem;
+    }
+
+    .activity-card p {
+      margin: 5px 0;
+      color: #666;
+    }
+
+    .activity-card .subdued-text {
+      font-size: 0.9rem;
+      color: #999;
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .pagination button {
+      margin: 0 5px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    form label {
+      font-weight: bold;
+      margin-bottom: 5px;
+      display: block;
+    }
+
+    input[type="text"],
+    input[type="date"],
+    input[type="time"],
+    textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+
+    .form-buttons button {
+      padding: 10px 16px;
+      background-color: #4a90e2;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+
+    .form-buttons button:hover {
+      background-color: #357ab8;
+    }
+
+    .comment-box textarea {
+      resize: vertical;
+    }
+
+    a {
+      color: #4a90e2;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
+
 <body>
 
   <header>
@@ -14,76 +165,112 @@
   </header>
 
   <main>
-
     <!-- Search and Filter -->
     <section class="filters">
-      <input type="text" id="searchInput" placeholder="Search club activities..." />
-      <button id="sortTitleBtn">Sort by Title</button>
-      <button id="sortDateBtn">Sort by Date</button>
+      <input type="text" placeholder="Search club activities..." id="search" />
+      <button id="filterBtn">Filter</button>
+      <button id="sortBtn">Sort</button>
     </section>
 
-    <!-- Activity List -->
-    <section class="activity-list" id="activityList"></section>
+    <!-- Activities -->
+    <section class="activity-list" id="activityList">
+      <!-- Activity Cards will be dynamically inserted here -->
+    </section>
 
     <!-- Pagination -->
-    <section class="pagination">
-      <button id="prevBtn">Prev</button>
-      <span id="pageInfo"></span>
-      <button id="nextBtn">Next</button>
+    <section class="pagination" id="pagination">
+      <!-- Pagination buttons will be dynamically inserted here -->
     </section>
 
-    <!-- Creation Form -->
-    <section id="create">
-      <h2>Add New Club Activity</h2>
-      <form id="activityForm">
-        <div class="form-group">
-          <label>Club Name *</label>
-          <input type="text" id="clubName" required />
-          <small class="error" id="clubNameError"></small>
-        </div>
-        <div class="form-group">
-          <label>Event Title *</label>
-          <input type="text" id="eventTitle" required />
-          <small class="error" id="eventTitleError"></small>
-        </div>
-        <div class="form-group">
-          <label>Date *</label>
-          <input type="date" id="eventDate" required />
-          <small class="error" id="eventDateError"></small>
-        </div>
-        <div class="form-group">
-          <label>Time *</label>
-          <input type="time" id="eventTime" required />
-          <small class="error" id="eventTimeError"></small>
-        </div>
-        <div class="form-group">
-          <label>Location *</label>
-          <input type="text" id="eventLocation" required />
-          <small class="error" id="eventLocationError"></small>
-        </div>
-        <div class="form-group">
-          <label>Description</label>
-          <textarea id="eventDescription" rows="4"></textarea>
-        </div>
-        <div class="form-buttons">
-          <button type="submit">Submit</button>
-          <button type="reset">Cancel</button>
-        </div>
-      </form>
-    </section>
-
-    <!-- Detail Section -->
-    <section id="detail" class="detail-section" style="display:none;">
-      <h2 id="detailTitle">Club Activity Details</h2>
-      <img id="detailImage" style="width:100%;max-height:300px;object-fit:cover;border-radius:10px;">
-      <p><strong>Club:</strong> <span id="detailClub"></span></p>
-      <p><strong>Date & Time:</strong> <span id="detailDateTime"></span></p>
-      <p><strong>Location:</strong> <span id="detailLocation"></span></p>
-      <p><strong>Description:</strong> <span id="detailDescription"></span></p>
-      <button id="backBtn">← Back to listing</button>
+    <!-- Add New Activity -->
+    <section>
+      <a href="#create" class="button">+ Add New Activity</a>
     </section>
 
   </main>
 
+  <script>
+    // Dummy JSON Data (In real scenario, you would fetch this from an API)
+    const activities = [
+      {
+        "id": 1,
+        "club": "Art Club",
+        "title": "Sketch Night",
+        "date": "2025-04-15",
+        "time": "18:00",
+        "location": "Room B101",
+        "description": "Join fellow artists for a relaxing night of sketching and snacks.",
+        "image": "https://images.unsplash.com/photo-1504198458649-3128b932f49b"
+      },
+      {
+        "id": 2,
+        "club": "Robotics Club",
+        "title": "Arduino Workshop",
+        "date": "2025-04-18",
+        "time": "14:00",
+        "location": "Lab 204",
+        "description": "Build your first Arduino robot with fellow enthusiasts!",
+        "image": "https://images.unsplash.com/photo-1556740749-887f6717d7e4"
+      },
+      {
+        "id": 3,
+        "club": "Photography Club",
+        "title": "Photo Walk",
+        "date": "2025-04-22",
+        "time": "09:00",
+        "location": "Campus Gardens",
+        "description": "Join us for a photography walk around campus, capturing candid moments.",
+        "image": "https://images.unsplash.com/photo-1501807959025-df45a09a1bfb"
+      }
+    ];
+
+    // Function to render activity cards
+    function renderActivities(activities) {
+      const activityList = document.getElementById('activityList');
+      activityList.innerHTML = ''; // Clear existing content
+
+      activities.forEach(activity => {
+        const activityCard = document.createElement('div');
+        activityCard.classList.add('activity-card');
+        
+        activityCard.innerHTML = `
+          <img src="${activity.image}" alt="${activity.title}">
+          <h2>${activity.title}</h2>
+          <p class="subdued-text">${activity.date} • ${activity.location}</p>
+          <p>${activity.description}</p>
+          <a href="#detail">View Details</a>
+        `;
+        
+        activityList.appendChild(activityCard);
+      });
+    }
+
+    // Function to render pagination buttons
+    function renderPagination(pageCount) {
+      const pagination = document.getElementById('pagination');
+      pagination.innerHTML = ''; // Clear existing pagination buttons
+
+      const prevButton = document.createElement('button');
+      prevButton.textContent = 'Prev';
+      pagination.appendChild(prevButton);
+
+      for (let i = 1; i <= pageCount; i++) {
+        const pageButton = document.createElement('button');
+        pageButton.textContent = i;
+        pagination.appendChild(pageButton);
+      }
+
+      const nextButton = document.createElement('button');
+      nextButton.textContent = 'Next';
+      pagination.appendChild(nextButton);
+    }
+
+    // Initial render of activities and pagination
+    renderActivities(activities);
+    renderPagination(3); // Let's assume we have 3 pages
+
+  </script>
+
 </body>
+
 </html>

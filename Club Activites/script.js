@@ -169,55 +169,59 @@ activityForm.addEventListener("submit", (e) => {
     activityForm.reset();
   }
 });
-[
-  {
-    "id": 1,
-    "club": "Art Club",
-    "title": "Sketch Night",
-    "date": "2025-04-15",
-    "time": "18:00",
-    "location": "Room B101",
-    "description": "Join fellow artists for a relaxing night of sketching and snacks.",
-    "image": "https://images.unsplash.com/photo-1504198458649-3128b932f49b"
-  },
-  {
-    "id": 2,
-    "club": "Robotics Club",
-    "title": "Arduino Workshop",
-    "date": "2025-04-18",
-    "time": "14:00",
-    "location": "Lab 204",
-    "description": "Build your first Arduino robot with fellow enthusiasts!",
-    "image": "https://images.unsplash.com/photo-1556740749-887f6717d7e4"
-  },
-  {
-    "id": 3,
-    "club": "Drama Club",
-    "title": "Theater Rehearsal",
-    "date": "2025-04-20",
-    "time": "19:00",
-    "location": "Theater Hall",
-    "description": "Full cast rehearsal for the upcoming play. Don't miss it!",
-    "image": "https://images.unsplash.com/photo-1590291622381-1398c77bc95a"
-  },
-  {
-    "id": 4,
-    "club": "Photography Club",
-    "title": "Photo Walk",
-    "date": "2025-04-22",
-    "time": "09:00",
-    "location": "Campus Gardens",
-    "description": "Join us for a photography walk around campus, capturing candid moments.",
-    "image": "https://images.unsplash.com/photo-1501807959025-df45a09a1bfb"
-  },
-  {
-    "id": 5,
-    "club": "Coding Club",
-    "title": "Hackathon",
-    "date": "2025-04-25",
-    "time": "10:00",
-    "location": "Computer Science Lab",
-    "description": "Join us for a 24-hour hackathon to solve real-world problems through code!",
-    "image": "https://images.unsplash.com/photo-1561948958-4b2387db5c56"
-  }
+
+  [
+    [
+      {
+        "id": 1,
+        "club": "Art Club",
+        "title": "Sketch Night",
+        "date": "2025-04-15",
+        "time": "18:00",
+        "location": "Room B101",
+        "description": "Join fellow artists for a relaxing night of sketching and snacks.",
+        "image": "https://images.unsplash.com/photo-1504198458649-3128b932f49b"
+      },
+      {
+        "id": 2,
+        "club": "Robotics Club",
+        "title": "Arduino Workshop",
+        "date": "2025-04-18",
+        "time": "14:00",
+        "location": "Lab 204",
+        "description": "Build your first Arduino robot with fellow enthusiasts!",
+        "image": "https://images.unsplash.com/photo-1556740749-887f6717d7e4"
+      },
+      {
+        "id": 3,
+        "club": "Photography Club",
+        "title": "Photo Walk",
+        "date": "2025-04-22",
+        "time": "09:00",
+        "location": "Campus Gardens",
+        "description": "Join us for a photography walk around campus, capturing candid moments.",
+        "image": "https://images.unsplash.com/photo-1501807959025-df45a09a1bfb"
+      },
+      {
+        "id": 4,
+        "club": "Drama Club",
+        "title": "Theater Rehearsal",
+        "date": "2025-04-20",
+        "time": "19:00",
+        "location": "Theater Hall",
+        "description": "Full cast rehearsal for the upcoming play. Don't miss it!",
+        "image": "https://images.unsplash.com/photo-1590291622381-1398c77bc95a"
+      },
+      {
+        "id": 5,
+        "club": "Coding Club",
+        "title": "Hackathon",
+        "date": "2025-04-25",
+        "time": "10:00",
+        "location": "Computer Science Lab",
+        "description": "Join us for a 24-hour hackathon to solve real-world problems through code!",
+        "image": "https://images.unsplash.com/photo-1561948958-4b2387db5c56"
+      }
+    ]
+    
 ]
