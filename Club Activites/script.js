@@ -1,189 +1,223 @@
-// script.js
+const activityList = document.getElementById("activityList");
+const searchInput = document.getElementById("searchInput");
+const sortTitleBtn = document.getElementById("sortTitleBtn");
+const sortDateBtn = document.getElementById("sortDateBtn");
+const prevBtn = document.getElementById("prevBtn");
+const nextBtn = document.getElementById("nextBtn");
+const pageInfo = document.getElementById("pageInfo");
+const activityForm = document.getElementById("activityForm");
 
-// Global variables
+const detailSection = document.getElementById("detail");
+const detailTitle = document.getElementById("detailTitle");
+const detailImage = document.getElementById("detailImage");
+const detailClub = document.getElementById("detailClub");
+const detailDateTime = document.getElementById("detailDateTime");
+const detailLocation = document.getElementById("detailLocation");
+const detailDescription = document.getElementById("detailDescription");
+const backBtn = document.getElementById("backBtn");
+
 let activities = [];
 let filteredActivities = [];
 let currentPage = 1;
-const itemsPerPage = 4;
+const activitiesPerPage = 2;
 
-// DOM Elements
-const activityList = document.querySelector('.activity-list');
-const searchInput = document.querySelector('.filters input[type="text"]');
-const filterButton = document.querySelector('.filters button:nth-child(2)');
-const sortButton = document.querySelector('.filters button:nth-child(3)');
-const paginationSection = document.querySelector('.pagination');
-const detailSection = document.getElementById('detail');
-const form = document.querySelector('#create form');
-
-// Fetch activities from mock API
-document.addEventListener('DOMContentLoaded', () => {
-  fetchActivities();
-  addFormValidation();
-});
-
-// Fetch Data
 async function fetchActivities() {
   activityList.innerHTML = "<p>Loading activities...</p>";
 
   try {
-    const response = await fetch('https://jsonplaceholder.typicode.com/posts?_limit=15'); // Example API
+    const response = await fetch('https://mocki.io/v1/cc07a558-4b6b-4b01-8975-8c8a4c416b7d'); // Replace with your actual URL
+    if (!response.ok) throw new Error("Failed to fetch data");
     const data = await response.json();
-
-    // Map API data into our structure
-    activities = data.map((item, index) => ({
-      id: item.id,
-      club: "Club " + (index + 1),
-      title: item.title.slice(0, 20),
-      date: randomDate(),
-      time: randomTime(),
-      location: "Room " + (100 + index),
-      description: item.body.slice(0, 80)
-    }));
-
-    filteredActivities = [...activities];
+    activities = data;
+    filteredActivities = activities;
     renderActivities();
-    renderPagination();
   } catch (error) {
+    activityList.innerHTML = `<p>Error loading activities. Please try again later.</p>`;
     console.error(error);
-    activityList.innerHTML = "<p>Failed to load activities. Please try again later.</p>";
   }
 }
 
-// Random date/time generators for demo
-function randomDate() {
-  const start = new Date();
-  const end = new Date(2025, 4, 30);
-  const randomDate = new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
-  return randomDate.toISOString().split('T')[0];
-}
-
-function randomTime() {
-  const hour = Math.floor(Math.random() * 12) + 1;
-  const minute = Math.floor(Math.random() * 60);
-  const ampm = Math.random() > 0.5 ? 'AM' : 'PM';
-  return `${hour}:${minute.toString().padStart(2, '0')} ${ampm}`;
-}
-
-// Render activities based on page
+document.addEventListener("DOMContentLoaded", fetchActivities);
 function renderActivities() {
+  const startIndex = (currentPage - 1) * activitiesPerPage;
+  const endIndex = startIndex + activitiesPerPage;
+  const activitiesToShow = filteredActivities.slice(startIndex, endIndex);
+
   activityList.innerHTML = "";
 
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedActivities = filteredActivities.slice(startIndex, startIndex + itemsPerPage);
-
-  if (paginatedActivities.length === 0) {
+  if (activitiesToShow.length === 0) {
     activityList.innerHTML = "<p>No activities found.</p>";
     return;
   }
 
-  paginatedActivities.forEach(activity => {
-    const card = document.createElement('div');
-    card.className = 'activity-card';
+  activitiesToShow.forEach(activity => {
+    const card = document.createElement("div");
+    card.className = "activity-card";
+
     card.innerHTML = `
+      <img src="${activity.image}" style="width:100%; height:150px; object-fit:cover; border-radius:8px;" />
       <h2>${activity.title}</h2>
       <p class="subdued-text">${activity.date} • ${activity.location}</p>
-      <p>${activity.description}</p>
-      <a href="#detail" onclick="openDetailView(${activity.id})">View Details</a>
+      <p>${activity.description.substring(0, 60)}...</p>
+      <a href="#" onclick="viewDetails(${activity.id})">View Details</a>
     `;
+
     activityList.appendChild(card);
   });
+
+  pageInfo.innerText = `Page ${currentPage} of ${Math.ceil(filteredActivities.length / activitiesPerPage)}`;
 }
 
-// Render Pagination
-function renderPagination() {
-  paginationSection.innerHTML = `
-    <button onclick="prevPage()">Prev</button>
-    <span>Page ${currentPage} of ${Math.ceil(filteredActivities.length / itemsPerPage)}</span>
-    <button onclick="nextPage()">Next</button>
-  `;
-}
-
-function prevPage() {
+prevBtn.addEventListener("click", () => {
   if (currentPage > 1) {
     currentPage--;
     renderActivities();
-    renderPagination();
   }
-}
+});
 
-function nextPage() {
-  if (currentPage < Math.ceil(filteredActivities.length / itemsPerPage)) {
+nextBtn.addEventListener("click", () => {
+  if (currentPage < Math.ceil(filteredActivities.length / activitiesPerPage)) {
     currentPage++;
     renderActivities();
-    renderPagination();
   }
-}
+});
 
-// Search activities
-searchInput.addEventListener('input', () => {
-  const query = searchInput.value.toLowerCase();
-  filteredActivities = activities.filter(activity => 
-    activity.title.toLowerCase().includes(query) || 
-    activity.club.toLowerCase().includes(query)
+searchInput.addEventListener("input", () => {
+  const searchValue = searchInput.value.toLowerCase();
+  filteredActivities = activities.filter(activity =>
+    activity.title.toLowerCase().includes(searchValue) ||
+    activity.club.toLowerCase().includes(searchValue)
   );
   currentPage = 1;
   renderActivities();
-  renderPagination();
 });
 
-// Sort activities by title
-sortButton.addEventListener('click', () => {
+sortTitleBtn.addEventListener("click", () => {
   filteredActivities.sort((a, b) => a.title.localeCompare(b.title));
-  currentPage = 1;
   renderActivities();
 });
 
-// Open Detail View
-function openDetailView(id) {
-  const activity = activities.find(a => a.id === id);
+sortDateBtn.addEventListener("click", () => {
+  filteredActivities.sort((a, b) => new Date(a.date) - new Date(b.date));
+  renderActivities();
+});
+function viewDetails(id) {
+  const activity = activities.find(act => act.id === id);
 
   if (!activity) return;
 
-  detailSection.innerHTML = `
-    <h2>Club Activity Details</h2>
-    <p><strong>Club:</strong> ${activity.club}</p>
-    <p><strong>Event:</strong> ${activity.title}</p>
-    <p><strong>Date & Time:</strong> ${activity.date} at ${activity.time}</p>
-    <p><strong>Location:</strong> ${activity.location}</p>
-    <p><strong>Description:</strong> ${activity.description}</p>
+  detailTitle.textContent = activity.title;
+  detailImage.src = activity.image;
+  detailClub.textContent = activity.club;
+  detailDateTime.textContent = `${activity.date} at ${activity.time}`;
+  detailLocation.textContent = activity.location;
+  detailDescription.textContent = activity.description;
 
-    <div class="card-buttons">
-      <button>Edit</button>
-      <button style="background-color: #dc3545;">Delete</button>
-    </div>
-
-    <div class="comment-box">
-      <label>Comments</label>
-      <textarea placeholder="Write a comment..." rows="3"></textarea>
-    </div>
-
-    <p style="margin-top: 15px;">
-      <a href="#">← Back to listing</a>
-    </p>
-  `;
+  // Hide activity list and show details
+  activityList.style.display = "none";
+  document.querySelector(".pagination").style.display = "none";
+  detailSection.style.display = "block";
 }
 
-// Form validation
-function addFormValidation() {
-  form.addEventListener('submit', function(event) {
-    event.preventDefault();
-    const inputs = form.querySelectorAll('input[required], textarea');
+backBtn.addEventListener("click", () => {
+  detailSection.style.display = "none";
+  activityList.style.display = "grid";
+  document.querySelector(".pagination").style.display = "flex";
+});
+activityForm.addEventListener("submit", (e) => {
+  e.preventDefault();
 
-    let valid = true;
-    inputs.forEach(input => {
-      if (!input.value.trim()) {
-        valid = false;
-        input.style.border = "1px solid red";
-      } else {
-        input.style.border = "1px solid #ddd";
-      }
-    });
+  let valid = true;
 
-    if (valid) {
-      alert("Form is valid! (Simulation, not actually submitted)");
-      form.reset();
-    } else {
-      alert("Please fill all required fields!");
-    }
-  });
-}
+  if (!clubName.value.trim()) {
+    document.getElementById("clubNameError").textContent = "Club Name is required";
+    valid = false;
+  } else {
+    document.getElementById("clubNameError").textContent = "";
+  }
+
+  if (!eventTitle.value.trim()) {
+    document.getElementById("eventTitleError").textContent = "Event Title is required";
+    valid = false;
+  } else {
+    document.getElementById("eventTitleError").textContent = "";
+  }
+
+  if (!eventDate.value) {
+    document.getElementById("eventDateError").textContent = "Date is required";
+    valid = false;
+  } else {
+    document.getElementById("eventDateError").textContent = "";
+  }
+
+  if (!eventTime.value) {
+    document.getElementById("eventTimeError").textContent = "Time is required";
+    valid = false;
+  } else {
+    document.getElementById("eventTimeError").textContent = "";
+  }
+
+  if (!eventLocation.value.trim()) {
+    document.getElementById("eventLocationError").textContent = "Location is required";
+    valid = false;
+  } else {
+    document.getElementById("eventLocationError").textContent = "";
+  }
+
+  if (valid) {
+    alert("Form is valid! (Not actually submitting for now.)");
+    activityForm.reset();
+  }
+});
+[
+  {
+    "id": 1,
+    "club": "Art Club",
+    "title": "Sketch Night",
+    "date": "2025-04-15",
+    "time": "18:00",
+    "location": "Room B101",
+    "description": "Join fellow artists for a relaxing night of sketching and snacks.",
+    "image": "https://images.unsplash.com/photo-1504198458649-3128b932f49b"
+  },
+  {
+    "id": 2,
+    "club": "Robotics Club",
+    "title": "Arduino Workshop",
+    "date": "2025-04-18",
+    "time": "14:00",
+    "location": "Lab 204",
+    "description": "Build your first Arduino robot with fellow enthusiasts!",
+    "image": "https://images.unsplash.com/photo-1556740749-887f6717d7e4"
+  },
+  {
+    "id": 3,
+    "club": "Drama Club",
+    "title": "Theater Rehearsal",
+    "date": "2025-04-20",
+    "time": "19:00",
+    "location": "Theater Hall",
+    "description": "Full cast rehearsal for the upcoming play. Don't miss it!",
+    "image": "https://images.unsplash.com/photo-1590291622381-1398c77bc95a"
+  },
+  {
+    "id": 4,
+    "club": "Photography Club",
+    "title": "Photo Walk",
+    "date": "2025-04-22",
+    "time": "09:00",
+    "location": "Campus Gardens",
+    "description": "Join us for a photography walk around campus, capturing candid moments.",
+    "image": "https://images.unsplash.com/photo-1501807959025-df45a09a1bfb"
+  },
+  {
+    "id": 5,
+    "club": "Coding Club",
+    "title": "Hackathon",
+    "date": "2025-04-25",
+    "time": "10:00",
+    "location": "Computer Science Lab",
+    "description": "Join us for a 24-hour hackathon to solve real-world problems through code!",
+    "image": "https://images.unsplash.com/photo-1561948958-4b2387db5c56"
+  }
+]
