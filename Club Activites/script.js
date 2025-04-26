@@ -1,12 +1,10 @@
-// script.js
-
-// Global variables
+//Global variables
 let activities = [];
 let filteredActivities = [];
 let currentPage = 1;
 const itemsPerPage = 4;
 
-// DOM Elements
+//DOM Elements
 const activityList = document.querySelector('.activity-list');
 const searchInput = document.querySelector('.filters input[type="text"]');
 const filterButton = document.querySelector('.filters button:nth-child(2)');
@@ -21,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
   addFormValidation();
 });
 
-// Fetch Data
+//Fetch Data
 async function fetchActivities() {
   activityList.innerHTML = "<p>Loading activities...</p>";
 
@@ -49,7 +47,7 @@ async function fetchActivities() {
   }
 }
 
-// Random date/time generators for demo
+//Random date/time generators for demo
 function randomDate() {
   const start = new Date();
   const end = new Date(2025, 4, 30);
@@ -64,7 +62,7 @@ function randomTime() {
   return `${hour}:${minute.toString().padStart(2, '0')} ${ampm}`;
 }
 
-// Render activities based on page
+//Render activities based on page
 function renderActivities() {
   activityList.innerHTML = "";
 
@@ -89,7 +87,7 @@ function renderActivities() {
   });
 }
 
-// Render Pagination
+//Render Pagination
 function renderPagination() {
   paginationSection.innerHTML = `
     <button onclick="prevPage()">Prev</button>
@@ -114,7 +112,7 @@ function nextPage() {
   }
 }
 
-// Search activities
+//Search activities
 searchInput.addEventListener('input', () => {
   const query = searchInput.value.toLowerCase();
   filteredActivities = activities.filter(activity => 
@@ -126,14 +124,14 @@ searchInput.addEventListener('input', () => {
   renderPagination();
 });
 
-// Sort activities by title
+//Sort activities by title
 sortButton.addEventListener('click', () => {
   filteredActivities.sort((a, b) => a.title.localeCompare(b.title));
   currentPage = 1;
   renderActivities();
 });
 
-// Open Detail View
+//Open Detail View
 function openDetailView(id) {
   const activity = activities.find(a => a.id === id);
 
