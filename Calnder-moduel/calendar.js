@@ -6,8 +6,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const eventNameInput = document.getElementById('event-name');
     const eventDateInput = document.getElementById('event-date');
     const eventTimeInput = document.getElementById('event-time');
-    const sortSelect = createSortSelect(); // انشاء خيار الترتيب
-    const detailBox = createDetailBox(); // انشاء صندوق تفاصيل الحدث
+    const sortSelect = createSortSelect(); 
+    const detailBox = createDetailBox(); 
 
     let allEvents = [];
     let currentPage = 1;
