@@ -131,7 +131,7 @@ sortButton.addEventListener('click', () => {
   renderActivities();
 });
 
-//Open Detail View
+//Open Detail View 
 function openDetailView(id) {
   const activity = activities.find(a => a.id === id);
 
