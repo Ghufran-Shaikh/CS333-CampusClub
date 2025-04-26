@@ -113,6 +113,13 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('All fields are requried ✅');
             return;
         }
+    // Add event locally
+    const newEvent = { name, date, time };
+    allEvents.push(newEvent);
+    currentPage = Math.ceil(allEvents.length / itemsPerPage);
+    renderEvents();
+    form.reset();
+});
 
 
 
