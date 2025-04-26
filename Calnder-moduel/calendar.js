@@ -62,5 +62,38 @@ document.addEventListener('DOMContentLoaded', () => {
         );
     }
 
+    // Paginate events
+    // 🔢 Pagination
+    function paginateEvents(events) {
+        const start = (currentPage - 1) * itemsPerPage;
+        return events.slice(start, start + itemsPerPage);
+    }
+
+    function renderPagination(totalItems) {
+        const totalPages = Math.ceil(totalItems / itemsPerPage);
+        const paginationContainer = document.getElementById('pagination') || createPaginationContainer();
+        paginationContainer.innerHTML = '';
+
+        for (let i = 1; i <= totalPages; i++) {
+            const btn = document.createElement('button');
+            btn.textContent = i;
+            btn.className = `mx-1 px-3 py-1 rounded-full ${i === currentPage ? 'bg-orange-400 text-white' : 'bg-gray-200'}`;
+            btn.addEventListener('click', () => {
+                currentPage = i;
+                renderEvents();
+            });
+            paginationContainer.appendChild(btn);
+        }
+    }
+
+    function createPaginationContainer() {
+        const container = document.createElement('div');
+        container.id = 'pagination';
+        container.className = 'mt-4 flex justify-center';
+        eventList.parentNode.appendChild(container);
+        return container;
+    }
+
+
 
 </script>
