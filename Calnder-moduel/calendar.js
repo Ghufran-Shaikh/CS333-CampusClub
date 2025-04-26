@@ -1,41 +1,38 @@
-<script>
 document.addEventListener('DOMContentLoaded', () => {
-    const API_URL = 'https://mocki.io/v1/5c112f19-66b7-4d87-abc8-7bb0112764b3'; 
+    const API_URL = 'https://mocki.io/v1/d7e63f6c-5ed1-4538-90c8-2b8c1e075b3e';
     const eventList = document.querySelector('.list-disc');
     const searchInput = document.getElementById('event-search');
     const form = document.querySelector('form');
     const eventNameInput = document.getElementById('event-name');
     const eventDateInput = document.getElementById('event-date');
     const eventTimeInput = document.getElementById('event-time');
+    const sortSelect = createSortSelect(); // انشاء خيار الترتيب
+    const detailBox = createDetailBox(); // انشاء صندوق تفاصيل الحدث
 
     let allEvents = [];
     let currentPage = 1;
     const itemsPerPage = 3;
 
-
-    // Fetch events from the API
-    // 🚀 Fetch events
+    // ✅ Fetch Events from API
     async function fetchEvents() {
         try {
             showLoading();
             const response = await fetch(API_URL);
-            if (!response.ok) throw new Error('Failed to fetch events');
+            if (!response.ok) throw new Error('فشل في جلب الأحداث');
             const data = await response.json();
             allEvents = data;
             renderEvents();
         } catch (error) {
-            console.error('Error fetching events:', error);
-            eventList.innerHTML = `<li class="text-red-500">حدث خطأ أثناء جلب الأحداث.</li>`;
-        } finally {
-            hideLoading();
+            console.error('Fetch error:', error);
+            eventList.innerHTML = `<li class="text-red-500">خطأ في تحميل الأحداث ❌</li>`;
         }
     }
 
-    // Render events to the list
-    // 🔥 Render events
+    // ✅ Render Events
     function renderEvents() {
         const filteredEvents = filterEvents();
-        const paginatedEvents = paginateEvents(filteredEvents);
+        const sortedEvents = sortEvents(filteredEvents);
+        const paginatedEvents = paginateEvents(sortedEvents);
 
         eventList.innerHTML = '';
         if (paginatedEvents.length === 0) {
@@ -45,15 +42,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         paginatedEvents.forEach(event => {
             const li = document.createElement('li');
-            li.className = "mb-2 font-semibold";
+            li.className = "mb-2 font-semibold cursor-pointer hover:underline";
             li.textContent = `${event.name}: ${event.date} ${event.time}`;
+            li.addEventListener('click', () => showEventDetails(event)); // 📋 عرض تفاصيل عند الضغط
             eventList.appendChild(li);
         });
         renderPagination(filteredEvents.length);
     }
 
-    // Filter events based on search input
-    // 🔍 Filter events
+    // ✅ Filter by search input
     function filterEvents() {
         const query = searchInput.value.toLowerCase();
         return allEvents.filter(event => 
@@ -62,18 +59,35 @@ document.addEventListener('DOMContentLoaded', () => {
         );
     }
 
-    // Paginate events
-    // 🔢 Pagination
+    // ✅ Sort events
+    function sortEvents(events) {
+        const sortType = sortSelect.value;
+        if (sortType === 'name') {
+            return events.slice().sort((a, b) => a.name.localeCompare(b.name));
+        } else if (sortType === 'date') {
+            return events.slice().sort((a, b) => new Date(a.date) - new Date(b.date));
+        }
+        return events;
+    }
+
+    // ✅ Pagination
     function paginateEvents(events) {
         const start = (currentPage - 1) * itemsPerPage;
         return events.slice(start, start + itemsPerPage);
     }
 
+    // ✅ Render pagination buttons
     function renderPagination(totalItems) {
-        const totalPages = Math.ceil(totalItems / itemsPerPage);
-        const paginationContainer = document.getElementById('pagination') || createPaginationContainer();
+        let paginationContainer = document.getElementById('pagination');
+        if (!paginationContainer) {
+            paginationContainer = document.createElement('div');
+            paginationContainer.id = 'pagination';
+            paginationContainer.className = 'mt-4 flex justify-center';
+            eventList.parentNode.appendChild(paginationContainer);
+        }
         paginationContainer.innerHTML = '';
 
+        const totalPages = Math.ceil(totalItems / itemsPerPage);
         for (let i = 1; i <= totalPages; i++) {
             const btn = document.createElement('button');
             btn.textContent = i;
@@ -86,23 +100,54 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function createPaginationContainer() {
-        const container = document.createElement('div');
-        container.id = 'pagination';
-        container.className = 'mt-4 flex justify-center';
-        eventList.parentNode.appendChild(container);
-        return container;
-    }
-
-    // ⏳ Loading indicator
+    // ✅ Show loading
     function showLoading() {
-        eventList.innerHTML = `<li class="text-gray-500">جارٍ التحميل...</li>`;
+        eventList.innerHTML = `<li class="text-gray-500">جارٍ تحميل الأحداث...</li>`;
     }
 
-    function hideLoading() {
-        // handled automatically
+    // ✅ Create Sort Select dropdown
+    function createSortSelect() {
+        const container = document.createElement('div');
+        container.className = 'mb-4';
+
+        const select = document.createElement('select');
+        select.className = 'border p-2 rounded';
+        select.innerHTML = `
+            <option value="">ترتيب حسب...</option>
+            <option value="name">ترتيب بالاسم</option>
+            <option value="date">ترتيب بالتاريخ</option>
+        `;
+
+        select.addEventListener('change', () => {
+            renderEvents();
+        });
+
+        eventList.parentNode.insertBefore(container, eventList);
+        container.appendChild(select);
+
+        return select;
     }
-    // 🛠 Form submit
+
+    // ✅ Create Detail Box
+    function createDetailBox() {
+        const detail = document.createElement('div');
+        detail.className = 'mt-4 p-4 bg-gray-100 rounded shadow hidden';
+        eventList.parentNode.appendChild(detail);
+        return detail;
+    }
+
+    // ✅ Show Event Details
+    function showEventDetails(event) {
+        detailBox.innerHTML = `
+            <h3 class="font-bold text-lg mb-2">تفاصيل الحدث</h3>
+            <p><strong>الاسم:</strong> ${event.name}</p>
+            <p><strong>التاريخ:</strong> ${event.date}</p>
+            <p><strong>الوقت:</strong> ${event.time}</p>
+        `;
+        detailBox.classList.remove('hidden');
+    }
+
+    // ✅ Form submit - Add new event
     form.addEventListener('submit', (e) => {
         e.preventDefault();
         const name = eventNameInput.value.trim();
@@ -110,27 +155,24 @@ document.addEventListener('DOMContentLoaded', () => {
         const time = eventTimeInput.value.trim();
 
         if (!name || !date || !time) {
-            alert('All fields are requried ✅');
+            alert('جميع الحقول مطلوبة ✅');
             return;
         }
-    // Add event locally
-    const newEvent = { name, date, time };
-    allEvents.push(newEvent);
-    currentPage = Math.ceil(allEvents.length / itemsPerPage);
-    renderEvents();
-    form.reset();
+
+        const newEvent = { name, date, time };
+        allEvents.push(newEvent);
+        currentPage = Math.ceil(allEvents.length / itemsPerPage);
+        renderEvents();
+        form.reset();
+    });
+
+    // ✅ Search input change
+    searchInput.addEventListener('input', () => {
+        currentPage = 1;
+        renderEvents();
+    });
+
+    // ✅ Initial load
+    fetchEvents();
 });
- // 🔎 Search handler
- searchInput.addEventListener('input', () => {
-    currentPage = 1;
-    renderEvents();
-});
 
-// 🚀 Initial fetch
-fetchEvents();
-});
-
-
-
-
-</script>
