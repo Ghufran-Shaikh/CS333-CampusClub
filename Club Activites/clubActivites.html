@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,59 +7,72 @@
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f4f4f4;
+      background-color: #ffffff;
       margin: 0;
       padding: 0;
       color: #333;
     }
 
     header {
-      background-color: #4a90e2;
-      padding: 20px 0;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      background-color: #ffffff;
+      padding: 21px 0;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
       text-align: center;
     }
 
     header h1 {
       margin: 0;
-      font-size: 2.5rem;
-      color: #fff;
+      font-size: 2rem;
+      color: #222;
     }
 
     main {
-      max-width: 1200px;
-      margin: 30px auto;
+      max-width: 1000px;
+      margin: 31px auto;
       padding: 0 20px;
     }
 
     section {
-      margin-bottom: 40px;
+      margin-bottom: 30px;
     }
 
-    .filters {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 20px;
-    }
-
-    input[type="text"] {
-      width: 70%;
+    input[type="text"],
+    input[type="date"],
+    input[type="time"],
+    input[type="email"],
+    textarea {
+      width: 100%;
       padding: 10px;
+      margin-top: 5px;
       border: 1px solid #ddd;
       border-radius: 4px;
+      background-color: #fff;
     }
 
-    button {
+    button,
+    a.button {
       background-color: #4a90e2;
-      color: white;
+      color: #fff;
       padding: 10px 16px;
+      text-decoration: none;
       border: none;
       border-radius: 4px;
       cursor: pointer;
     }
 
-    button:hover {
+    button:hover,
+    a.button:hover {
       background-color: #357ab8;
+    }
+
+    .filters,
+    .form-buttons,
+    .card-buttons,
+    .pagination {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 10px;
     }
 
     .activity-list {
@@ -70,77 +82,41 @@
     }
 
     .activity-card {
-      background-color: white;
+      background-color: #ffffff;
       padding: 15px;
       border-radius: 8px;
       border: 1px solid #eee;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .activity-card img {
-      width: 100%;
-      height: auto;
-      border-radius: 8px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
     }
 
     .activity-card h2 {
-      margin: 10px 0;
-      font-size: 1.5rem;
+      margin: 0 0 5px;
+      font-size: 1.2rem;
+      color: #222;
     }
 
     .activity-card p {
-      margin: 5px 0;
-      color: #666;
-    }
-
-    .activity-card .subdued-text {
-      font-size: 0.9rem;
-      color: #999;
+      margin: 4px 0;
+      color: #555;
     }
 
     .pagination {
-      display: flex;
       justify-content: center;
-      margin-top: 20px;
-    }
-
-    .pagination button {
-      margin: 0 5px;
-    }
-
-    .form-group {
-      margin-bottom: 15px;
+      align-items: center;
     }
 
     form label {
-      font-weight: bold;
-      margin-bottom: 5px;
       display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
     }
 
-    input[type="text"],
-    input[type="date"],
-    input[type="time"],
-    textarea {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-size: 1rem;
+    .form-group {
+      margin-bottom: 16px;
     }
 
-    .form-buttons button {
-      padding: 10px 16px;
-      background-color: #4a90e2;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      margin-right: 10px;
-    }
-
-    .form-buttons button:hover {
-      background-color: #357ab8;
+    .comment-box {
+      margin-top: 20px;
     }
 
     .comment-box textarea {
@@ -155,9 +131,21 @@
     a:hover {
       text-decoration: underline;
     }
+
+    .detail-section {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      border: 1px solid #eee;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+    }
+
+    .subdued-text {
+      color: #888;
+      font-size: 0.9rem;
+    }
   </style>
 </head>
-
 <body>
 
   <header>
@@ -165,21 +153,12 @@
   </header>
 
   <main>
+
     <!-- Search and Filter -->
     <section class="filters">
-      <input type="text" placeholder="Search club activities..." id="search" />
-      <button id="filterBtn">Filter</button>
-      <button id="sortBtn">Sort</button>
-    </section>
-
-    <!-- Activities -->
-    <section class="activity-list" id="activityList">
-      <!-- Activity Cards will be dynamically inserted here -->
-    </section>
-
-    <!-- Pagination -->
-    <section class="pagination" id="pagination">
-      <!-- Pagination buttons will be dynamically inserted here -->
+      <input type="text" placeholder="Search club activities..." />
+      <button>Filter</button>
+      <button>Sort</button>
     </section>
 
     <!-- Add New Activity -->
@@ -187,90 +166,103 @@
       <a href="#create" class="button">+ Add New Activity</a>
     </section>
 
+    <!-- Activities -->
+    <section class="activity-list">
+      <div class="activity-card">
+        <h2>Art Club Meetup</h2>
+        <p class="subdued-text">April 15, 2025 • Room B101</p>
+        <p>Join us for sketching and creativity!</p>
+        <a href="#detail">View Details</a>
+      </div>
+
+      <div class="activity-card">
+        <h2>Robotics Club Workshop</h2>
+        <p class="subdued-text">April 18, 2025 • Lab 204</p>
+        <p>Build your first Arduino robot!</p>
+        <a href="#detail">View Details</a>
+      </div>
+
+      <div class="activity-card">
+        <h2>Drama Club Rehearsal</h2>
+        <p class="subdued-text">April 19, 2025 • Theater Hall</p>
+        <p>Full cast rehearsal for the play.</p>
+        <a href="#detail">View Details</a>
+      </div>
+
+      <div class="activity-card">
+        <h2>Photography Club Walk</h2>
+        <p class="subdued-text">April 21, 2025 • Campus Gardens</p>
+        <p>Natural light and candid photo tour.</p>
+        <a href="#detail">View Details</a>
+      </div>
+    </section>
+
+    <!-- Pagination -->
+    <section class="pagination">
+      <button>Prev</button>
+      <span>Page 1 of 3</span>
+      <button>Next</button>
+    </section>
+
+    <!-- Creation Form -->
+    <section id="create">
+      <h2>Add New Club Activity</h2>
+      <form>
+        <div class="form-group">
+          <label>Club Name *</label>
+          <input type="text" required />
+        </div>
+        <div class="form-group">
+          <label>Event Title *</label>
+          <input type="text" required />
+        </div>
+        <div class="form-group">
+          <label>Date *</label>
+          <input type="date" required />
+        </div>
+        <div class="form-group">
+          <label>Time *</label>
+          <input type="time" required />
+        </div>
+        <div class="form-group">
+          <label>Location *</label>
+          <input type="text" required />
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea rows="4"></textarea>
+        </div>
+        <div class="form-buttons">
+          <button type="submit">Submit</button>
+          <button type="reset">Cancel</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Detail Section -->
+    <section id="detail" class="detail-section">
+      <h2>Club Activity Details</h2>
+      <p><strong>Club:</strong> Art Club</p>
+      <p><strong>Event:</strong> Sketch Night</p>
+      <p><strong>Date & Time:</strong> April 15, 2025 at 6:00 PM</p>
+      <p><strong>Location:</strong> Room B101</p>
+      <p><strong>Description:</strong> Join fellow artists for a relaxing night of sketching and snacks.</p>
+
+      <div class="card-buttons">
+        <button>Edit</button>
+        <button style="background-color: #dc3545;">Delete</button>
+      </div>
+
+      <div class="comment-box">
+        <label>Comments</label>
+        <textarea placeholder="Write a comment..." rows="3"></textarea>
+      </div>
+
+      <p style="margin-top: 15px;">
+        <a href="#">← Back to listing</a>
+      </p>
+    </section>
+
   </main>
-
-  <script>
-    // Dummy JSON Data (In real scenario, you would fetch this from an API)
-    const activities = [
-      {
-        "id": 1,
-        "club": "Art Club",
-        "title": "Sketch Night",
-        "date": "2025-04-15",
-        "time": "18:00",
-        "location": "Room B101",
-        "description": "Join fellow artists for a relaxing night of sketching and snacks.",
-        "image": "https://images.unsplash.com/photo-1504198458649-3128b932f49b"
-      },
-      {
-        "id": 2,
-        "club": "Robotics Club",
-        "title": "Arduino Workshop",
-        "date": "2025-04-18",
-        "time": "14:00",
-        "location": "Lab 204",
-        "description": "Build your first Arduino robot with fellow enthusiasts!",
-        "image": "https://images.unsplash.com/photo-1556740749-887f6717d7e4"
-      },
-      {
-        "id": 3,
-        "club": "Photography Club",
-        "title": "Photo Walk",
-        "date": "2025-04-22",
-        "time": "09:00",
-        "location": "Campus Gardens",
-        "description": "Join us for a photography walk around campus, capturing candid moments.",
-        "image": "https://images.unsplash.com/photo-1501807959025-df45a09a1bfb"
-      }
-    ];
-
-    // Function to render activity cards
-    function renderActivities(activities) {
-      const activityList = document.getElementById('activityList');
-      activityList.innerHTML = ''; // Clear existing content
-
-      activities.forEach(activity => {
-        const activityCard = document.createElement('div');
-        activityCard.classList.add('activity-card');
-        
-        activityCard.innerHTML = `
-          <img src="${activity.image}" alt="${activity.title}">
-          <h2>${activity.title}</h2>
-          <p class="subdued-text">${activity.date} • ${activity.location}</p>
-          <p>${activity.description}</p>
-          <a href="#detail">View Details</a>
-        `;
-        
-        activityList.appendChild(activityCard);
-      });
-    }
-
-    // Function to render pagination buttons
-    function renderPagination(pageCount) {
-      const pagination = document.getElementById('pagination');
-      pagination.innerHTML = ''; // Clear existing pagination buttons
-
-      const prevButton = document.createElement('button');
-      prevButton.textContent = 'Prev';
-      pagination.appendChild(prevButton);
-
-      for (let i = 1; i <= pageCount; i++) {
-        const pageButton = document.createElement('button');
-        pageButton.textContent = i;
-        pagination.appendChild(pageButton);
-      }
-
-      const nextButton = document.createElement('button');
-      nextButton.textContent = 'Next';
-      pagination.appendChild(nextButton);
-    }
-
-    // Initial render of activities and pagination
-    renderActivities(activities);
-    renderPagination(3); // Let's assume we have 3 pages
-
-  </script>
-
 </body>
-
 </html>
