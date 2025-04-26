@@ -120,6 +120,15 @@ document.addEventListener('DOMContentLoaded', () => {
     renderEvents();
     form.reset();
 });
+ // 🔎 Search handler
+ searchInput.addEventListener('input', () => {
+    currentPage = 1;
+    renderEvents();
+});
+
+// 🚀 Initial fetch
+fetchEvents();
+});
 
 
 
