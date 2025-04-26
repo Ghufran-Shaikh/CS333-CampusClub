@@ -94,6 +94,16 @@ document.addEventListener('DOMContentLoaded', () => {
         return container;
     }
 
+    // ⏳ Loading indicator
+    function showLoading() {
+        eventList.innerHTML = `<li class="text-gray-500">جارٍ التحميل...</li>`;
+    }
+
+    function hideLoading() {
+        // handled automatically
+    }
+
+
 
 
 </script>
