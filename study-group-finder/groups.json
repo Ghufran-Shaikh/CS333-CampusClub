@@ -1,0 +1,502 @@
+[
+  {
+    "id": 1,
+    "name": "BIO102 Study Group",
+    "subject": "Biology",
+    "coverage": "Chapter 1-5",
+    "location": "Room 101",
+    "date": "2025-04-30",
+    "startTime": "10:00 AM",
+    "endTime": "12:00 PM",
+    "repetition": "Weekly",
+    "seats": 10,
+    "agenda": "Discuss key concepts and solve problems.",
+    "attachment": "",
+    "members": [
+      { "name": "Alice", "avatar": "img/alice.jpg", "profileLink": "#" },
+      { "name": "Bob", "avatar": "img/bob.jpg", "profileLink": "#" }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "CS101 Project Discussion",
+    "subject": "CS101",
+    "coverage": "Project 2",
+    "location": "S20-201",
+    "date": "2025-05-03",
+    "startTime": "10:00",
+    "endTime": "12:00",
+    "repetition": "Once",
+    "seats": 8,
+    "members": [
+      { "name": "Fatima", "avatar": "img/fatima.jpg", "profileLink": "#" },
+      { "name": "Omar", "avatar": "img/omar.jpg", "profileLink": "#" }
+    ],
+    "agenda": "Discuss project requirements and assign tasks."
+  },
+  {
+    "id": 3,
+    "name": "Math201 Problem Solving",
+    "subject": "Math201",
+    "coverage": "Chapters 5-8",
+    "location": "S10-305",
+    "date": "2025-05-02",
+    "startTime": "09:00",
+    "endTime": "11:00",
+    "repetition": "Every Friday",
+    "seats": 6,
+    "members": [
+      { "name": "Lina", "avatar": "img/lina.jpg", "profileLink": "#" },
+      { "name": "Khalid", "avatar": "img/khalid.jpg", "profileLink": "#" },
+      { "name": "Mona", "avatar": "img/mona.jpg", "profileLink": "#" }
+    ],
+    "agenda": "Solve past exam problems."
+  },
+  {
+    "id": 4,
+    "name": "Physics 101 Lab Prep",
+    "subject": "PHYS101",
+    "coverage": "Lab 3: Motion",
+    "location": "Lab-202",
+    "date": "2025-05-05",
+    "startTime": "13:00",
+    "endTime": "15:00",
+    "repetition": "Every Wednesday",
+    "seats": 7,
+    "members": [
+      { "name": "Noor", "avatar": "img/noor.jpg", "profileLink": "#" },
+      { "name": "Hassan", "avatar": "img/hassan.jpg", "profileLink": "#" },
+      { "name": "Emily", "avatar": "img/emily.jpg", "profileLink": "#" }
+    ],
+    "agenda": "Prepare for lab, discuss experiment setup."
+  },
+  {
+    "id": 5,
+    "name": "Chemistry 110 Study Night",
+    "subject": "CHEM110",
+    "coverage": "Midterm Review",
+    "location": "S30-110",
+    "date": "2025-05-07",
+    "startTime": "18:00",
+    "endTime": "20:00",
+    "repetition": "Once",
+    "seats": 10,
+    "members": [
+      { "name": "Ahmed", "avatar": "img/ahmed.jpg", "profileLink": "#" },
+      { "name": "Layla", "avatar": "img/layla.jpg", "profileLink": "#" },
+      { "name": "Sam", "avatar": "img/sam.jpg", "profileLink": "#" }
+    ],
+    "agenda": "Review key concepts and practice problems."
+  },
+  {
+    "id": 6,
+    "name": "History 201 Discussion",
+    "subject": "HIST201",
+    "coverage": "WWII and Aftermath",
+    "location": "S15-210",
+    "date": "2025-05-10",
+    "startTime": "11:00",
+    "endTime": "12:30",
+    "repetition": "Every Saturday",
+    "seats": 12,
+    "members": [
+      { "name": "Maya", "avatar": "img/maya.jpg", "profileLink": "#" },
+      { "name": "Omar", "avatar": "img/omar.jpg", "profileLink": "#" },
+      { "name": "Jenna", "avatar": "img/jenna.jpg", "profileLink": "#" }
+    ],
+    "agenda": "Discuss readings and essay topics."
+  },
+  {
+    "id": 7,
+    "name": "Programming Club Hackathon Prep",
+    "subject": "CS Club",
+    "coverage": "Hackathon Planning",
+    "location": "S50-301",
+    "date": "2025-05-12",
+    "startTime": "16:00",
+    "endTime": "18:00",
+    "repetition": "Every Thursday",
+    "seats": 15,
+    "members": [
+      { "name": "Ali", "avatar": "img/ali.jpg", "profileLink": "#" },
+      { "name": "Fatima", "avatar": "img/fatima.jpg", "profileLink": "#" },
+      { "name": "Zain", "avatar": "img/zain.jpg", "profileLink": "#" }
+    ],
+    "agenda": "Team formation and project brainstorming."
+  },
+  {
+    "id": 8,
+    "name": "Art 101 Portfolio Review",
+    "subject": "ART101",
+    "coverage": "Portfolio Feedback",
+    "location": "Art-105",
+    "date": "2025-05-15",
+    "startTime": "10:00",
+    "endTime": "12:00",
+    "repetition": "Once",
+    "seats": 6,
+    "members": [
+      { "name": "Sara", "avatar": "img/sara.jpg", "profileLink": "#" },
+      { "name": "Lina", "avatar": "img/lina.jpg", "profileLink": "#" },
+      { "name": "Omar", "avatar": "img/omar.jpg", "profileLink": "#" }
+    ],
+    "agenda": "Share and critique portfolio pieces."
+  },
+  {
+    "id": 9,
+    "name": "Python Programming Workshop",
+    "subject": "CS202",
+    "coverage": "Advanced Python Topics",
+    "location": "Lab-301",
+    "date": "2025-05-04",
+    "startTime": "14:00",
+    "endTime": "16:00",
+    "repetition": "Bi-weekly",
+    "seats": 12,
+    "members": [
+      { "name": "Sarah", "avatar": "img/sarah.jpg", "profileLink": "#" },
+      { "name": "Mike", "avatar": "img/mike.jpg", "profileLink": "#" }
+    ],
+    "agenda": "Hands-on Python programming workshop"
+  },
+  {
+    "id": 10,
+    "name": "Economics Study Session",
+    "subject": "ECON301",
+    "coverage": "Macroeconomics Review",
+    "location": "S15-202",
+    "date": "2025-05-05",
+    "startTime": "11:00",
+    "endTime": "13:00",
+    "repetition": "Weekly",
+    "seats": 15,
+    "members": [
+      { "name": "David", "avatar": "img/david.jpg", "profileLink": "#" },
+      { "name": "Emma", "avatar": "img/emma.jpg", "profileLink": "#" }
+    ],
+    "agenda": "Review macroeconomic principles"
+  },
+  {
+    "id": 11,
+    "name": "Chemistry Lab Prep",
+    "subject": "CHEM201",
+    "coverage": "Organic Chemistry Lab 3",
+    "location": "Lab-401",
+    "date": "2025-05-06",
+    "startTime": "13:00",
+    "endTime": "15:00",
+    "repetition": "Once",
+    "seats": 8,
+    "members": [
+      { "name": "John", "avatar": "img/john.jpg", "profileLink": "#" },
+      { "name": "Lisa", "avatar": "img/lisa.jpg", "profileLink": "#" }
+    ],
+    "agenda": "Prepare for organic chemistry lab experiment"
+  },
+  {
+    "id": 12,
+    "name": "Literature Discussion",
+    "subject": "LIT101",
+    "coverage": "Shakespeare Works",
+    "location": "S12-105",
+    "date": "2025-05-07",
+    "startTime": "15:00",
+    "endTime": "17:00",
+    "repetition": "Weekly",
+    "seats": 10,
+    "members": [
+      { "name": "Anna", "avatar": "img/anna.jpg", "profileLink": "#" },
+      { "name": "Tom", "avatar": "img/tom.jpg", "profileLink": "#" }
+    ],
+    "agenda": "Discuss Shakespeare's major works"
+  },
+  {
+    "id": 13,
+    "name": "Physics Problem Solving",
+    "subject": "PHYS202",
+    "coverage": "Quantum Mechanics",
+    "location": "S30-401",
+    "date": "2025-05-08",
+    "startTime": "09:00",
+    "endTime": "11:00",
+    "repetition": "Weekly",
+    "seats": 6,
+    "members": [
+      { "name": "Alex", "avatar": "img/alex.jpg", "profileLink": "#" },
+      { "name": "Maria", "avatar": "img/maria.jpg", "profileLink": "#" }
+    ],
+    "agenda": "Solve quantum mechanics problems"
+  },
+  {
+    "id": 14,
+    "name": "Web Development Workshop",
+    "subject": "CS301",
+    "coverage": "React & Node.js",
+    "location": "Lab-201",
+    "date": "2025-05-09",
+    "startTime": "14:00",
+    "endTime": "16:00",
+    "repetition": "Bi-weekly",
+    "seats": 15,
+    "members": [
+      { "name": "Ryan", "avatar": "img/ryan.jpg", "profileLink": "#" },
+      { "name": "Sophie", "avatar": "img/sophie.jpg", "profileLink": "#" }
+    ],
+    "agenda": "Build full-stack web applications"
+  },
+  {
+    "id": 15,
+    "name": "Statistics Study Group",
+    "subject": "STAT301",
+    "coverage": "Probability Theory",
+    "location": "S25-301",
+    "date": "2025-05-10",
+    "startTime": "13:00",
+    "endTime": "15:00",
+    "repetition": "Weekly",
+    "seats": 12,
+    "members": [
+      { "name": "Chris", "avatar": "img/chris.jpg", "profileLink": "#" },
+      { "name": "Julia", "avatar": "img/julia.jpg", "profileLink": "#" }
+    ],
+    "agenda": "Practice probability problems"
+  },
+  {
+    "id": 16,
+    "name": "French Language Practice",
+    "subject": "FREN201",
+    "coverage": "Intermediate Conversation",
+    "location": "S18-102",
+    "date": "2025-05-11",
+    "startTime": "16:00",
+    "endTime": "18:00",
+    "repetition": "Weekly",
+    "seats": 8,
+    "members": [
+      { "name": "Pierre", "avatar": "img/pierre.jpg", "profileLink": "#" },
+      { "name": "Claire", "avatar": "img/claire.jpg", "profileLink": "#" }
+    ],
+    "agenda": "French conversation practice"
+  },
+  {
+    "id": 17,
+    "name": "Database Design Group",
+    "subject": "CS305",
+    "coverage": "SQL & NoSQL",
+    "location": "Lab-302",
+    "date": "2025-05-12",
+    "startTime": "11:00",
+    "endTime": "13:00",
+    "repetition": "Weekly",
+    "seats": 10,
+    "members": [
+      { "name": "Daniel", "avatar": "img/daniel.jpg", "profileLink": "#" },
+      { "name": "Eva", "avatar": "img/eva.jpg", "profileLink": "#" }
+    ],
+    "agenda": "Database design principles and practice"
+  },
+  {
+    "id": 18,
+    "name": "Marketing Strategy",
+    "subject": "MKT301",
+    "coverage": "Digital Marketing",
+    "location": "S22-201",
+    "date": "2025-05-13",
+    "startTime": "15:00",
+    "endTime": "17:00",
+    "repetition": "Weekly",
+    "seats": 15,
+    "members": [
+      { "name": "Mark", "avatar": "img/mark.jpg", "profileLink": "#" },
+      { "name": "Rachel", "avatar": "img/rachel.jpg", "profileLink": "#" }
+    ],
+    "agenda": "Digital marketing case studies"
+  },
+  {
+    "id": 19,
+    "name": "Environmental Science",
+    "subject": "ENV201",
+    "coverage": "Climate Change",
+    "location": "S28-301",
+    "date": "2025-05-14",
+    "startTime": "10:00",
+    "endTime": "12:00",
+    "repetition": "Bi-weekly",
+    "seats": 20,
+    "members": [
+      { "name": "Grace", "avatar": "img/grace.jpg", "profileLink": "#" },
+      { "name": "Lucas", "avatar": "img/lucas.jpg", "profileLink": "#" }
+    ],
+    "agenda": "Discuss climate change impacts"
+  },
+  {
+    "id": 20,
+    "name": "Mobile App Development",
+    "subject": "CS401",
+    "coverage": "iOS Development",
+    "location": "Lab-401",
+    "date": "2025-05-15",
+    "startTime": "14:00",
+    "endTime": "16:00",
+    "repetition": "Weekly",
+    "seats": 12,
+    "members": [
+      { "name": "Steve", "avatar": "img/steve.jpg", "profileLink": "#" },
+      { "name": "Laura", "avatar": "img/laura.jpg", "profileLink": "#" }
+    ],
+    "agenda": "iOS app development workshop"
+  },
+  {
+    "id": 21,
+    "name": "Business Ethics",
+    "subject": "BUS301",
+    "coverage": "Case Studies",
+    "location": "S20-301",
+    "date": "2025-05-16",
+    "startTime": "11:00",
+    "endTime": "13:00",
+    "repetition": "Weekly",
+    "seats": 15,
+    "members": [
+      { "name": "Robert", "avatar": "img/robert.jpg", "profileLink": "#" },
+      { "name": "Nina", "avatar": "img/nina.jpg", "profileLink": "#" }
+    ],
+    "agenda": "Analyze business ethics cases"
+  },
+  {
+    "id": 22,
+    "name": "Art History",
+    "subject": "ART201",
+    "coverage": "Renaissance Art",
+    "location": "S16-201",
+    "date": "2025-05-17",
+    "startTime": "13:00",
+    "endTime": "15:00",
+    "repetition": "Weekly",
+    "seats": 18,
+    "members": [
+      { "name": "Isabella", "avatar": "img/isabella.jpg", "profileLink": "#" },
+      { "name": "Leo", "avatar": "img/leo.jpg", "profileLink": "#" }
+    ],
+    "agenda": "Study Renaissance masterpieces"
+  },
+  {
+    "id": 23,
+    "name": "Psychology Research",
+    "subject": "PSY301",
+    "coverage": "Research Methods",
+    "location": "S24-301",
+    "date": "2025-05-18",
+    "startTime": "09:00",
+    "endTime": "11:00",
+    "repetition": "Bi-weekly",
+    "seats": 10,
+    "members": [
+      { "name": "Sophia", "avatar": "img/sophia.jpg", "profileLink": "#" },
+      { "name": "Max", "avatar": "img/max.jpg", "profileLink": "#" }
+    ],
+    "agenda": "Research methodology discussion"
+  },
+  {
+    "id": 24,
+    "name": "Artificial Intelligence",
+    "subject": "CS405",
+    "coverage": "Machine Learning",
+    "location": "Lab-501",
+    "date": "2025-05-19",
+    "startTime": "15:00",
+    "endTime": "17:00",
+    "repetition": "Weekly",
+    "seats": 15,
+    "members": [
+      { "name": "Alan", "avatar": "img/alan.jpg", "profileLink": "#" },
+      { "name": "Maya", "avatar": "img/maya.jpg", "profileLink": "#" }
+    ],
+    "agenda": "Machine learning algorithms practice"
+  },
+  {
+    "id": 25,
+    "name": "Music Theory",
+    "subject": "MUS201",
+    "coverage": "Harmony & Composition",
+    "location": "M10-101",
+    "date": "2025-05-20",
+    "startTime": "16:00",
+    "endTime": "18:00",
+    "repetition": "Weekly",
+    "seats": 12,
+    "members": [
+      { "name": "James", "avatar": "img/james.jpg", "profileLink": "#" },
+      { "name": "Emma", "avatar": "img/emma.jpg", "profileLink": "#" }
+    ],
+    "agenda": "Music composition workshop"
+  },
+  {
+    "id": 26,
+    "name": "Calculus III Study Group",
+    "subject": "MATH301",
+    "coverage": "Vector Calculus",
+    "location": "S32-201",
+    "date": "2025-05-21",
+    "startTime": "14:00",
+    "endTime": "16:00",
+    "repetition": "Weekly",
+    "seats": 8,
+    "members": [
+      { "name": "Victor", "avatar": "img/victor.jpg", "profileLink": "#" },
+      { "name": "Helen", "avatar": "img/helen.jpg", "profileLink": "#" }
+    ],
+    "agenda": "Vector calculus problem solving"
+  },
+  {
+    "id": 27,
+    "name": "Political Science Forum",
+    "subject": "POLS201",
+    "coverage": "International Relations",
+    "location": "S26-301",
+    "date": "2025-05-22",
+    "startTime": "11:00",
+    "endTime": "13:00",
+    "repetition": "Weekly",
+    "seats": 20,
+    "members": [
+      { "name": "Thomas", "avatar": "img/thomas.jpg", "profileLink": "#" },
+      { "name": "Diana", "avatar": "img/diana.jpg", "profileLink": "#" }
+    ],
+    "agenda": "Discuss current international affairs"
+  },
+  {
+    "id": 28,
+    "name": "Spanish Conversation",
+    "subject": "SPAN301",
+    "coverage": "Advanced Spanish",
+    "location": "S14-102",
+    "date": "2025-05-23",
+    "startTime": "13:00",
+    "endTime": "15:00",
+    "repetition": "Weekly",
+    "seats": 10,
+    "members": [
+      { "name": "Carlos", "avatar": "img/carlos.jpg", "profileLink": "#" },
+      { "name": "Ana", "avatar": "img/ana.jpg", "profileLink": "#" }
+    ],
+    "agenda": "Spanish conversation practice"
+  },
+  {
+    "id": 29,
+    "name": "Robotics Workshop",
+    "subject": "ENG401",
+    "coverage": "Robot Programming",
+    "location": "Lab-601",
+    "date": "2025-05-24",
+    "startTime": "15:00",
+    "endTime": "17:00",
+    "repetition": "Bi-weekly",
+    "seats": 12,
+    "members": [
+      { "name": "Richard", "avatar": "img/richard.jpg", "profileLink": "#" },
+      { "name": "Olivia", "avatar": "img/olivia.jpg", "profileLink": "#" }
+    ],
+    "agenda": "Hands-on robotics programming"
+  }
+]

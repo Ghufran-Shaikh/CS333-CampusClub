@@ -1,8 +1,9 @@
- /** @type {import('tailwindcss').Config} */
- export default {
-    content: ["./src/**/*.{html,js}"],
+/** @type {import('tailwindcss').Config} */
+export default {
+    content: ["./**/*.{html,js}"],
+    darkMode: 'class',
     theme: {
-      extend: {},
+        extend: {},
     },
     plugins: [],
-  }
+}

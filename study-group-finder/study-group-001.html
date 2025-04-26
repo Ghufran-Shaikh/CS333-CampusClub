@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark:bg-gray-900">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,8 +7,10 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <title>study-groups-001</title>
 </head>
-<body class="bg-gray-50 dark:bg-gray-900">
-    <nav class="flex" aria-label="Breadcrumb">
+<body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col dark:bg-gray-900 dark:text-white">
+    <div class="relative w-full">
+      <img id="group-banner" class="w-full h-64 object-cover" src="https://cdn.vectorstock.com/i/500p/33/40/study-concept-for-banner-design-vector-42473340.jpg" alt="study banner" style="display:block;">
+      <nav class="absolute top-0 left-0 w-full flex bg-white/80 px-4 py-2 z-10 dark:bg-gray-900/80" aria-label="Breadcrumb">
         <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
           <li class="inline-flex items-center">
             <a href="#" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white">
@@ -36,136 +38,294 @@
           </li>
         </ol>
       </nav>
-    <img src="https://cdn.vectorstock.com/i/500p/33/40/study-concept-for-banner-design-vector-42473340.jpg" alt="srudy banner">
-
-    <h1 class="text-5xl font-extrabold dark:text-white">BIO102 Final review</h1>
+    </div>
+    <div class=" mt-8">
+      <h1 id="group-title" class="text-5xl font-extrabold text-gray-900 mb-2 ml-4 text-left dark:text-white"></h1>
+      <div id="group-meta" class="flex text-left ml-6 gap-4 mb-4">
+        <span id="group-subject" class="font-semibold text-lg dark:text-white"></span>
+        <span id="group-coverage" class="font-semibold text-lg dark:text-white"></span>
+      </div>
+      <div class="flex flex-col md:flex-row gap-6 right-4">
+        <div class="flex-1">
+          <div id="group-details" class="ml-5  rounded-lg  mb-6  text-gray-900 text-lg  dark:text-white"></div>
+        </div>
+        <div class="w-full md:w-80 flex flex-col gap-6 ">
+          <div id="group-side-info" class="p-4 mr-4 bg-white rounded-lg shadow border border-gray-200 text-gray-900 mb-0 dark:bg-gray-800 dark:border-gray-700 dark:text-white">
+            <h3 class="text-xl font-bold mb-2 text-center">Group Info</h3>
+            <div class="p-4 bg-gray-600 text-white rounded-xl  ">
+              <div class='mb-2'><span class="font-semibold">Location:</span> <span id="side-location"></span></div>
+              <div class='mb-2'><span class="font-semibold">Date:</span> <span id="side-date"></span> </div>
+              <div class="mb-2"><span class="font-semibold">Time:</span> <span id="side-time"></span></div>
+              <div class='mb-2'><span class="font-semibold">Repetition:</span> <span id="side-repetition"></span></div>
+              <div class='mb-2'><span class="font-semibold">Seats:</span> <span id="side-seats"></span></div>
+            </div>
+          </div>
+          <div id="group-members" class="p-4 mr-4 bg-white rounded-lg shadow border border-gray-200 text-gray-900 dark:bg-gray-800 dark:border-gray-700 dark:text-white">
+            <h3 class="text-xl font-bold mb-2 text-center">Members</h3>
+            <div class="flex items-center justify-baseline bg-gray-600 text-white rounded-xl p-2 ">
+              <ul id="members-list" class="list-disc p-2"></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="group-comments" class="w-full p-6 bg-white shadow border border-gray-200 mt-6 dark:bg-gray-800 dark:border-gray-700 dark:text-white">
+        <h3 class="text-2xl font-bold mb-2 text-gray-900 dark:text-white">Comments</h3>
+        <form id="comment-form" class="mb-4">
+          <textarea id="comment-input" rows="3" class="block w-full p-2 mb-2 text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Write a comment..."></textarea>
+          <div class="flex items-center mb-2">
+            <span class="mr-2 text-gray-700 dark:text-gray-300">Rating:</span>
+            <div id="star-rating" class="flex text-yellow-400 dark:text-yellow-500"></div>
+          </div>
+          <button type="submit" class="px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700">Post</button>
+        </form>
+        <div id="comments-list"></div>
+      </div>
+      <div data-dial-init class="fixed flex end-6 top-6 group">
+        <div id="speed-dial-menu-horizontal" class="flex items-center hidden me-4 space-x-2 rtl:space-x-reverse rounded-lg shadow-xs">
+            <button type="button" data-tooltip-target="tooltip-share" data-tooltip-placement="top" class="flex justify-center items-center w-[52px] h-[52px] text-gray-500 hover:text-gray-900 bg-white rounded-full border border-gray-200 dark:border-gray-600 shadow-xs dark:hover:text-white dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 focus:ring-4 focus:ring-gray-300 focus:outline-none dark:focus:ring-gray-400">
+                <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 18">
+                    <path d="M14.419 10.581a3.564 3.564 0 0 0-2.574 1.1l-4.756-2.49a3.54 3.54 0 0 0 .072-.71 3.55 3.55 0 0 0-.043-.428L11.67 6.1a3.56 3.56 0 1 0-.831-2.265c.006.143.02.286.043.428L6.33 6.218a3.573 3.573 0 1 0-.175 4.743l4.756 2.491a3.58 3.58 0 1 0 3.508-2.871Z"/>
+                </svg>
+                <span class="sr-only">Share</span>
+            </button>
+            <div id="tooltip-share" role="tooltip" class="absolute z-10 invisible inline-block w-auto px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
+                Share
+                <div class="tooltip-arrow" data-popper-arrow></div>
+            </div>
+            <button type="button" data-tooltip-target="tooltip-print" data-tooltip-placement="top" class="flex justify-center items-center w-[52px] h-[52px] text-gray-500 hover:text-gray-900 bg-white rounded-full border border-gray-200 dark:border-gray-600 shadow-xs dark:hover:text-white dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 focus:ring-4 focus:ring-gray-300 focus:outline-none dark:focus:ring-gray-400">
+                <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M5 20h10a1 1 0 0 0 1-1v-5H4v5a1 1 0 0 0 1 1Z"/>
+                    <path d="M18 7H2a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2v-3a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2Zm-1-2V2a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v3h14Z"/>
+                </svg>
+                <span class="sr-only">Print</span>
+            </button>
+            <div id="tooltip-print" role="tooltip" class="absolute z-10 invisible inline-block w-auto px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
+                Print
+                <div class="tooltip-arrow" data-popper-arrow></div>
+            </div>
+            <button type="button" data-tooltip-target="tooltip-download" data-tooltip-placement="top" class="flex justify-center items-center w-[52px] h-[52px] text-gray-500 hover:text-gray-900 bg-white rounded-full border border-gray-200 dark:border-gray-600 shadow-xs dark:hover:text-white dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 focus:ring-4 focus:ring-gray-300 focus:outline-none dark:focus:ring-gray-400">
+                <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M14.707 7.793a1 1 0 0 0-1.414 0L11 10.086V1.5a1 1 0 0 0-2 0v8.586L6.707 7.793a1 1 0 1 0-1.414 1.414l4 4a1 1 0 0 0 1.416 0l4-4a1 1 0 0 0-.002-1.414Z"/>
+                    <path d="M18 12h-2.55l-2.975 2.975a3.5 3.5 0 0 1-4.95 0L4.55 12H2a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2Zm-3 5a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"/>
+                </svg>
+                <span class="sr-only">Download</span>
+            </button>
+            <div id="tooltip-download" role="tooltip" class="absolute z-10 invisible inline-block w-auto px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
+                Download
+                <div class="tooltip-arrow" data-popper-arrow></div>
+            </div>
+            <button type="button" data-tooltip-target="tooltip-copy" data-tooltip-placement="top" class="flex justify-center items-center w-[52px] h-[52px] text-gray-500 hover:text-gray-900 bg-white rounded-full border border-gray-200 dark:border-gray-600 dark:hover:text-white shadow-xs dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 focus:ring-4 focus:ring-gray-300 focus:outline-none dark:focus:ring-gray-400">
+                <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 20">
+                    <path d="M5 9V4.13a2.96 2.96 0 0 0-1.293.749L.879 7.707A2.96 2.96 0 0 0 .13 9H5Zm11.066-9H9.829a2.98 2.98 0 0 0-2.122.879L7 1.584A.987.987 0 0 0 6.766 2h4.3A3.972 3.972 0 0 1 15 6v10h1.066A1.97 1.97 0 0 0 18 14V2a1.97 1.97 0 0 0-1.934-2Z"/>
+                    <path d="M11.066 4H7v5a2 2 0 0 1-2 2H0v7a1.969 1.969 0 0 0 1.933 2h9.133A1.97 1.97 0 0 0 13 18V6a1.97 1.97 0 0 0-1.934-2Z"/>
+                </svg>
+                <span class="sr-only">Copy</span>
+            </button>
+            <div id="tooltip-copy" role="tooltip" class="absolute z-10 invisible inline-block w-auto px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
+                Copy
+                <div class="tooltip-arrow" data-popper-arrow></div>
+            </div>
+        </div>
+        <button type="button" data-dial-toggle="speed-dial-menu-horizontal" aria-controls="speed-dial-menu-horizontal" aria-expanded="false" class="flex items-center justify-center text-white bg-blue-700 rounded-full w-14 h-14 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 focus:outline-none dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                  </svg>
+                          <span class="sr-only">Open actions menu</span>
+        </button>
+    </div>
+    <script>
+    // --- Speed Dial Toggle ---
+document.addEventListener('DOMContentLoaded', function() {
+  const speedDialButton = document.querySelector('[data-dial-toggle]');
+  const speedDialMenu = document.getElementById('speed-dial-menu-horizontal');
+  if (speedDialButton && speedDialMenu) {
+    speedDialButton.addEventListener('click', function(e) {
+      e.stopPropagation();
+      const isExpanded = speedDialButton.getAttribute('aria-expanded') === 'true';
+      speedDialButton.setAttribute('aria-expanded', !isExpanded);
+      speedDialMenu.classList.toggle('hidden');
+    });
+    document.addEventListener('click', function(e) {
+      if (!speedDialButton.contains(e.target) && !speedDialMenu.contains(e.target)) {
+        speedDialMenu.classList.add('hidden');
+        speedDialButton.setAttribute('aria-expanded', 'false');
+      }
+    });
+  }
+  // Helper to get query param
+  function getQueryParam(name) {
+    const url = new URL(window.location.href);
+    return url.searchParams.get(name);
+  }
+  // Render group details
+  const groupId = getQueryParam('id');
+  const detailsDiv = document.getElementById('group-details');
+  const groupTitle = document.getElementById('group-title');
+  if (groupId && detailsDiv) {
+    detailsDiv.textContent = 'Loading...';
+    fetch('groups.json')
+      .then(r => r.json())
+      .then(groups => {
+        const group = groups.find(g => String(g.id) === String(groupId));
+        if (!group) {
+          detailsDiv.innerHTML = '<span class="text-red-600">Group not found.</span>';
+          if (groupTitle) groupTitle.textContent = '';
+          return;
+        }
+        if (groupTitle) groupTitle.textContent = group.name;
+        document.getElementById('group-subject').textContent = group.subject;
+        document.getElementById('group-coverage').textContent = group.coverage;
+        detailsDiv.innerHTML = `<h2 class='text-2xl font-bold mb-2 text-gray-900 dark:text-white'>Agenda</h2>
+          <p class='mb-4 text-gray-700 dark:text-gray-300'>${group.agenda}</p>`;
+        // Always show attachment field, even if not present
+        detailsDiv.innerHTML += `<h2 class='text-2xl font-bold mb-2 text-gray-900 dark:text-white'>Attachment</h2>
+          <p class='mb-4'>${group.attachment ? `<a href="${group.attachment}" target="_blank" class="underline text-blue-400">View Attachment</a>` : '<span class="italic text-gray-400">No attachment</span>'}</p>`;
+        // Render side info
+        document.getElementById('side-location').textContent = group.location;
+        document.getElementById('side-date').textContent = group.date;
+        document.getElementById('side-time').textContent = `${group.startTime} - ${group.endTime}`;
+        document.getElementById('side-repetition').textContent = group.repetition;
+        document.getElementById('side-seats').textContent = group.seats;
+        // Render members list
+        const membersList = document.getElementById('members-list');
+        if (membersList) {
+          membersList.innerHTML = group.members.map(member => `
+            <li class="flex items-center gap-2 mb-2">
+              <img src="${member.avatar}" alt="${member.name}" class="w-8 h-8 rounded-full">
+              <a href="${member.profileLink}" class="text-blue-500 hover:underline">${member.name}</a>
+            </li>
+          `).join('');
+        }
+      })
+      .catch(() => {
+        detailsDiv.innerHTML = '<span class="text-red-600">Failed to load group info.</span>';
+      });
+  }
+  // Comments section logic with stars
+  const commentsList = document.getElementById('comments-list');
+  const commentForm = document.getElementById('comment-form');
+  const commentInput = document.getElementById('comment-input');
+  const starRating = document.getElementById('star-rating');
+  const localKey = `comments-group-${groupId}`;
+  let selectedStars = 0;
+  function renderStars(selected) {
+    if (!starRating) return;
+    starRating.innerHTML = '';
+    for (let i = 1; i <= 5; i++) {
+      const star = document.createElement('span');
+      star.innerHTML = `<svg class='w-6 h-6 cursor-pointer ${i <= selected ? 'text-yellow-400' : 'text-gray-300'}' fill='currentColor' viewBox='0 0 20 20'><path d='M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.967a1 1 0 00.95.69h4.175c.969 0 1.371 1.24.588 1.81l-3.38 2.455a1 1 0 00-.364 1.118l1.287 3.966c.3.922-.755 1.688-1.54 1.118l-3.38-2.454a1 1 0 00-1.175 0l-3.38 2.454c-.784.57-1.838-.196-1.54-1.118l1.287-3.966a1 1 0 00-.364-1.118L2.049 9.394c-.783-.57-.38-1.81.588-1.81h4.175a1 1 0 00.95-.69l1.286-3.967z'/></svg>`;
+      star.addEventListener('click', () => {
+        selectedStars = i;
+        renderStars(selectedStars);
+      });
+      starRating.appendChild(star);
+    }
+  }
+  function renderComments() {
+    const comments = JSON.parse(localStorage.getItem(localKey) || '[]');
+    commentsList.innerHTML = comments.length
+      ? comments.map(c => `
+        <div class='mb-4 p-4 bg-gray-100 dark:bg-gray-700 rounded'>
+          <div class="flex items-center gap-2 mb-2">
+            <img src="${c.avatar}" alt="${c.name}" class="w-8 h-8 rounded-full">
+            <div>
+              <span class='font-semibold'>${c.name}</span>
+              <div class="text-yellow-400">${'★'.repeat(c.stars)}${'☆'.repeat(5-c.stars)}</div>
+            </div>
+          </div>
+          <p class="ml-10">${c.text}</p>
+        </div>
+      `).join('')
+      : '<div class="text-gray-500">No comments yet.</div>';
+  }
+  if (commentForm && commentInput && commentsList && starRating) {
+    renderStars(selectedStars);
+    renderComments();
+    commentForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const val = commentInput.value.trim();
+      if (val && selectedStars > 0) {
+        const comments = JSON.parse(localStorage.getItem(localKey) || '[]');
+        // Randomly select a demo user for the comment
+        const demoUsers = [
+          { name: 'Sarah', avatar: 'img/sarah.jpg' },
+          { name: 'Ahmed', avatar: 'img/ahmed.jpg' },
+          { name: 'Lisa', avatar: 'img/lisa.jpg' },
+          { name: 'Mohammad', avatar: 'img/mohammad.jpg' }
+        ];
+        const user = demoUsers[Math.floor(Math.random() * demoUsers.length)];
+        comments.push({ 
+          text: val, 
+          stars: selectedStars,
+          name: user.name,
+          avatar: user.avatar
+        });
+        localStorage.setItem(localKey, JSON.stringify(comments));
+        commentInput.value = '';
+        selectedStars = 0;
+        renderStars(selectedStars);
+        renderComments();
+      }
+    });
     
-<p class="mb-3 text-gray-500 dark:text-gray-400">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Provident eaque aliquam excepturi repudiandae odit praesentium accusamus minus sequi laudantium. Similique in quis quia, sint quidem qui eligendi tempora libero ab.</p>
-<p class="text-gray-500 dark:text-gray-400">Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti veritatis hic consequatur iusto voluptatum labore, non sed ea magni atque quo, similique odit fugit quia tempore nostrum excepturi quasi quisquam.</p>
-
-<br>
-
-<h3 class="text-3xl font-bold dark:text-white">Reviews</h3>
-
-
-<div class="flex items-center">
-    <svg class="w-4 h-4 text-yellow-300 me-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
-        <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
-    </svg>
-    <svg class="w-4 h-4 text-yellow-300 me-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
-        <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
-    </svg>
-    <svg class="w-4 h-4 text-yellow-300 me-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
-        <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
-    </svg>
-    <svg class="w-4 h-4 text-yellow-300 me-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
-        <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
-    </svg>
-    <svg class="w-4 h-4 text-gray-300 me-1 dark:text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
-        <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
-    </svg>
-    <p class="ms-1 text-sm font-medium text-gray-500 dark:text-gray-400">4.95</p>
-    <p class="ms-1 text-sm font-medium text-gray-500 dark:text-gray-400">out of</p>
-    <p class="ms-1 text-sm font-medium text-gray-500 dark:text-gray-400">5</p>
-</div>
-<br>
-
-
-<article>
-    <div class="flex items-center mb-4">
-        <svg class="w-10 h-10 me-4 rounded-full" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-          </svg>
-        <div class="font-medium dark:text-white">
-            <p>Mohammed Ali <time datetime="2014-08-16 19:00" class="block text-sm text-gray-500 dark:text-gray-400">Joined on August 2014</time></p>
-        </div>
-    </div>
-    <div class="flex items-center mb-1 space-x-1 rtl:space-x-reverse">
-        <svg class="w-4 h-4 text-yellow-300" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
-            <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
-        </svg>
-        <svg class="w-4 h-4 text-yellow-300" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
-            <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
-        </svg>
-        <svg class="w-4 h-4 text-yellow-300" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
-            <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
-        </svg>
-        <svg class="w-4 h-4 text-yellow-300" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
-            <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
-        </svg>
-        <svg class="w-4 h-4 text-gray-300 dark:text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
-            <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
-        </svg>
-        <h3 class="ms-2 text-sm font-semibold text-gray-900 dark:text-white">Great revision!</h3>
-    </div>
-    <footer class="mb-5 text-sm text-gray-500 dark:text-gray-400"><p>Reviewed in the United Kingdom on <time datetime="2017-03-03 19:00">March 3, 2017</time></p></footer>
-    <p class="mb-2 text-gray-500 dark:text-gray-400">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Rem maxime aperiam quis, libero laboriosam laudantium id saepe ad provident nulla inventore autem! Quis architecto aliquid ducimus cumque? Veniam, quia fugiat. Lorem ipsum dolor sit amet consectetur adipisicing elit. Perspiciatis dignissimos tempore id doloribus libero expedita, fugit dolorum placeat molestiae. Dicta ab deleniti quidem, soluta id praesentium maiores quo earum corporis?</p>
-    <a href="#" class="block mb-5 text-sm font-medium text-blue-600 hover:underline dark:text-blue-500">Read more</a>
-    <aside>
-        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">19 people found this helpful</p>
-        <div class="flex items-center mt-3">
-            <a href="#" class="px-2 py-1.5 text-xs font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Helpful</a>
-            <a href="#" class="ps-4 text-sm font-medium text-blue-600 hover:underline dark:text-blue-500 border-gray-200 ms-4 border-s md:mb-0 dark:border-gray-600">Report abuse</a>
-        </div>
-    </aside>
-</article>
-
-
-<div data-dial-init class="fixed flex end-6 top-6 group">
-    <div id="speed-dial-menu-horizontal" class="flex items-center hidden me-4 space-x-2 rtl:space-x-reverse">
-        <button type="button" data-tooltip-target="tooltip-share" data-tooltip-placement="top" class="flex justify-center items-center w-[52px] h-[52px] text-gray-500 hover:text-gray-900 bg-white rounded-full border border-gray-200 dark:border-gray-600 shadow-xs dark:hover:text-white dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 focus:ring-4 focus:ring-gray-300 focus:outline-none dark:focus:ring-gray-400">
-            <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 18">
-                <path d="M14.419 10.581a3.564 3.564 0 0 0-2.574 1.1l-4.756-2.49a3.54 3.54 0 0 0 .072-.71 3.55 3.55 0 0 0-.043-.428L11.67 6.1a3.56 3.56 0 1 0-.831-2.265c.006.143.02.286.043.428L6.33 6.218a3.573 3.573 0 1 0-.175 4.743l4.756 2.491a3.58 3.58 0 1 0 3.508-2.871Z"/>
-            </svg>
-            <span class="sr-only">Share</span>
-        </button>
-        <div id="tooltip-share" role="tooltip" class="absolute z-10 invisible inline-block w-auto px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
-            Share
-            <div class="tooltip-arrow" data-popper-arrow></div>
-        </div>
-        <button type="button" data-tooltip-target="tooltip-print" data-tooltip-placement="top" class="flex justify-center items-center w-[52px] h-[52px] text-gray-500 hover:text-gray-900 bg-white rounded-full border border-gray-200 dark:border-gray-600 shadow-xs dark:hover:text-white dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 focus:ring-4 focus:ring-gray-300 focus:outline-none dark:focus:ring-gray-400">
-            <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M5 20h10a1 1 0 0 0 1-1v-5H4v5a1 1 0 0 0 1 1Z"/>
-                <path d="M18 7H2a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2v-3a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2Zm-1-2V2a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v3h14Z"/>
-            </svg>
-            <span class="sr-only">Print</span>
-        </button>
-        <div id="tooltip-print" role="tooltip" class="absolute z-10 invisible inline-block w-auto px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
-            Print
-            <div class="tooltip-arrow" data-popper-arrow></div>
-        </div>
-        <button type="button" data-tooltip-target="tooltip-download" data-tooltip-placement="top" class="flex justify-center items-center w-[52px] h-[52px] text-gray-500 hover:text-gray-900 bg-white rounded-full border border-gray-200 dark:border-gray-600 shadow-xs dark:hover:text-white dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 focus:ring-4 focus:ring-gray-300 focus:outline-none dark:focus:ring-gray-400">
-            <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M14.707 7.793a1 1 0 0 0-1.414 0L11 10.086V1.5a1 1 0 0 0-2 0v8.586L6.707 7.793a1 1 0 1 0-1.414 1.414l4 4a1 1 0 0 0 1.416 0l4-4a1 1 0 0 0-.002-1.414Z"/>
-                <path d="M18 12h-2.55l-2.975 2.975a3.5 3.5 0 0 1-4.95 0L4.55 12H2a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2Zm-3 5a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"/>
-            </svg>
-            <span class="sr-only">Download</span>
-        </button>
-        <div id="tooltip-download" role="tooltip" class="absolute z-10 invisible inline-block w-auto px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
-            Download
-            <div class="tooltip-arrow" data-popper-arrow></div>
-        </div>
-        <button type="button" data-tooltip-target="tooltip-copy" data-tooltip-placement="top" class="flex justify-center items-center w-[52px] h-[52px] text-gray-500 hover:text-gray-900 bg-white rounded-full border border-gray-200 dark:border-gray-600 dark:hover:text-white shadow-xs dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 focus:ring-4 focus:ring-gray-300 focus:outline-none dark:focus:ring-gray-400">
-            <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 20">
-                <path d="M5 9V4.13a2.96 2.96 0 0 0-1.293.749L.879 7.707A2.96 2.96 0 0 0 .13 9H5Zm11.066-9H9.829a2.98 2.98 0 0 0-2.122.879L7 1.584A.987.987 0 0 0 6.766 2h4.3A3.972 3.972 0 0 1 15 6v10h1.066A1.97 1.97 0 0 0 18 14V2a1.97 1.97 0 0 0-1.934-2Z"/>
-                <path d="M11.066 4H7v5a2 2 0 0 1-2 2H0v7a1.969 1.969 0 0 0 1.933 2h9.133A1.97 1.97 0 0 0 13 18V6a1.97 1.97 0 0 0-1.934-2Z"/>
-            </svg>
-            <span class="sr-only">Copy</span>
-        </button>
-        <div id="tooltip-copy" role="tooltip" class="absolute z-10 invisible inline-block w-auto px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
-            Copy
-            <div class="tooltip-arrow" data-popper-arrow></div>
-        </div>
-    </div>
-    <button type="button" data-dial-toggle="speed-dial-menu-horizontal" aria-controls="speed-dial-menu-horizontal" aria-expanded="false" class="flex items-center justify-center text-white bg-blue-700 rounded-full w-14 h-14 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 focus:outline-none dark:focus:ring-blue-800">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
-              </svg>
-                      <span class="sr-only">Open actions menu</span>
-    </button>
-</div>
-
-
+  }
+  // Populate with unique demo comments if empty
+  if (commentsList && localStorage.getItem(localKey) === null) {
+    let demo;
+    switch (String(groupId)) {
+      case '1':
+        demo = [
+          { text: 'BIO102 group helped me ace the final!', stars: 5, name: 'Sarah', avatar: 'img/sarah.jpg' },
+          { text: 'Very organized and clear explanations.', stars: 4, name: 'Ahmed', avatar: 'img/ahmed.jpg' }
+        ]; break;
+      case '2':
+        demo = [
+          { text: 'CS101 project team was super collaborative.', stars: 5, name: 'Lisa', avatar: 'img/lisa.jpg' },
+          { text: 'We finished our tasks on time.', stars: 4, name: 'Mohammad', avatar: 'img/mohammad.jpg' }
+        ]; break;
+      case '3':
+        demo = [
+          { text: 'Math201 group solved tough problems together.', stars: 5, name: 'Sarah', avatar: 'img/sarah.jpg' },
+          { text: 'Sometimes a bit fast-paced.', stars: 3, name: 'Ahmed', avatar: 'img/ahmed.jpg' }
+        ]; break;
+      case '4':
+        demo = [
+          { text: 'Physics lab prep was hands-on and fun.', stars: 4, name: 'Lisa', avatar: 'img/lisa.jpg' },
+          { text: 'Great for understanding experiments.', stars: 5, name: 'Mohammad', avatar: 'img/mohammad.jpg' }
+        ]; break;
+      case '5':
+        demo = [
+          { text: 'Chemistry review was very thorough.', stars: 5, name: 'Sarah', avatar: 'img/sarah.jpg' },
+          { text: 'Nice group, good practice questions.', stars: 4, name: 'Ahmed', avatar: 'img/ahmed.jpg' }
+        ]; break;
+      case '6':
+        demo = [
+          { text: 'History discussions were insightful.', stars: 5, name: 'Lisa', avatar: 'img/lisa.jpg' },
+          { text: 'Loved the essay brainstorming.', stars: 4, name: 'Mohammad', avatar: 'img/mohammad.jpg' }
+        ]; break;
+      case '7':
+        demo = [
+          { text: 'Hackathon prep was exciting!', stars: 5, name: 'Sarah', avatar: 'img/sarah.jpg' },
+          { text: 'Great team spirit.', stars: 5, name: 'Ahmed', avatar: 'img/ahmed.jpg' }
+        ]; break;
+      case '8':
+        demo = [
+          { text: 'Art portfolio feedback was constructive.', stars: 5, name: 'Lisa', avatar: 'img/lisa.jpg' },
+          { text: 'Helped me improve my work.', stars: 4, name: 'Mohammad', avatar: 'img/mohammad.jpg' }
+        ]; break;
+      default:
+        demo = [
+          { text: 'Great group, very helpful!', stars: 5, name: 'Lisa', avatar: 'img/lisa.jpg' },
+          { text: 'Good explanations and friendly members.', stars: 4, name: 'Mohammad', avatar: 'img/mohammad.jpg' },
+          { text: 'Nice experience, but could be more organized.', stars: 3, name: 'Sarah', avatar: 'img/sarah.jpg' }
+        ];
+    }
+    localStorage.setItem(localKey, JSON.stringify(demo));
+    renderComments();
+  }
+});
+    </script>
       <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+      <script src="script.js"></script>
 </body>
 </html>

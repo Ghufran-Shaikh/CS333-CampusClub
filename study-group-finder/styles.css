@@ -1,1 +1,78 @@
+/* Import Tailwind CSS */
 @import "tailwindcss";
+
+/* Form popup styles */
+.form-popup {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 24px;
+  overflow: auto;
+  scroll-behavior: smooth;
+}
+
+/* Main layout styles */
+main {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Study group grid layout */
+.study-group-list {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
+  gap: 1.5rem;
+  padding: 1.5rem;
+  margin: 0 auto;
+  max-width: 1200px;
+  width: 100%;
+  margin-bottom: 80px; /* Space for pagination */
+}
+
+/* Study group card width consistency */
+.study-group-list > div {
+  width: 215px !important;
+  margin: 0 auto;
+}
+
+/* Fixed pagination container */
+.pagination-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgb(17, 24, 39);
+  padding: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  z-index: 10;
+  width: 100%;
+}
+
+/* Pagination list styles */
+.pagination-container ul {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+
+
+/* Speed dial menu transition */
+#speed-dial-menu-horizontal {
+  transition: all 0.3s ease-in-out;
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+#speed-dial-menu-horizontal:not(.hidden) {
+  opacity: 1;
+  transform: translateY(0);
+}
