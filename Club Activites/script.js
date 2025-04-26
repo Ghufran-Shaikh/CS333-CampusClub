@@ -129,7 +129,7 @@ sortButton.addEventListener('click', () => {
   filteredActivities.sort((a, b) => a.title.localeCompare(b.title));
   currentPage = 1;
   renderActivities();
-});
+}); 
 
 //Open Detail View
 function openDetailView(id) {
