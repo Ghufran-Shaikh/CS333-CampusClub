@@ -1,9 +1,1 @@
-# CS333-CampusClub
-#### ✔Task Distribution
-| Project Member | Task |
-|----------|----------|
-| Ghufran Shaikh - 202208128   | Events Calender |
-| Khadija A.Nabi - 202207749   | Study Group Finder |
-| Noha Idris - 202208588   | Course Reviews |
-| Maimoona Abdulrahman -  202208599  | Course Notes |
-| Alanood Ahmed - 202210940   | Club Activities |
+🎯 In this phase we will implement JavaScript functionality for Course Reviews module . Building on the HTML and CSS foundations from Phase 1, we will now add dynamic behavior and data integration to make Course Reviews module fully interactive.
