@@ -52,4 +52,15 @@ document.addEventListener('DOMContentLoaded', () => {
         renderPagination(filteredEvents.length);
     }
 
+    // Filter events based on search input
+    // 🔍 Filter events
+    function filterEvents() {
+        const query = searchInput.value.toLowerCase();
+        return allEvents.filter(event => 
+            event.name.toLowerCase().includes(query) || 
+            event.date.includes(query)
+        );
+    }
+
+
 </script>
