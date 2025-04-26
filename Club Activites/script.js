@@ -13,7 +13,7 @@ const paginationSection = document.querySelector('.pagination');
 const detailSection = document.getElementById('detail');
 const form = document.querySelector('#create form');
 
-// Fetch activities from mock API
+//Fetch activities from mock API
 document.addEventListener('DOMContentLoaded', () => {
   fetchActivities();
   addFormValidation();
@@ -24,7 +24,7 @@ async function fetchActivities() {
   activityList.innerHTML = "<p>Loading activities...</p>";
 
   try {
-    const response = await fetch('https://jsonplaceholder.typicode.com/posts?_limit=15'); // Example API
+    const response = await fetch('https://jsonplaceholder.typicode.com/'); 
     const data = await response.json();
 
     // Map API data into our structure
