@@ -13,7 +13,7 @@ const paginationSection = document.querySelector('.pagination');
 const detailSection = document.getElementById('detail');
 const form = document.querySelector('#create form');
 
-//Fetch activities from mock API
+// Fetch activities from mock API
 document.addEventListener('DOMContentLoaded', () => {
   fetchActivities();
   addFormValidation();
@@ -24,7 +24,7 @@ async function fetchActivities() {
   activityList.innerHTML = "<p>Loading activities...</p>";
 
   try {
-    const response = await fetch('https://jsonplaceholder.typicode.com/'); 
+    const response = await fetch('https://jsonplaceholder.typicode.com/posts?_limit=15'); // Example API
     const data = await response.json();
 
     // Map API data into our structure
@@ -129,9 +129,9 @@ sortButton.addEventListener('click', () => {
   filteredActivities.sort((a, b) => a.title.localeCompare(b.title));
   currentPage = 1;
   renderActivities();
-});
+}); 
 
-//Open Detail View 
+//Open Detail View
 function openDetailView(id) {
   const activity = activities.find(a => a.id === id);
 
@@ -161,7 +161,7 @@ function openDetailView(id) {
   `;
 }
 
-//Form validation
+// Form validation
 function addFormValidation() {
   form.addEventListener('submit', function(event) {
     event.preventDefault();
@@ -183,5 +183,7 @@ function addFormValidation() {
     } else {
       alert("Please fill all required fields!");
     }
-  });
 }
+    )
+    }
+  
