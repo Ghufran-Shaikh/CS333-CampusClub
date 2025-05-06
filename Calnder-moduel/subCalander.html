@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            margin: 20px auto;
+            max-width: 600px;
+        }
+        .day {
+            border: 1px solid #ccc;
+            padding: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .day:hover {
+            background-color: #f0a500;
+        }
+        select {
+            padding: 10px;
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Choses the date: </h1>
+<select id="monthSelect"></select>
+<select id="yearSelect"></select>
+<button id="generateBtn">Build Calender </button>
+
+<div class="calendar" id="calendar"></div>
+
+<script>
+    const months = [
+        "January", "February", "March", "April", "May", "June", 
+        "July", "August", "September", "October", "November", "December"
+    ];
+
+    const generateCalendar = (year, month) => {
+        const calendar = document.getElementById('calendar');
+        calendar.innerHTML = '';
+        
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+        for (let day = 1; day <= daysInMonth; day++) {
+            const dayElement = document.createElement('div');
+            dayElement.classList.add('day');
+            dayElement.textContent = day;
+
+            //Adding teh clikability to the days
+            dayElement.addEventListener('click', () => {
+                window.location.href = `event-details.html?date=${day}&month=${month + 1}&year=${year}`;
+            });
+
+            calendar.appendChild(dayElement);
+        }
+    };
+
+    const populateSelects = () => {
+        const monthSelect = document.getElementById('monthSelect');
+        const yearSelect = document.getElementById('yearSelect');
+
+        for (let i = 0; i < months.length; i++) {
+            const option = document.createElement('option');
+            option.value = i;
+            option.textContent = months[i];
+            monthSelect.appendChild(option);
+        }
+
+        const currentYear = new Date().getFullYear();
+        for (let i = currentYear; i <= currentYear + 10; i++) {
+            const option = document.createElement('option');
+            option.value = i;
+            option.textContent = i;
+            yearSelect.appendChild(option);
+        }
+    };
+
+    document.getElementById('generateBtn').addEventListener('click', () => {
+        const month = parseInt(document.getElementById('monthSelect').value);
+        const year = parseInt(document.getElementById('yearSelect').value);
+        generateCalendar(year, month);
+    });
+
+    // ملء القوائم عند تحميل الصفحة
+    window.onload = populateSelects;
+</script>
+
+</body>
+</html>

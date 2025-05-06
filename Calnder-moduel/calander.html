@@ -47,39 +47,107 @@
                 </div>
 
                 <div class="grid grid-cols-7 gap-0 p-4 bg-white border border-gray-300 mb-4">
-                    <!-- Calendar days -->
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300 ">1</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300 ">2</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">3</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">4</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">5</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">6</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">7</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">8</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">9</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">10</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">11</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">12</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">13</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">14</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">15</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">16</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">17</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">18</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">19</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">20</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">21</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">22</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">23</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">24</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">25</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">26</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">27</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">28</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">29</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">30</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">31</div>
-                </div>
+                  <!DOCTYPE html>
+                  <html lang="ar">
+                  <head>
+                      <meta charset="UTF-8">
+                      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                      <title>تقويم قابل للنقر</title>
+                      <style>
+                          body {
+                              font-family: Arial, sans-serif;
+                              text-align: center;
+                          }
+                          .calendar {
+                              display: grid;
+                              grid-template-columns: repeat(7, 1fr);
+                              gap: 10px;
+                              margin: 20px auto;
+                              max-width: 600px;
+                          }
+                          .day {
+                              border: 1px solid #ccc;
+                              padding: 20px;
+                              cursor: pointer;
+                              transition: background-color 0.3s;
+                          }
+                          .day:hover {
+                              background-color: #f0a500;
+                          }
+                          select {
+                              padding: 10px;
+                              margin: 20px;
+                          }
+                      </style>
+                  </head>
+                  <body>
+                  
+                  <h1>اختيار التاريخ</h1>
+                  <select id="monthSelect"></select>
+                  <select id="yearSelect"></select>
+                  <button id="generateBtn">إنشاء التقويم</button>
+                  
+                  <div class="calendar" id="calendar"></div>
+                  
+                  <script>
+                      const months = [
+                          "يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", 
+                          "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"
+                      ];
+                  
+                      const generateCalendar = (year, month) => {
+                          const calendar = document.getElementById('calendar');
+                          calendar.innerHTML = '';
+                          
+                          const daysInMonth = new Date(year, month + 1, 0).getDate();
+                  
+                          for (let day = 1; day <= daysInMonth; day++) {
+                              const dayElement = document.createElement('div');
+                              dayElement.classList.add('day');
+                              dayElement.textContent = day;
+                  
+                              // إضافة حدث النقر
+                              dayElement.addEventListener('click', () => {
+                                  window.location.href = `event-details.html?date=${day}&month=${month + 1}&year=${year}`;
+                              });
+                  
+                              calendar.appendChild(dayElement);
+                          }
+                      };
+                  
+                      const populateSelects = () => {
+                          const monthSelect = document.getElementById('monthSelect');
+                          const yearSelect = document.getElementById('yearSelect');
+                  
+                          for (let i = 0; i < months.length; i++) {
+                              const option = document.createElement('option');
+                              option.value = i;
+                              option.textContent = months[i];
+                              monthSelect.appendChild(option);
+                          }
+                  
+                          const currentYear = new Date().getFullYear();
+                          for (let i = currentYear; i <= currentYear + 10; i++) {
+                              const option = document.createElement('option');
+                              option.value = i;
+                              option.textContent = i;
+                              yearSelect.appendChild(option);
+                          }
+                      };
+                  
+                      document.getElementById('generateBtn').addEventListener('click', () => {
+                          const month = parseInt(document.getElementById('monthSelect').value);
+                          const year = parseInt(document.getElementById('yearSelect').value);
+                          generateCalendar(year, month);
+                      });
+                  
+                      
+                      window.onload = populateSelects;
+                  </script>
+                  
+                  </body>
+                  </html>
+                   
 
                 <!-- Buttons -->
                 <div class="text-center mb-4">
