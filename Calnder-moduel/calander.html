@@ -257,42 +257,7 @@ const updateEventList = () => {
 
 document.getElementById('sortSelect').addEventListener('change', updateEventList);
 
-// -------------------- Fetch API Integration --------------------
-const externalDataUrl = 'https://raw.githubusercontent.com/Ghufran-Shaikh/CS333-CampusClub/demo/Calnder-moduel/EventData.json'; // رابط البيانات
 
-async function fetchExternalEvents() {
-    const eventList = document.getElementById('eventList');
-    const loadingItem = document.createElement('li');
-    loadingItem.textContent = 'Loading events...';
-    eventList.appendChild(loadingItem);
-
-    try {
-        const response = await fetch(externalDataUrl);
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        eventList.innerHTML = ''; 
-
-        data.forEach(event => {
-            const eventItem = document.createElement('li');
-            const eventDate = new Date(`${event.date}T${event.time}`); 
-            eventItem.textContent = `${eventDate.toLocaleString()} - ${event.title}`;
-            eventList.appendChild(eventItem);
-        });
-
-        updateEventList(); 
-
-    } catch (error) {
-        eventList.innerHTML = '';
-        const errorItem = document.createElement('li');
-        errorItem.textContent = 'Failed to load events. Please try again later.';
-        errorItem.style.color = 'red';
-        eventList.appendChild(errorItem);
-        console.error('Error fetching events:', error);
-    }
-}
 
 
 window.addEventListener('load', fetchExternalEvents);
@@ -316,7 +281,7 @@ window.addEventListener('load', fetchExternalEvents);
           }
   
           const data = await response.json();
-          eventList.innerHTML = ''; // تنظيف القائمة قبل إضافة البيانات
+          eventList.innerHTML = ''; 
   
           data.forEach(event => {
               const eventItem = document.createElement('li');
@@ -325,7 +290,7 @@ window.addEventListener('load', fetchExternalEvents);
               eventList.appendChild(eventItem);
           });
   
-          updateEventList(); // تأكد من الفرز والتصفية بعد الإضافة
+          updateEventList(); 
   
       } catch (error) {
           eventList.innerHTML = '';
@@ -337,7 +302,6 @@ window.addEventListener('load', fetchExternalEvents);
       }
   }
   
-  // تحميل البيانات تلقائيًا عند فتح الصفحة
   window.addEventListener('load', fetchExternalEvents);
   </script>
   
