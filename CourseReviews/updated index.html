@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Course Reviews</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    #review-ITIS103:target,
+    #review-ITCE314:target,
+    #review-ITCS333:target,
+    #add-review:target {
+      display: flex;
+      opacity: 1;
+    }
+    #add-review,
+    #review-ITIS103,
+    #review-ITCE314,
+    #review-ITCS333 {
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .error-message {
+      color: #dc2626; 
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+      display: none;
+    }
+    .error input,
+    .error textarea,
+    .error select {
+      border-color: #dc2626;
+    }
+    .loading-spinner {
+      border: 4px solid #e5e7eb; 
+      border-top: 4px solid #1e40af; 
+      border-radius: 50%;
+      width: 2rem;
+      height: 2rem;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800 px-4 sm:px-6 md:px-8">
+  <header class="bg-blue-800 p-4 text-white shadow-md sticky top-0 z-40">
+    <div class="flex items-center gap-4">
+      <h1 class="text-2xl font-bold">💬 Course Reviews</h1>
+    </div>
+  </header>
+
+  <main class="p-6 space-y-6">
+
+    <!-- search and filter and sort  -->
+    <div class="bg-white p-4 rounded-xl shadow flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <input id="searchInput" type="text" placeholder="🔍︎ Search by course..." class="w-full md:w-1/2 p-2 border rounded-xl" />
+      <div class="flex gap-2">
+        <select id="departmentFilter" class="p-2 border rounded-xl">
+          <option value="">All Departments</option>
+          <option value="Information System">Information System</option>
+          <option value="Computer Science">Computer Science</option>
+          <option value="Computer Engineering">Computer Engineering</option>
+        </select>
+        <select id="sortSelect" class="p-2 border rounded-xl">
+          <option value="" disabled selected>Sort by:</option>
+          <option value="newest">Newest</option>
+          <option value="oldest">Oldest</option>
+          <option value="most-liked">Most Liked</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- add review button -->
+    <div class="text-right">
+      <a href="#add-review" class="bg-blue-800 text-white px-4 py-2 rounded-xl hover:bg-blue-900">Add Review</a>
+    </div>
+
+    <!-- add new review window -->
+    <div id="add-review" class="hidden fixed inset-0 bg-black bg-opacity-50 items-start justify-center p-4 z-50">
+      <section class="bg-white rounded-2xl shadow-xl p-8 w-full max-w-2xl mt-20 max-h-[90vh] overflow-y-auto">
+        <h2 class="text-2xl font-bold mb-6 text-center text-blue-800">Add New Course Review</h2>
+        <form id="reviewForm" class="space-y-5">
+          <div>
+            <label for="title" class="block mb-1 font-medium text-gray-700">Course Title *</label>
+            <input id="title" type="text" required placeholder="example: DATA STRUCTURE" class="w-full px-4 py-2 border rounded focus:ring-2 focus:ring-blue-400" />
+            <p class="error-message" id="title-error">Course title is required and must be at least 3 characters.</p>
+          </div>
+          <div>
+            <label for="code" class="block mb-1 font-medium text-gray-700">Course Code *</label>
+            <input id="code" type="text" required placeholder="example: ITCS214" pattern="[A-Z]{4}[0-9]{3}" class="w-full px-4 py-2 border rounded focus:ring-2 focus:ring-blue-400" />
+            <p class="error-message" id="code-error">Course code must be in format: 4 letters followed by 3 digits (e.g., ITCS214).</p>
+          </div>
+          <div>
+            <label for="department" class="block mb-1 font-medium text-gray-700">Department *</label>
+            <select id="department" required class="w-full px-4 py-2 border rounded focus:ring-2 focus:ring-blue-400">
+              <option value="" disabled selected>Select a department</option>
+              <option value="Information System">Information System</option>
+              <option value="Computer Science">Computer Science</option>
+              <option value="Computer Engineering">Computer Engineering</option>
+            </select>
+            <p class="error-message" id="department-error">Please select a department.</p>
+          </div>
+          <div>
+            <label for="instructor" class="block mb-1 font-medium text-gray-700">Instructor Name *</label>
+            <input id="instructor" type="text" required placeholder="example: Dr. John Doe" class="w-full px-4 py-2 border rounded focus:ring-2 focus:ring-blue-400" />
+            <p class="error-message" id="instructor-error">Instructor name is required and must be at least 3 characters.</p>
+          </div>
+          <div>
+            <label for="semester" class="block mb-1 font-medium text-gray-700">Semester</label>
+            <select id="semester" class="w-full px-4 py-2 border rounded focus:ring-2 focus:ring-blue-400">
+              <option value="" disabled selected>Select a semester</option>
+              <option value="First Semester">First Semester</option>
+              <option value="Second Semester">Second Semester</option>
+              <option value="Summer Semester">Summer Semester</option>
+            </select>
+            <p class="error-message" id="semester-error">Please select a semester.</p>
+          </div>
+          <div>
+            <label for="rating" class="block mb-1 font-medium text-gray-700">Rating (1–5) *</label>
+            <input id="rating" type="number" required min="1" max="5" class="w-full px-4 py-2 border rounded focus:ring-2 focus:ring-blue-400" />
+            <p class="error-message" id="rating-error">Rating must be a number between 1 and 5.</p>
+          </div>
+          <div>
+            <label for="reviewText" class="block mb-1 font-medium text-gray-700">Review *</label>
+            <textarea id="reviewText" required rows="5" placeholder="Write your review..." class="w-full px-4 py-2 border rounded focus:ring-2 focus:ring-blue-400"></textarea>
+            <p class="error-message" id="reviewText-error">Review is required and must be at least 10 characters.</p>
+          </div>
+          <div class="flex justify-between items-center pt-4">
+            <button type="submit" class="bg-blue-800 text-white px-6 py-2 rounded hover:bg-blue-900 transition">Submit</button>
+            <a href="#" class="text-blue-800 hover:underline">Cancel</a>
+          </div>
+        </form>
+      </section>
+    </div>
+
+    <!-- review cards container -->
+    <section id="reviewContainer" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+      <!-- reviews will be rendered dynamically -->
+      <div id="loading" class="col-span-full flex justify-center py-4">
+        <div class="loading-spinner"></div>
+      </div>
+      <div id="error" class="col-span-full hidden text-center text-red-600"></div>
+    </section>
+
+    <!-- pagination control -->
+    <div id="pagination" class="flex justify-center items-center space-x-2 mt-6">
+    </div>
+
+  </main>
+
+ <!-- link with JavaScript file -->
+  <script src="script.js"></script>
+</body>
+</html>
