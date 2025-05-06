@@ -297,5 +297,50 @@ async function fetchExternalEvents() {
 
 window.addEventListener('load', fetchExternalEvents);
 </script>
+
+<script>
+  // -------------------- Fetch API Integration --------------------
+  
+  const externalDataUrl = 'https://raw.githubusercontent.com/Ghufran-Shaikh/CS333-CampusClub/refs/heads/demo/Calnder-moduel/EventData.json'; // غير الرابط حسب مصدر بياناتك
+  
+  async function fetchExternalEvents() {
+      const eventList = document.getElementById('eventList');
+      const loadingItem = document.createElement('li');
+      loadingItem.textContent = 'Loading events...';
+      eventList.appendChild(loadingItem);
+  
+      try {
+          const response = await fetch(externalDataUrl);
+          if (!response.ok) {
+              throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+  
+          const data = await response.json();
+          eventList.innerHTML = ''; // تنظيف القائمة قبل إضافة البيانات
+  
+          data.forEach(event => {
+              const eventItem = document.createElement('li');
+              const eventDate = new Date(event.dateTime);
+              eventItem.textContent = `${eventDate.toLocaleString()} - ${event.name}`;
+              eventList.appendChild(eventItem);
+          });
+  
+          updateEventList(); // تأكد من الفرز والتصفية بعد الإضافة
+  
+      } catch (error) {
+          eventList.innerHTML = '';
+          const errorItem = document.createElement('li');
+          errorItem.textContent = 'Failed to load events. Please try again later.';
+          errorItem.style.color = 'red';
+          eventList.appendChild(errorItem);
+          console.error('Error fetching events:', error);
+      }
+  }
+  
+  // تحميل البيانات تلقائيًا عند فتح الصفحة
+  window.addEventListener('load', fetchExternalEvents);
+  </script>
+  
+
 </body>
 </html>
