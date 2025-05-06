@@ -7,14 +7,14 @@
     <link rel="icon" type="image/x-icon" href="Calendar-icon.jpeg">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
-        /* إعدادات التصميم الأساسية للصفحة */
+        /* Basic styling settings for the page */
         body {
             display: flex;
             flex-direction: column;
             min-height: 100vh;
             margin: 0;
         }
-        /* تصميم تقويمة الأحداث */
+        /* Styling for the event calendar */
         .calendar {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
@@ -23,7 +23,7 @@
             max-width: 90vw;
             width: 100%;
         }
-        /* تصميم كل يوم في التقويم */
+        /* Styling for each day in the calendar */
         .day {
             border: 1px solid #ccc;
             padding: 10px;
@@ -33,28 +33,20 @@
             transition: background-color 0.3s;
         }
         .day:hover {
-            background-color: #f0a500; /* تغيير لون الخلفية عند التمرير */
+            background-color: #f0a500; 
+            /* Change background color on hover */
         }
-        /* تصميم نموذج إضافة حدث */
+        /* Styling for the Add Event form */
         .event-form {
-            display: none; /* مخفي افتراضيًا */
+            display: none; 
             margin-top: 20px;
             padding: 15px;
             border: 1px solid #ccc;
             border-radius: 5px;
             background-color: #f9f9f9;
         }
-        /* تصميم ملاحظات */
-        .notes {
-            margin-top: 20px;
-            padding: 15px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background-color: #f9f9f9;
-        }
-        /* تصميم قسم الأحداث القادمة */
         .upcoming-events {
-            position: fixed; /* مثبت على الجانب */
+            position: fixed;  
             right: 20px;
             top: 100px;
             width: 300px;
@@ -67,16 +59,15 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
-        /* ----------- تحسينات استجابة ----------- */
+       
         @media (max-width: 768px) {
             .calendar {
-                grid-template-columns: repeat(auto-fit, minmax(40px, 1fr)); /* تصميم مرن للتقويم */
-            }
+                grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));             }
         }
 
         @media (max-width: 1024px) {
             .upcoming-events {
-                position: static; /* يتحول إلى تصميم ثابت في الشاشات الأصغر */
+                position: static; 
                 width: 100%;
                 max-height: none;
                 margin-top: 20px;
@@ -149,21 +140,21 @@
 </footer>
 
 <script>
-// قائمة الشهور
+// -------------------- JavaScript Code --------------------
 const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-// دالة لتوليد التقويم
+
 const generateCalendar = (year, month) => {
     const calendar = document.getElementById('calendar');
-    calendar.innerHTML = ''; // تنظيف التقويم الحالي
-    const daysInMonth = new Date(year, month + 1, 0).getDate(); // عدد الأيام في الشهر
+    calendar.innerHTML = ''; 
+    const daysInMonth = new Date(year, month + 1, 0).getDate(); 
 
     for (let day = 1; day <= daysInMonth; day++) {
         const dayElement = document.createElement('div');
         dayElement.classList.add('day');
         dayElement.textContent = day;
 
-        // إضافة حدث عند النقر على يوم
+        
         dayElement.addEventListener('click', () => {
             openEventForm(year, month + 1, day);
         });
@@ -172,7 +163,6 @@ const generateCalendar = (year, month) => {
     }
 };
 
-// دالة لملء قوائم الأشهر والسنوات
 const populateSelects = () => {
     const monthSelect = document.getElementById('monthSelect');
     const yearSelect = document.getElementById('yearSelect');
@@ -193,14 +183,12 @@ const populateSelects = () => {
     }
 };
 
-// زر توليد التقويم
 document.getElementById('generateBtn').addEventListener('click', () => {
     const month = parseInt(document.getElementById('monthSelect').value);
     const year = parseInt(document.getElementById('yearSelect').value);
     generateCalendar(year, month);
 });
 
-// تحميل الصفحة
 window.onload = () => {
     populateSelects();
     const today = new Date();
@@ -209,10 +197,9 @@ window.onload = () => {
     generateCalendar(today.getFullYear(), today.getMonth());
 };
 
-// دالة لفتح نموذج إضافة حدث
 function openEventForm(year, month, day) {
     const eventForm = document.getElementById('eventForm');
-    eventForm.style.display = 'block'; // عرض النموذج
+    eventForm.style.display = 'block'; 
     document.getElementById('eventName').value = '';
     const eventDateTimeInput = document.getElementById('eventDateTime');
     eventDateTimeInput.value = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T00:00`;
@@ -226,14 +213,14 @@ function openEventForm(year, month, day) {
         if (eventName) {
             newEvent.textContent = `${eventDateTime.toLocaleString()} - ${eventName}`;
             eventList.appendChild(newEvent);
-            updateEventList(); // تحديث قائمة الأحداث
+            updateEventList(); 
         }
 
-        eventForm.style.display = 'none'; // إخفاء النموذج
+        eventForm.style.display = 'none'; 
     };
 }
 
-// دالة لفرز الأحداث
+
 const sortEvents = () => {
     const eventList = document.getElementById('eventList');
     const events = Array.from(eventList.children);
@@ -247,11 +234,10 @@ const sortEvents = () => {
         }
     });
 
-    eventList.innerHTML = ''; // تنظيف القائمة
-    events.forEach(event => eventList.appendChild(event)); // إعادة إضافة الأحداث
+    eventList.innerHTML = ''; 
+    events.forEach(event => eventList.appendChild(event)); 
 };
 
-// دالة لتصفية الأحداث حسب البحث
 const filterEvents = () => {
     const searchTerm = document.getElementById('event-search').value.toLowerCase();
     const eventList = document.getElementById('eventList');
@@ -263,57 +249,53 @@ const filterEvents = () => {
     });
 };
 
-// دالة لتحديث قائمة الأحداث
+
 const updateEventList = () => {
-    sortEvents(); // فرز الأحداث
-    filterEvents(); // تصفية الأحداث
+    sortEvents(); 
+    filterEvents(); 
 };
 
-// حدث لتغيير نوع الفرز
 document.getElementById('sortSelect').addEventListener('change', updateEventList);
+
+// -------------------- Fetch API Integration --------------------
+const externalDataUrl = 'https://raw.githubusercontent.com/Ghufran-Shaikh/CS333-CampusClub/demo/Calnder-moduel/EventData.json'; // رابط البيانات
+
+async function fetchExternalEvents() {
+    const eventList = document.getElementById('eventList');
+    const loadingItem = document.createElement('li');
+    loadingItem.textContent = 'Loading events...';
+    eventList.appendChild(loadingItem);
+
+    try {
+        const response = await fetch(externalDataUrl);
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        eventList.innerHTML = ''; 
+
+        data.forEach(event => {
+            const eventItem = document.createElement('li');
+            const eventDate = new Date(`${event.date}T${event.time}`); 
+            eventItem.textContent = `${eventDate.toLocaleString()} - ${event.title}`;
+            eventList.appendChild(eventItem);
+        });
+
+        updateEventList(); 
+
+    } catch (error) {
+        eventList.innerHTML = '';
+        const errorItem = document.createElement('li');
+        errorItem.textContent = 'Failed to load events. Please try again later.';
+        errorItem.style.color = 'red';
+        eventList.appendChild(errorItem);
+        console.error('Error fetching events:', error);
+    }
+}
+
+
+window.addEventListener('load', fetchExternalEvents);
 </script>
-<script>
-  // -------------------- Fetch API Integration --------------------
-  
-  const externalDataUrl = 'https://raw.githubusercontent.com/Ghufran-Shaikh/CS333-CampusClub/demo/Calnder-moduel/EventData.json'; // غير الرابط حسب مصدر بياناتك
-  
-  async function fetchExternalEvents() {
-      const eventList = document.getElementById('eventList');
-      const loadingItem = document.createElement('li');
-      loadingItem.textContent = 'Loading events...';
-      eventList.appendChild(loadingItem);
-  
-      try {
-          const response = await fetch(externalDataUrl);
-          if (!response.ok) {
-              throw new Error(`HTTP error! Status: ${response.status}`);
-          }
-  
-          const data = await response.json();
-          eventList.innerHTML = ''; // تنظيف القائمة قبل إضافة البيانات
-  
-          data.forEach(event => {
-              const eventItem = document.createElement('li');
-              const eventDate = new Date(event.dateTime);
-              eventItem.textContent = `${eventDate.toLocaleString()} - ${event.name}`;
-              eventList.appendChild(eventItem);
-          });
-  
-          updateEventList(); // تأكد من الفرز والتصفية بعد الإضافة
-  
-      } catch (error) {
-          eventList.innerHTML = '';
-          const errorItem = document.createElement('li');
-          errorItem.textContent = 'Failed to load events. Please try again later.';
-          errorItem.style.color = 'red';
-          eventList.appendChild(errorItem);
-          console.error('Error fetching events:', error);
-      }
-  }
-  
-  // تحميل البيانات تلقائيًا عند فتح الصفحة
-  window.addEventListener('load', fetchExternalEvents);
-  </script>
-  
 </body>
 </html>
