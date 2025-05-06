@@ -7,12 +7,14 @@
     <link rel="icon" type="image/x-icon" href="Calendar-icon.jpeg">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
+        /* إعدادات التصميم الأساسية للصفحة */
         body {
             display: flex;
             flex-direction: column;
             min-height: 100vh;
             margin: 0;
         }
+        /* تصميم تقويمة الأحداث */
         .calendar {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
@@ -21,6 +23,7 @@
             max-width: 90vw;
             width: 100%;
         }
+        /* تصميم كل يوم في التقويم */
         .day {
             border: 1px solid #ccc;
             padding: 10px;
@@ -30,22 +33,54 @@
             transition: background-color 0.3s;
         }
         .day:hover {
-            background-color: #f0a500;
+            background-color: #f0a500; /* تغيير لون الخلفية عند التمرير */
         }
+        /* تصميم نموذج إضافة حدث */
         .event-form {
-            display: none;
+            display: none; /* مخفي افتراضيًا */
             margin-top: 20px;
             padding: 15px;
             border: 1px solid #ccc;
             border-radius: 5px;
             background-color: #f9f9f9;
         }
+        /* تصميم ملاحظات */
         .notes {
             margin-top: 20px;
             padding: 15px;
             border: 1px solid #ccc;
             border-radius: 5px;
             background-color: #f9f9f9;
+        }
+        /* تصميم قسم الأحداث القادمة */
+        .upcoming-events {
+            position: fixed; /* مثبت على الجانب */
+            right: 20px;
+            top: 100px;
+            width: 300px;
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* ----------- تحسينات استجابة ----------- */
+        @media (max-width: 768px) {
+            .calendar {
+                grid-template-columns: repeat(auto-fit, minmax(40px, 1fr)); /* تصميم مرن للتقويم */
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .upcoming-events {
+                position: static; /* يتحول إلى تصميم ثابت في الشاشات الأصغر */
+                width: 100%;
+                max-height: none;
+                margin-top: 20px;
+            }
         }
     </style>
 </head>
@@ -69,9 +104,9 @@
             <h1 class="text-4xl font-bold text-blue-800 mb-2">Event Calendar</h1>
             <p class="text-gray-600 mb-4">Choose a date to add an event.</p>
 
-            <div class="flex gap-2 mb-4">
-                <select id="monthSelect" class="border border-gray-300 p-2 rounded flex-1"></select>
-                <select id="yearSelect" class="border border-gray-300 p-2 rounded flex-1"></select>
+            <div class="flex gap-2 mb-4 flex-wrap">
+                <select id="monthSelect" class="border border-gray-300 p-2 rounded flex-1 min-w-[120px]"></select>
+                <select id="yearSelect" class="border border-gray-300 p-2 rounded flex-1 min-w-[120px]"></select>
                 <button id="generateBtn" class="bg-blue-800 text-white font-bold py-2 px-4 rounded">Generate</button>
             </div>
 
@@ -85,30 +120,19 @@
                 <input type="datetime-local" id="eventDateTime" class="w-full p-2 border border-gray-300 rounded mb-2" />
                 <button id="saveEventBtn" class="bg-blue-800 text-white font-bold py-2 px-4 rounded mt-2">Submit</button>
             </div>
-
-            <!-- ملاحظات -->
-            <div class="notes">
-                <h3 class="font-bold mb-2">Notes</h3>
-                <ul id="notesList" class="list-disc pl-5">
-                    <li>يمكنك النقر على أي يوم لإضافة حدث.</li>
-                    <li>تأكد من ملء جميع الحقول قبل الإرسال.</li>
-                </ul>
-            </div>
         </div>
 
-        <div>
-            <div class="bg-white p-4 border border-gray-300 rounded shadow">
-                <h2 class="text-2xl font-bold mb-4">Upcoming Events</h2>
-                <input type="text" id="event-search" placeholder="🔍 Search for an event..." class="w-full p-2 border border-gray-300 rounded mb-4" oninput="updateEventList()">
-                <div class="flex justify-between mb-4">
-                    <label for="sortSelect" class="font-bold">Sort By:</label>
-                    <select id="sortSelect" class="border border-gray-300 p-2 rounded" onchange="updateEventList()">
-                        <option value="date">Date</option>
-                        <option value="name">Name</option>
-                    </select>
-                </div>
-                <ul id="eventList" class="list-disc pl-5"></ul>
+        <div class="upcoming-events">
+            <h2 class="text-2xl font-bold mb-4">Upcoming Events</h2>
+            <input type="text" id="event-search" placeholder="🔍 Search for an event..." class="w-full p-2 border border-gray-300 rounded mb-4" oninput="updateEventList()">
+            <div class="flex justify-between mb-4">
+                <label for="sortSelect" class="font-bold">Sort By:</label>
+                <select id="sortSelect" class="border border-gray-300 p-2 rounded" onchange="updateEventList()">
+                    <option value="date">Date</option>
+                    <option value="name">Name</option>
+                </select>
             </div>
+            <ul id="eventList" class="list-disc pl-5"></ul>
         </div>
     </div>
 </main>
@@ -125,18 +149,21 @@
 </footer>
 
 <script>
+// قائمة الشهور
 const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
+// دالة لتوليد التقويم
 const generateCalendar = (year, month) => {
     const calendar = document.getElementById('calendar');
-    calendar.innerHTML = '';
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    calendar.innerHTML = ''; // تنظيف التقويم الحالي
+    const daysInMonth = new Date(year, month + 1, 0).getDate(); // عدد الأيام في الشهر
 
     for (let day = 1; day <= daysInMonth; day++) {
         const dayElement = document.createElement('div');
         dayElement.classList.add('day');
         dayElement.textContent = day;
 
+        // إضافة حدث عند النقر على يوم
         dayElement.addEventListener('click', () => {
             openEventForm(year, month + 1, day);
         });
@@ -145,6 +172,7 @@ const generateCalendar = (year, month) => {
     }
 };
 
+// دالة لملء قوائم الأشهر والسنوات
 const populateSelects = () => {
     const monthSelect = document.getElementById('monthSelect');
     const yearSelect = document.getElementById('yearSelect');
@@ -165,12 +193,14 @@ const populateSelects = () => {
     }
 };
 
+// زر توليد التقويم
 document.getElementById('generateBtn').addEventListener('click', () => {
     const month = parseInt(document.getElementById('monthSelect').value);
     const year = parseInt(document.getElementById('yearSelect').value);
     generateCalendar(year, month);
 });
 
+// تحميل الصفحة
 window.onload = () => {
     populateSelects();
     const today = new Date();
@@ -179,9 +209,10 @@ window.onload = () => {
     generateCalendar(today.getFullYear(), today.getMonth());
 };
 
+// دالة لفتح نموذج إضافة حدث
 function openEventForm(year, month, day) {
     const eventForm = document.getElementById('eventForm');
-    eventForm.style.display = 'block';
+    eventForm.style.display = 'block'; // عرض النموذج
     document.getElementById('eventName').value = '';
     const eventDateTimeInput = document.getElementById('eventDateTime');
     eventDateTimeInput.value = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T00:00`;
@@ -195,13 +226,14 @@ function openEventForm(year, month, day) {
         if (eventName) {
             newEvent.textContent = `${eventDateTime.toLocaleString()} - ${eventName}`;
             eventList.appendChild(newEvent);
-            updateEventList();
+            updateEventList(); // تحديث قائمة الأحداث
         }
 
-        eventForm.style.display = 'none';
+        eventForm.style.display = 'none'; // إخفاء النموذج
     };
 }
 
+// دالة لفرز الأحداث
 const sortEvents = () => {
     const eventList = document.getElementById('eventList');
     const events = Array.from(eventList.children);
@@ -211,15 +243,15 @@ const sortEvents = () => {
         if (sortCriteria === 'date') {
             return new Date(a.textContent.split(' - ')[0]) - new Date(b.textContent.split(' - ')[0]);
         } else {
-            // Sort by event name (after the date)
             return a.textContent.split(' - ')[1].localeCompare(b.textContent.split(' - ')[1]);
         }
     });
 
-    eventList.innerHTML = '';
-    events.forEach(event => eventList.appendChild(event));
+    eventList.innerHTML = ''; // تنظيف القائمة
+    events.forEach(event => eventList.appendChild(event)); // إعادة إضافة الأحداث
 };
 
+// دالة لتصفية الأحداث حسب البحث
 const filterEvents = () => {
     const searchTerm = document.getElementById('event-search').value.toLowerCase();
     const eventList = document.getElementById('eventList');
@@ -231,12 +263,57 @@ const filterEvents = () => {
     });
 };
 
+// دالة لتحديث قائمة الأحداث
 const updateEventList = () => {
-    sortEvents();
-    filterEvents();
+    sortEvents(); // فرز الأحداث
+    filterEvents(); // تصفية الأحداث
 };
 
+// حدث لتغيير نوع الفرز
 document.getElementById('sortSelect').addEventListener('change', updateEventList);
 </script>
+<script>
+  // -------------------- Fetch API Integration --------------------
+  
+  const externalDataUrl = 'https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/events.json'; // غير الرابط حسب مصدر بياناتك
+  
+  async function fetchExternalEvents() {
+      const eventList = document.getElementById('eventList');
+      const loadingItem = document.createElement('li');
+      loadingItem.textContent = 'Loading events...';
+      eventList.appendChild(loadingItem);
+  
+      try {
+          const response = await fetch(externalDataUrl);
+          if (!response.ok) {
+              throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+  
+          const data = await response.json();
+          eventList.innerHTML = ''; // تنظيف القائمة قبل إضافة البيانات
+  
+          data.forEach(event => {
+              const eventItem = document.createElement('li');
+              const eventDate = new Date(event.dateTime);
+              eventItem.textContent = `${eventDate.toLocaleString()} - ${event.name}`;
+              eventList.appendChild(eventItem);
+          });
+  
+          updateEventList(); // تأكد من الفرز والتصفية بعد الإضافة
+  
+      } catch (error) {
+          eventList.innerHTML = '';
+          const errorItem = document.createElement('li');
+          errorItem.textContent = 'Failed to load events. Please try again later.';
+          errorItem.style.color = 'red';
+          eventList.appendChild(errorItem);
+          console.error('Error fetching events:', error);
+      }
+  }
+  
+  // تحميل البيانات تلقائيًا عند فتح الصفحة
+  window.addEventListener('load', fetchExternalEvents);
+  </script>
+  
 </body>
 </html>
