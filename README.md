@@ -1,9 +1,1 @@
-# CS333-CampusClub
-#### ✔Task Distribution
-| Project Member | Task |
-|----------|----------|
-| Ghufran Shaikh - 202208128   | Events Calender |
-| Khadija A.Nabi - 202207749   | Study Group Finder |
-| Noha Idris - 202208588   | Course Reviews |
-| Maimoona Abdulrahman -  202208599  | Course Notes |
-| Alanood Ahmed - 202210940   | Club Activities |
+🎯 In this phase we will style, create structure, and define the content and layout elements such as links, headings, forms, etc. using HTML and CSS for Course Reviews module. 
