@@ -1,170 +1,242 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Event Calender</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/x-icon" href="Calander-icon.jpeg">
+    <title>Event Calendar</title>
+    <link rel="icon" type="image/x-icon" href="Calendar-icon.jpeg">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            margin: 20px auto;
+            max-width: 90vw;
+            width: 100%;
+        }
+        .day {
+            border: 1px solid #ccc;
+            padding: 10px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 0.9rem;
+            transition: background-color 0.3s;
+        }
+        .day:hover {
+            background-color: #f0a500;
+        }
+        .event-form {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .notes {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+    </style>
 </head>
 <body>
-    <!-- Header -->
-  <header class= "bg-blue-800 fixed top-0 left-0 right-0 z-10 py-4 px-6">
-    <nav class="my-2">
-      <ul class="flex space-x-6 justify-center items-center text-blue-800 font-bold ">
-        <li><a href="../index.html"  target="_blank" class="text-white hover:text-orange-500  transition duration-300">Home</a></li>
-        <li><a href="calander.html"  target="_blank" class="text-white hover:text-orange-500 transition duration-300">Event Calendar</a></li>
-        <li><a href="../study-group-finder/study-group-finder.html" target="_blank" class="text-white hover:text-orange-500 transition duration-300">Study Group Finder</a></li>
-        <li><a href="../CourseReviews/CourseReviews.html" target="_blank" class="text-white hover:text-orange-500 transition duration-300">Course Reviews</a></li>
-        <li><a href="../Course Notes/CourseNote.html" target="_blank" class="text-white hover:text-orange-500 transition duration-300">Course Note</a></li>
-        <li><a href="../Club Activites/clubActivites.html" target="_blank" class="text-white hover:text-orange-500 transition duration-300">Clubs Activites</a></li>
-
-      </ul>
+<header class="bg-blue-800 fixed top-0 left-0 right-0 z-10 py-4 px-6">
+    <nav>
+        <ul class="flex space-x-6 justify-center items-center text-white font-bold">
+            <li><a href="../index.html" target="_blank" class="hover:text-orange-500">Home</a></li>
+            <li><a href="calander.html" target="_blank" class="hover:text-orange-500">Event Calendar</a></li>
+            <li><a href="../study-group-finder/study-group-finder.html" target="_blank" class="hover:text-orange-500">Study Group Finder</a></li>
+            <li><a href="../CourseReviews/CourseReviews.html" target="_blank" class="hover:text-orange-500">Course Reviews</a></li>
+            <li><a href="../Course Notes/CourseNote.html" target="_blank" class="hover:text-orange-500">Course Note</a></li>
+            <li><a href="../Club Activites/clubActivites.html" target="_blank" class="hover:text-orange-500">Clubs Activities</a></li>
+        </ul>
     </nav>
-  </header>
+</header>
 
-    <div class="flex flex-col min-h-screen pt-24">
-        <main class="flex-grow flex">
-        
-            <!-- Left side: Calendar -->
-            <div class="w-2/5 ml-6">
-                <!-- Title -->
-                <div class=" mb-4">
-                    <h1 class=" text-4xl font-bold text-blue-800">Event Calender</h1>
-                    <h4 class="text-gray-600">May</h4>
-                </div>
+<main class="flex-grow flex flex-col items-center pt-24 px-4">
+    <div class="max-w-5xl w-full grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+            <h1 class="text-4xl font-bold text-blue-800 mb-2">Event Calendar</h1>
+            <p class="text-gray-600 mb-4">Choose a date to add an event.</p>
 
-                <!-- Calendar -->
-                <div class="bg-orange-400 p-4 mb-2">
-                    <div class="grid grid-cols-7 gap-2">
-                        <div class="text-center font-semibold text-black">Sun</div>
-                        <div class="text-center font-semibold text-black">Mon</div>
-                        <div class="text-center font-semibold text-black">Tue</div>
-                        <div class="text-center font-semibold text-black">Wed</div>
-                        <div class="text-center font-semibold text-black">Thu</div>
-                        <div class="text-center font-semibold text-black">Fri</div>
-                        <div class="text-center font-semibold text-black">Sat</div>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-7 gap-0 p-4 bg-white border border-gray-300 mb-4">
-                    <!-- Calendar days -->
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300 ">1</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300 ">2</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">3</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">4</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">5</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">6</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">7</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">8</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">9</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">10</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">11</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">12</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">13</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">14</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">15</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">16</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">17</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">18</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">19</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">20</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">21</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">22</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">23</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">24</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">25</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">26</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">27</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">28</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">29</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">30</div>
-                    <div class="border border-gray-400 text-center p-2 hover:bg-orange-300">31</div>
-                </div>
-
-                <!-- Buttons -->
-                <div class="text-center mb-4">
-                    <button class="bg-blue-800 text-white font-bold py-2 px-4  m-1 rounded-full hover:bg-orange-500">Add Event</button>
-                    <button class="bg-blue-800 text-white font-bold py-2 px-4 rounded-full m-1 hover:bg-orange-500">Edit Event</button>
-                </div>
-                <div class="text-center mb-10">
-                    <button class="bg-blue-800 text-white font-bold py-2 px-4 rounded-full m-1 hover:bg-red-700">Delete Event</button>
-                </div>
+            <div class="flex gap-2 mb-4">
+                <select id="monthSelect" class="border border-gray-300 p-2 rounded flex-1"></select>
+                <select id="yearSelect" class="border border-gray-300 p-2 rounded flex-1"></select>
+                <button id="generateBtn" class="bg-blue-800 text-white font-bold py-2 px-4 rounded">Generate</button>
             </div>
 
-            <!-- Upcoming Event -->
-            <div class="w-3/5 p-4">
-                <div class="bg-white p-4 border border-gray-300 rounded-lg shadow-md">
-                    <h2 class="text-2xl font-bold mb-4">Upcoming Events</h2>
+            <div class="calendar" id="calendar"></div>
 
-                    <!-- 🔍 Search bar -->
-                    <div class="mb-4">
-                      <input type="text" id="event-search" placeholder="🔍 ابحث عن حدث..." class="w-full p-2 border border-gray-300 rounded-lg">
-                    </div>   
-                    
-
-                    <ul class="list-disc pl-5">
-                        <li class="mb-2 font-semibold">Chese Club Event: 3 April 2025 13:00-15:00</li>
-                        <li class="mb-2 font-semibold">Tennis Club Event : 14 April 2025 13:00-15:00</li>
-                        <li class="mb-2 font-semibold">Football Club Event : 12 May 2025 13:00-15:00</li>
-                        <li class="mb-2 font-semibold">CyberSecurity Club Event : 20 May 2025 13:00-15:00</li>
-                    </ul>
-                </div>
+            <div id="eventForm" class="event-form mt-4">
+                <h3 class="font-bold mb-2">Add Event</h3>
+                <label for="eventName">Event Name:</label>
+                <input type="text" id="eventName" class="w-full p-2 border border-gray-300 rounded mb-2" />
+                <label for="eventDateTime">Event Date and Time:</label>
+                <input type="datetime-local" id="eventDateTime" class="w-full p-2 border border-gray-300 rounded mb-2" />
+                <button id="saveEventBtn" class="bg-blue-800 text-white font-bold py-2 px-4 rounded mt-2">Submit</button>
             </div>
 
-            <!--Adding event-editing event section -->
-            <div class="w-3/5 p-4">
-                <div class="bg-white p-4 border border-gray-300 rounded-lg shadow-md">
-                    <h2 class="text-2xl font-bold mb-2">Add/Edit Event</h2>
-                    <p class="mb-4">Please note that for deleteing event click on the day in the Calendar and then click delete button .</p>
-                    <!-- Form for adding/editing event -->
-                    <form action="#" method="POST">
-                        <div class="mb-4">
-                            <label for="event-name" class="block font-semibold text-gray-700">Event Name:</label>
-                            <input type="text" id="event-name" name="event-name" class="border border-gray-300 rounded-lg p-2 w-full" required>
-                        </div>
-                        <div class="mb-4">
-                            <label for="event-date" class="block font-semibold text-gray-700">Event Date:</label>
-                            <input type="date" id="event-date" name="event-date" class="border border-gray-300 rounded-lg p-2 w-full" required>
-                        </div>
-                        <div class="mb-4">
-                            <label for="event-time" class="block font-semibold text-gray-700">Event Time:</label>
-                            <input type="time" id="event-time" name="event-time" class="border border-gray-300 rounded-lg p-2 w-full" required>
-                        </div>
-                        <button type="submit" class="bg-blue-800 text-white font-bold py-2 px-4 rounded-full center hover:bg-blue-500">Submit</button>
-                    </form>
-                </div>
+            <!-- ملاحظات -->
+            <div class="notes">
+                <h3 class="font-bold mb-2">Notes</h3>
+                <ul id="notesList" class="list-disc pl-5">
+                    <li>يمكنك النقر على أي يوم لإضافة حدث.</li>
+                    <li>تأكد من ملء جميع الحقول قبل الإرسال.</li>
+                </ul>
             </div>
-            
-        </main>
+        </div>
 
-        <!-- Footer -->
-  <footer class="bg-blue-800 text-white shadow-inner p-4 fixed bottom-0 w-full">
-    <div class="container mx-auto flex justify-between items-center flex-wrap text-sm">
-      <div>&copy; 2025 ITCS333 Project</div>
-      <div class="flex gap-4">
-        <a href="#" class="hover:text-orange-500 transition duration-300">Club Policy</a>
-        <a href="#" class="hover:text-orange-500 transition duration-300">Terms</a>
-        <a href="#" class="hover:text-orange-500 transition duration-300">Contact</a>
-        <a href="#" class="hover:text-orange-500 transition duration-300">About</a>
-        <a href="#" class="hover:text-orange-500 transition duration-300">Help</a>
-      </div>
+        <div>
+            <div class="bg-white p-4 border border-gray-300 rounded shadow">
+                <h2 class="text-2xl font-bold mb-4">Upcoming Events</h2>
+                <input type="text" id="event-search" placeholder="🔍 Search for an event..." class="w-full p-2 border border-gray-300 rounded mb-4" oninput="updateEventList()">
+                <div class="flex justify-between mb-4">
+                    <label for="sortSelect" class="font-bold">Sort By:</label>
+                    <select id="sortSelect" class="border border-gray-300 p-2 rounded" onchange="updateEventList()">
+                        <option value="date">Date</option>
+                        <option value="name">Name</option>
+                    </select>
+                </div>
+                <ul id="eventList" class="list-disc pl-5"></ul>
+            </div>
+        </div>
     </div>
-  </footer>
+</main>
+
+<footer class="bg-blue-800 text-white py-4 text-center mt-8">
+    <div>&copy; 2025 ITCS333 Project</div>
+    <div class="flex justify-center gap-4 mt-2">
+        <a href="#" class="hover:text-orange-500">Club Policy</a>
+        <a href="#" class="hover:text-orange-500">Terms</a>
+        <a href="#" class="hover:text-orange-500">Contact</a>
+        <a href="#" class="hover:text-orange-500">About</a>
+        <a href="#" class="hover:text-orange-500">Help</a>
     </div>
+</footer>
 
-    <!-- 🔍 Filter Script --->
-    <script>
-      const searchInput = document.getElementById('event-search');
-      const events = document.querySelectorAll('.list-disc li');
+<script>
+const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-      searchInput.addEventListener('input', function () {
-        const filter = searchInput.value.toLowerCase();
-        events.forEach(event => {
-          const text = event.textContent.toLowerCase();
-          event.style.display = text.includes(filter) ? 'list-item' : 'none';
+const generateCalendar = (year, month) => {
+    const calendar = document.getElementById('calendar');
+    calendar.innerHTML = '';
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    for (let day = 1; day <= daysInMonth; day++) {
+        const dayElement = document.createElement('div');
+        dayElement.classList.add('day');
+        dayElement.textContent = day;
+
+        dayElement.addEventListener('click', () => {
+            openEventForm(year, month + 1, day);
         });
-      });
-    </script>
-    <script src="calendar.js"></script>
+
+        calendar.appendChild(dayElement);
+    }
+};
+
+const populateSelects = () => {
+    const monthSelect = document.getElementById('monthSelect');
+    const yearSelect = document.getElementById('yearSelect');
+
+    months.forEach((month, index) => {
+        const option = document.createElement('option');
+        option.value = index;
+        option.textContent = month;
+        monthSelect.appendChild(option);
+    });
+
+    const currentYear = new Date().getFullYear();
+    for (let i = currentYear; i <= currentYear + 10; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.textContent = i;
+        yearSelect.appendChild(option);
+    }
+};
+
+document.getElementById('generateBtn').addEventListener('click', () => {
+    const month = parseInt(document.getElementById('monthSelect').value);
+    const year = parseInt(document.getElementById('yearSelect').value);
+    generateCalendar(year, month);
+});
+
+window.onload = () => {
+    populateSelects();
+    const today = new Date();
+    document.getElementById('monthSelect').value = today.getMonth();
+    document.getElementById('yearSelect').value = today.getFullYear();
+    generateCalendar(today.getFullYear(), today.getMonth());
+};
+
+function openEventForm(year, month, day) {
+    const eventForm = document.getElementById('eventForm');
+    eventForm.style.display = 'block';
+    document.getElementById('eventName').value = '';
+    const eventDateTimeInput = document.getElementById('eventDateTime');
+    eventDateTimeInput.value = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T00:00`;
+
+    document.getElementById('saveEventBtn').onclick = function() {
+        const eventList = document.getElementById('eventList');
+        const newEvent = document.createElement('li');
+        const eventDateTime = new Date(eventDateTimeInput.value);
+        const eventName = document.getElementById('eventName').value.trim();
+
+        if (eventName) {
+            newEvent.textContent = `${eventDateTime.toLocaleString()} - ${eventName}`;
+            eventList.appendChild(newEvent);
+            updateEventList();
+        }
+
+        eventForm.style.display = 'none';
+    };
+}
+
+const sortEvents = () => {
+    const eventList = document.getElementById('eventList');
+    const events = Array.from(eventList.children);
+    const sortCriteria = document.getElementById('sortSelect').value;
+
+    events.sort((a, b) => {
+        if (sortCriteria === 'date') {
+            return new Date(a.textContent.split(' - ')[0]) - new Date(b.textContent.split(' - ')[0]);
+        } else {
+            // Sort by event name (after the date)
+            return a.textContent.split(' - ')[1].localeCompare(b.textContent.split(' - ')[1]);
+        }
+    });
+
+    eventList.innerHTML = '';
+    events.forEach(event => eventList.appendChild(event));
+};
+
+const filterEvents = () => {
+    const searchTerm = document.getElementById('event-search').value.toLowerCase();
+    const eventList = document.getElementById('eventList');
+    const events = Array.from(eventList.children);
+
+    events.forEach(event => {
+        const eventName = event.textContent.toLowerCase();
+        event.style.display = eventName.includes(searchTerm) ? '' : 'none';
+    });
+};
+
+const updateEventList = () => {
+    sortEvents();
+    filterEvents();
+};
+
+document.getElementById('sortSelect').addEventListener('change', updateEventList);
+</script>
 </body>
 </html>
