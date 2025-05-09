@@ -134,12 +134,20 @@
 
 // -------------------- Full JavaScript for Event Calendar --------------------
 <script>
+// -------------------- Full JavaScript for Event Calendar  --------------------
+
+// -------------------- Full JavaScript for Event Calendar with Pagination --------------------
+
 const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-let events = []; // Will hold all current events including fetched + user added
+let events = []; // Holds all current events
 let editingEventId = null; // Track if currently editing an event
 
 const externalDataUrl = 'https://raw.githubusercontent.com/Ghufran-Shaikh/CS333-CampusClub/refs/heads/demo/Calnder-moduel/EventData.json';
+
+const eventsPerPage = 5;  // Number of events per page for pagination
+let currentPage = 1;      // Current visible page in pagination
+let filteredEvents = [];  // Store filtered events to paginate
 
 // Generate calendar for given year and month
 const generateCalendar = (year, month) => {
@@ -160,12 +168,12 @@ const generateCalendar = (year, month) => {
     }
 };
 
-// Populate month and year dropdown selectors
+// Populate month and year selectors
 const populateSelects = () => {
     const monthSelect = document.getElementById('monthSelect');
     const yearSelect = document.getElementById('yearSelect');
 
-    if (monthSelect.options.length === 0) { // avoid repopulate on reload
+    if (monthSelect.options.length === 0) {
         months.forEach((month, index) => {
             const option = document.createElement('option');
             option.value = index;
@@ -174,7 +182,7 @@ const populateSelects = () => {
         });
     }
 
-    if (yearSelect.options.length === 0) { // avoid repopulate on reload
+    if (yearSelect.options.length === 0) {
         const currentYear = new Date().getFullYear();
         for (let i = currentYear; i <= currentYear + 10; i++) {
             const option = document.createElement('option');
@@ -200,19 +208,24 @@ function openEventForm(year, month, day, event = null) {
     }
 }
 
-// Render event list with edit and delete buttons
+// Render event list with current page's events, add pagination controls
 const renderEvents = () => {
     const eventList = document.getElementById('eventList');
     eventList.innerHTML = '';
 
-    if (events.length === 0) {
+    if (filteredEvents.length === 0) {
         const emptyItem = document.createElement('li');
-        emptyItem.textContent = 'No events available.';
+        emptyItem.textContent = 'No matching events.';
         eventList.appendChild(emptyItem);
+        removePaginationControls();
         return;
     }
 
-    events.forEach(event => {
+    const startIndex = (currentPage - 1) * eventsPerPage;
+    const endIndex = Math.min(startIndex + eventsPerPage, filteredEvents.length);
+    const eventsToShow = filteredEvents.slice(startIndex, endIndex);
+
+    eventsToShow.forEach(event => {
         const eventItem = document.createElement('li');
         eventItem.classList.add('event-item');
         const eventDate = new Date(`${event.date}T${event.time}`);
@@ -221,22 +234,16 @@ const renderEvents = () => {
         const btnContainer = document.createElement('span');
         btnContainer.style.marginLeft = '10px';
 
-        // Edit button
         const editBtn = document.createElement('button');
         editBtn.textContent = 'Edit';
         editBtn.style.marginRight = '5px';
         editBtn.classList.add('bg-yellow-400', 'text-black', 'rounded', 'px-2', 'py-0.5', 'hover:bg-yellow-500', 'cursor-pointer');
-        editBtn.onclick = () => {
-            openEventFormFromId(event.id);
-        };
+        editBtn.onclick = () => openEventFormFromId(event.id);
 
-        // Delete button
         const deleteBtn = document.createElement('button');
         deleteBtn.textContent = 'Delete';
         deleteBtn.classList.add('bg-red-600', 'text-white', 'rounded', 'px-2', 'py-0.5', 'hover:bg-red-700', 'cursor-pointer');
-        deleteBtn.onclick = () => {
-            deleteEvent(event.id);
-        };
+        deleteBtn.onclick = () => deleteEvent(event.id);
 
         btnContainer.appendChild(editBtn);
         btnContainer.appendChild(deleteBtn);
@@ -244,17 +251,110 @@ const renderEvents = () => {
 
         eventList.appendChild(eventItem);
     });
+
+    renderPaginationControls();
 };
 
-// Find and open event form for editing by id
-const openEventFormFromId = (id) => {
-    const event = events.find(ev => ev.id === id);
-    if (event) {
-        openEventForm(null, null, null, event);
+// Render pagination controls below event list
+const renderPaginationControls = () => {
+    removePaginationControls();
+
+    const eventListContainer = document.getElementById('eventList').parentNode;
+
+    const paginationDiv = document.createElement('div');
+    paginationDiv.id = 'paginationControls';
+    paginationDiv.classList.add('flex', 'justify-center', 'gap-2', 'mt-4', 'flex-wrap');
+
+    const totalPages = Math.ceil(filteredEvents.length / eventsPerPage);
+
+    // Previous button
+    const prevBtn = document.createElement('button');
+    prevBtn.textContent = 'Previous';
+    prevBtn.disabled = currentPage === 1;
+    prevBtn.classList.add('bg-blue-600', 'text-white', 'px-3', 'py-1', 'rounded', 'hover:bg-blue-700', 'disabled:opacity-50', 'disabled:cursor-not-allowed');
+    prevBtn.onclick = () => {
+        if (currentPage > 1) {
+            currentPage--;
+            renderEvents();
+        }
+    };
+    paginationDiv.appendChild(prevBtn);
+
+    // Page numbers - show max 5 pages with current in center
+    // Calculate start and end page for pagination window
+    let startPage = Math.max(1, currentPage - 2);
+    let endPage = Math.min(totalPages, startPage + 4);
+    if (endPage - startPage < 4) {
+        startPage = Math.max(1, endPage - 4);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+        const pageBtn = document.createElement('button');
+        pageBtn.textContent = i;
+        if (i === currentPage) {
+            pageBtn.classList.add('bg-blue-800', 'text-white', 'font-bold', 'px-3', 'py-1', 'rounded');
+        } else {
+            pageBtn.classList.add('bg-gray-200', 'text-gray-700', 'px-3', 'py-1', 'rounded', 'hover:bg-gray-300');
+            pageBtn.onclick = () => {
+                currentPage = i;
+                renderEvents();
+            };
+        }
+        paginationDiv.appendChild(pageBtn);
+    }
+
+    // Next button
+    const nextBtn = document.createElement('button');
+    nextBtn.textContent = 'Next';
+    nextBtn.disabled = currentPage === totalPages;
+    nextBtn.classList.add('bg-blue-600', 'text-white', 'px-3', 'py-1', 'rounded', 'hover:bg-blue-700', 'disabled:opacity-50', 'disabled:cursor-not-allowed');
+    nextBtn.onclick = () => {
+        if (currentPage < totalPages) {
+            currentPage++;
+            renderEvents();
+        }
+    };
+    paginationDiv.appendChild(nextBtn);
+
+    eventListContainer.appendChild(paginationDiv);
+};
+
+// Remove existing pagination controls
+const removePaginationControls = () => {
+    const existingControls = document.getElementById('paginationControls');
+    if (existingControls) {
+        existingControls.remove();
     }
 };
 
-// Save current form event (add new or update existing)
+// Filter events by search term
+const filterEventsList = () => {
+    const searchTerm = document.getElementById('event-search').value.toLowerCase();
+    filteredEvents = events.filter(event => event.title.toLowerCase().includes(searchTerm));
+};
+
+// Sort filtered events array
+const sortFilteredEvents = () => {
+    const sortCriteria = document.getElementById('sortSelect').value;
+
+    filteredEvents.sort((a, b) => {
+        if (sortCriteria === 'date') {
+            return new Date(`${a.date}T${a.time}`) - new Date(`${b.date}T${b.time}`);
+        } else {
+            return a.title.localeCompare(b.title);
+        }
+    });
+};
+
+// Update event list with sorting, filtering, and pagination
+const updateEventList = () => {
+    currentPage = 1; // Reset to first page on any update
+    filterEventsList();
+    sortFilteredEvents();
+    renderEvents();
+};
+
+// Save event from form (add new or update existing)
 const saveEvent = () => {
     const eventNameInput = document.getElementById('eventName');
     const eventDateTimeInput = document.getElementById('eventDateTime');
@@ -274,7 +374,6 @@ const saveEvent = () => {
     const timePart = eventDateTimeVal.split('T')[1];
 
     if (editingEventId !== null) {
-        // Update existing event
         const idx = events.findIndex(e => e.id === editingEventId);
         if (idx !== -1) {
             events[idx].title = eventName;
@@ -282,7 +381,6 @@ const saveEvent = () => {
             events[idx].time = timePart;
         }
     } else {
-        // Add new event
         const newId = events.length > 0 ? Math.max(...events.map(e => e.id)) + 1 : 1;
         const newEvent = {
             id: newId,
@@ -309,76 +407,15 @@ const deleteEvent = (id) => {
     }
 };
 
-const sortEvents = () => {
-    const sortCriteria = document.getElementById('sortSelect').value;
-
-    events.sort((a, b) => {
-        if (sortCriteria === 'date') {
-            return new Date(`${a.date}T${a.time}`) - new Date(`${b.date}T${b.time}`);
-        } else {
-            // Sort by name
-            return a.title.localeCompare(b.title);
-        }
-    });
-};
-
-const filterEvents = () => {
-    const searchTerm = document.getElementById('event-search').value.toLowerCase();
-
-    return events.filter(event => event.title.toLowerCase().includes(searchTerm));
-};
-
-const updateEventList = () => {
-    sortEvents();
-    const filteredEvents = filterEvents();
-    renderEventsFiltered(filteredEvents);
-};
-
-// Render filtered events only
-const renderEventsFiltered = (filteredEvents) => {
-    const eventList = document.getElementById('eventList');
-    eventList.innerHTML = '';
-
-    if (filteredEvents.length === 0) {
-        const emptyItem = document.createElement('li');
-        emptyItem.textContent = 'No matching events.';
-        eventList.appendChild(emptyItem);
-        return;
+// Open event form with event details for editing
+const openEventFormFromId = (id) => {
+    const event = events.find(ev => ev.id === id);
+    if (event) {
+        openEventForm(null, null, null, event);
     }
-
-    filteredEvents.forEach(event => {
-        const eventItem = document.createElement('li');
-        eventItem.classList.add('event-item');
-        const eventDate = new Date(`${event.date}T${event.time}`);
-        eventItem.textContent = `${eventDate.toLocaleString()} - ${event.title}`;
-
-        const btnContainer = document.createElement('span');
-        btnContainer.style.marginLeft = '10px';
-
-        const editBtn = document.createElement('button');
-        editBtn.textContent = 'Edit';
-        editBtn.style.marginRight = '5px';
-        editBtn.classList.add('bg-yellow-400', 'text-black', 'rounded', 'px-2', 'py-0.5', 'hover:bg-yellow-500', 'cursor-pointer');
-        editBtn.onclick = () => {
-            openEventFormFromId(event.id);
-        };
-
-        const deleteBtn = document.createElement('button');
-        deleteBtn.textContent = 'Delete';
-        deleteBtn.classList.add('bg-red-600', 'text-white', 'rounded', 'px-2', 'py-0.5', 'hover:bg-red-700', 'cursor-pointer');
-        deleteBtn.onclick = () => {
-            deleteEvent(event.id);
-        };
-
-        btnContainer.appendChild(editBtn);
-        btnContainer.appendChild(deleteBtn);
-        eventItem.appendChild(btnContainer);
-
-        eventList.appendChild(eventItem);
-    });
 };
 
-// Fetch external events and add them into events array
+// Fetch external events
 async function fetchExternalEvents() {
     const eventList = document.getElementById('eventList');
     const loadingItem = document.createElement('li');
@@ -393,9 +430,7 @@ async function fetchExternalEvents() {
 
         const data = await response.json();
 
-        // Normalize external data to local events format and assign ids
-        data.forEach((ev, index) => {
-            // Check if already in events to prevent duplicates on reload (optional)
+        data.forEach((ev) => {
             const existing = events.find(e => e.title === ev.title && e.date === ev.date && e.time === ev.time);
             if (!existing) {
                 events.push({
@@ -403,12 +438,11 @@ async function fetchExternalEvents() {
                     title: ev.title,
                     description: ev.description || '',
                     date: ev.date,
-                    time: ev.time + ':00' // Append seconds if missing
+                    time: ev.time + (ev.time.length === 5 ? ':00' : '')
                 });
             }
         });
 
-        eventList.innerHTML = ''; 
         updateEventList();
 
     } catch (error) {
@@ -432,9 +466,11 @@ window.onload = () => {
     document.getElementById('saveEventBtn').addEventListener('click', saveEvent);
     document.getElementById('sortSelect').addEventListener('change', updateEventList);
     document.getElementById('event-search').addEventListener('input', updateEventList);
-    
+
     fetchExternalEvents();
-};   
+};
+
+
 
 </script>
 
