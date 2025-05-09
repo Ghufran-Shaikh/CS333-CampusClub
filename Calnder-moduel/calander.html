@@ -7,14 +7,12 @@
     <link rel="icon" type="image/x-icon" href="Calendar-icon.jpeg">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
-        /* Basic styling settings for the page */
         body {
             display: flex;
             flex-direction: column;
             min-height: 100vh;
             margin: 0;
         }
-        /* Styling for the event calendar */
         .calendar {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
@@ -23,7 +21,6 @@
             max-width: 90vw;
             width: 100%;
         }
-        /* Styling for each day in the calendar */
         .day {
             border: 1px solid #ccc;
             padding: 10px;
@@ -34,9 +31,7 @@
         }
         .day:hover {
             background-color: #f0a500; 
-            /* Change background color on hover */
         }
-        /* Styling for the Add Event form */
         .event-form {
             display: none; 
             margin-top: 20px;
@@ -58,13 +53,11 @@
             padding: 15px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-
-       
         @media (max-width: 768px) {
             .calendar {
-                grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));             }
+                grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
+            }
         }
-
         @media (max-width: 1024px) {
             .upcoming-events {
                 position: static; 
@@ -139,11 +132,16 @@
     </div>
 </footer>
 
+// -------------------- Full JavaScript for Event Calendar --------------------
 <script>
-// -------------------- JavaScript Code --------------------
 const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
+let events = []; // Will hold all current events including fetched + user added
+let editingEventId = null; // Track if currently editing an event
 
+const externalDataUrl = 'https://raw.githubusercontent.com/Ghufran-Shaikh/CS333-CampusClub/refs/heads/demo/Calnder-moduel/EventData.json';
+
+// Generate calendar for given year and month
 const generateCalendar = (year, month) => {
     const calendar = document.getElementById('calendar');
     calendar.innerHTML = ''; 
@@ -154,7 +152,6 @@ const generateCalendar = (year, month) => {
         dayElement.classList.add('day');
         dayElement.textContent = day;
 
-        
         dayElement.addEventListener('click', () => {
             openEventForm(year, month + 1, day);
         });
@@ -163,148 +160,285 @@ const generateCalendar = (year, month) => {
     }
 };
 
+// Populate month and year dropdown selectors
 const populateSelects = () => {
     const monthSelect = document.getElementById('monthSelect');
     const yearSelect = document.getElementById('yearSelect');
 
-    months.forEach((month, index) => {
-        const option = document.createElement('option');
-        option.value = index;
-        option.textContent = month;
-        monthSelect.appendChild(option);
-    });
+    if (monthSelect.options.length === 0) { // avoid repopulate on reload
+        months.forEach((month, index) => {
+            const option = document.createElement('option');
+            option.value = index;
+            option.textContent = month;
+            monthSelect.appendChild(option);
+        });
+    }
 
-    const currentYear = new Date().getFullYear();
-    for (let i = currentYear; i <= currentYear + 10; i++) {
-        const option = document.createElement('option');
-        option.value = i;
-        option.textContent = i;
-        yearSelect.appendChild(option);
+    if (yearSelect.options.length === 0) { // avoid repopulate on reload
+        const currentYear = new Date().getFullYear();
+        for (let i = currentYear; i <= currentYear + 10; i++) {
+            const option = document.createElement('option');
+            option.value = i;
+            option.textContent = i;
+            yearSelect.appendChild(option);
+        }
     }
 };
 
-document.getElementById('generateBtn').addEventListener('click', () => {
-    const month = parseInt(document.getElementById('monthSelect').value);
-    const year = parseInt(document.getElementById('yearSelect').value);
-    generateCalendar(year, month);
-});
+// Open event form for adding or editing event
+function openEventForm(year, month, day, event = null) {
+    const eventForm = document.getElementById('eventForm');
+    eventForm.style.display = 'block'; 
+    document.getElementById('eventName').value = event ? event.title : '';
+    const eventDateTimeInput = document.getElementById('eventDateTime');
+    if (event) {
+        eventDateTimeInput.value = `${event.date}T${event.time}`;
+        editingEventId = event.id;
+    } else {
+        eventDateTimeInput.value = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T00:00`;
+        editingEventId = null;
+    }
+}
 
+// Render event list with edit and delete buttons
+const renderEvents = () => {
+    const eventList = document.getElementById('eventList');
+    eventList.innerHTML = '';
+
+    if (events.length === 0) {
+        const emptyItem = document.createElement('li');
+        emptyItem.textContent = 'No events available.';
+        eventList.appendChild(emptyItem);
+        return;
+    }
+
+    events.forEach(event => {
+        const eventItem = document.createElement('li');
+        eventItem.classList.add('event-item');
+        const eventDate = new Date(`${event.date}T${event.time}`);
+        eventItem.textContent = `${eventDate.toLocaleString()} - ${event.title}`;
+
+        const btnContainer = document.createElement('span');
+        btnContainer.style.marginLeft = '10px';
+
+        // Edit button
+        const editBtn = document.createElement('button');
+        editBtn.textContent = 'Edit';
+        editBtn.style.marginRight = '5px';
+        editBtn.classList.add('bg-yellow-400', 'text-black', 'rounded', 'px-2', 'py-0.5', 'hover:bg-yellow-500', 'cursor-pointer');
+        editBtn.onclick = () => {
+            openEventFormFromId(event.id);
+        };
+
+        // Delete button
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = 'Delete';
+        deleteBtn.classList.add('bg-red-600', 'text-white', 'rounded', 'px-2', 'py-0.5', 'hover:bg-red-700', 'cursor-pointer');
+        deleteBtn.onclick = () => {
+            deleteEvent(event.id);
+        };
+
+        btnContainer.appendChild(editBtn);
+        btnContainer.appendChild(deleteBtn);
+        eventItem.appendChild(btnContainer);
+
+        eventList.appendChild(eventItem);
+    });
+};
+
+// Find and open event form for editing by id
+const openEventFormFromId = (id) => {
+    const event = events.find(ev => ev.id === id);
+    if (event) {
+        openEventForm(null, null, null, event);
+    }
+};
+
+// Save current form event (add new or update existing)
+const saveEvent = () => {
+    const eventNameInput = document.getElementById('eventName');
+    const eventDateTimeInput = document.getElementById('eventDateTime');
+    const eventName = eventNameInput.value.trim();
+    const eventDateTimeVal = eventDateTimeInput.value;
+
+    if (!eventName) {
+        alert('Please enter an event name.');
+        return;
+    }
+    if (!eventDateTimeVal) {
+        alert('Please select a date and time for the event.');
+        return;
+    }
+
+    const datePart = eventDateTimeVal.split('T')[0];
+    const timePart = eventDateTimeVal.split('T')[1];
+
+    if (editingEventId !== null) {
+        // Update existing event
+        const idx = events.findIndex(e => e.id === editingEventId);
+        if (idx !== -1) {
+            events[idx].title = eventName;
+            events[idx].date = datePart;
+            events[idx].time = timePart;
+        }
+    } else {
+        // Add new event
+        const newId = events.length > 0 ? Math.max(...events.map(e => e.id)) + 1 : 1;
+        const newEvent = {
+            id: newId,
+            title: eventName,
+            description: '',
+            date: datePart,
+            time: timePart
+        };
+        events.push(newEvent);
+    }
+
+    editingEventId = null;
+    document.getElementById('eventForm').style.display = 'none';
+    eventNameInput.value = '';
+    eventDateTimeInput.value = '';
+    updateEventList();
+};
+
+// Delete event by id
+const deleteEvent = (id) => {
+    if (confirm('Are you sure you want to delete this event?')) {
+        events = events.filter(ev => ev.id !== id);
+        updateEventList();
+    }
+};
+
+const sortEvents = () => {
+    const sortCriteria = document.getElementById('sortSelect').value;
+
+    events.sort((a, b) => {
+        if (sortCriteria === 'date') {
+            return new Date(`${a.date}T${a.time}`) - new Date(`${b.date}T${b.time}`);
+        } else {
+            // Sort by name
+            return a.title.localeCompare(b.title);
+        }
+    });
+};
+
+const filterEvents = () => {
+    const searchTerm = document.getElementById('event-search').value.toLowerCase();
+
+    return events.filter(event => event.title.toLowerCase().includes(searchTerm));
+};
+
+const updateEventList = () => {
+    sortEvents();
+    const filteredEvents = filterEvents();
+    renderEventsFiltered(filteredEvents);
+};
+
+// Render filtered events only
+const renderEventsFiltered = (filteredEvents) => {
+    const eventList = document.getElementById('eventList');
+    eventList.innerHTML = '';
+
+    if (filteredEvents.length === 0) {
+        const emptyItem = document.createElement('li');
+        emptyItem.textContent = 'No matching events.';
+        eventList.appendChild(emptyItem);
+        return;
+    }
+
+    filteredEvents.forEach(event => {
+        const eventItem = document.createElement('li');
+        eventItem.classList.add('event-item');
+        const eventDate = new Date(`${event.date}T${event.time}`);
+        eventItem.textContent = `${eventDate.toLocaleString()} - ${event.title}`;
+
+        const btnContainer = document.createElement('span');
+        btnContainer.style.marginLeft = '10px';
+
+        const editBtn = document.createElement('button');
+        editBtn.textContent = 'Edit';
+        editBtn.style.marginRight = '5px';
+        editBtn.classList.add('bg-yellow-400', 'text-black', 'rounded', 'px-2', 'py-0.5', 'hover:bg-yellow-500', 'cursor-pointer');
+        editBtn.onclick = () => {
+            openEventFormFromId(event.id);
+        };
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = 'Delete';
+        deleteBtn.classList.add('bg-red-600', 'text-white', 'rounded', 'px-2', 'py-0.5', 'hover:bg-red-700', 'cursor-pointer');
+        deleteBtn.onclick = () => {
+            deleteEvent(event.id);
+        };
+
+        btnContainer.appendChild(editBtn);
+        btnContainer.appendChild(deleteBtn);
+        eventItem.appendChild(btnContainer);
+
+        eventList.appendChild(eventItem);
+    });
+};
+
+// Fetch external events and add them into events array
+async function fetchExternalEvents() {
+    const eventList = document.getElementById('eventList');
+    const loadingItem = document.createElement('li');
+    loadingItem.textContent = 'Loading events...';
+    eventList.appendChild(loadingItem);
+
+    try {
+        const response = await fetch(externalDataUrl);
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        // Normalize external data to local events format and assign ids
+        data.forEach((ev, index) => {
+            // Check if already in events to prevent duplicates on reload (optional)
+            const existing = events.find(e => e.title === ev.title && e.date === ev.date && e.time === ev.time);
+            if (!existing) {
+                events.push({
+                    id: events.length > 0 ? Math.max(...events.map(e => e.id)) + 1 : 1,
+                    title: ev.title,
+                    description: ev.description || '',
+                    date: ev.date,
+                    time: ev.time + ':00' // Append seconds if missing
+                });
+            }
+        });
+
+        eventList.innerHTML = ''; 
+        updateEventList();
+
+    } catch (error) {
+        eventList.innerHTML = '';
+        const errorItem = document.createElement('li');
+        errorItem.textContent = 'Failed to load events. Please try again later.';
+        errorItem.style.color = 'red';
+        eventList.appendChild(errorItem);
+        console.error('Error fetching events:', error);
+    }
+}
+
+// Event listeners setup
 window.onload = () => {
     populateSelects();
     const today = new Date();
     document.getElementById('monthSelect').value = today.getMonth();
     document.getElementById('yearSelect').value = today.getFullYear();
     generateCalendar(today.getFullYear(), today.getMonth());
-};
 
-function openEventForm(year, month, day) {
-    const eventForm = document.getElementById('eventForm');
-    eventForm.style.display = 'block'; 
-    document.getElementById('eventName').value = '';
-    const eventDateTimeInput = document.getElementById('eventDateTime');
-    eventDateTimeInput.value = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T00:00`;
+    document.getElementById('saveEventBtn').addEventListener('click', saveEvent);
+    document.getElementById('sortSelect').addEventListener('change', updateEventList);
+    document.getElementById('event-search').addEventListener('input', updateEventList);
+    
+    fetchExternalEvents();
+};   
 
-    document.getElementById('saveEventBtn').onclick = function() {
-        const eventList = document.getElementById('eventList');
-        const newEvent = document.createElement('li');
-        const eventDateTime = new Date(eventDateTimeInput.value);
-        const eventName = document.getElementById('eventName').value.trim();
-
-        if (eventName) {
-            newEvent.textContent = `${eventDateTime.toLocaleString()} - ${eventName}`;
-            eventList.appendChild(newEvent);
-            updateEventList(); 
-        }
-
-        eventForm.style.display = 'none'; 
-    };
-}
-
-
-const sortEvents = () => {
-    const eventList = document.getElementById('eventList');
-    const events = Array.from(eventList.children);
-    const sortCriteria = document.getElementById('sortSelect').value;
-
-    events.sort((a, b) => {
-        if (sortCriteria === 'date') {
-            return new Date(a.textContent.split(' - ')[0]) - new Date(b.textContent.split(' - ')[0]);
-        } else {
-            return a.textContent.split(' - ')[1].localeCompare(b.textContent.split(' - ')[1]);
-        }
-    });
-
-    eventList.innerHTML = ''; 
-    events.forEach(event => eventList.appendChild(event)); 
-};
-
-const filterEvents = () => {
-    const searchTerm = document.getElementById('event-search').value.toLowerCase();
-    const eventList = document.getElementById('eventList');
-    const events = Array.from(eventList.children);
-
-    events.forEach(event => {
-        const eventName = event.textContent.toLowerCase();
-        event.style.display = eventName.includes(searchTerm) ? '' : 'none';
-    });
-};
-
-
-const updateEventList = () => {
-    sortEvents(); 
-    filterEvents(); 
-};
-
-document.getElementById('sortSelect').addEventListener('change', updateEventList);
-
-
-
-
-window.addEventListener('load', fetchExternalEvents);
 </script>
 
-<script>
-  // -------------------- Fetch API Integration --------------------
-  
-  const externalDataUrl = 'https://raw.githubusercontent.com/Ghufran-Shaikh/CS333-CampusClub/refs/heads/demo/Calnder-moduel/EventData.json'; // غير الرابط حسب مصدر بياناتك
-  
-  async function fetchExternalEvents() {
-      const eventList = document.getElementById('eventList');
-      const loadingItem = document.createElement('li');
-      loadingItem.textContent = 'Loading events...';
-      eventList.appendChild(loadingItem);
-  
-      try {
-          const response = await fetch(externalDataUrl);
-          if (!response.ok) {
-              throw new Error(`HTTP error! Status: ${response.status}`);
-          }
-  
-          const data = await response.json();
-          eventList.innerHTML = ''; 
-  
-          data.forEach(event => {
-              const eventItem = document.createElement('li');
-              const eventDate = new Date(event.dateTime);
-              eventItem.textContent = `${eventDate.toLocaleString()} - ${event.name}`;
-              eventList.appendChild(eventItem);
-          });
-  
-          updateEventList(); 
-  
-      } catch (error) {
-          eventList.innerHTML = '';
-          const errorItem = document.createElement('li');
-          errorItem.textContent = 'Failed to load events. Please try again later.';
-          errorItem.style.color = 'red';
-          eventList.appendChild(errorItem);
-          console.error('Error fetching events:', error);
-      }
-  }
-  
-  window.addEventListener('load', fetchExternalEvents);
-  </script>
-  
+
 
 </body>
 </html>
