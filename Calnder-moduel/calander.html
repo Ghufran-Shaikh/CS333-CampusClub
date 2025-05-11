@@ -197,9 +197,8 @@
 <script>
 // -------------------- Full JavaScript for Event Calendar  --------------------
 
-// -------------------- JavaScript الكامل لتطبيق التقويم مع المصادقة --------------------
 
-const API_BASE_URL = 'http://yourdomain.com/api'; // تغيير هذا لعنوان API الخاص بك
+const API_BASE_URL = 'https://replit.com/@ghufranshaikh45/Api-PHP'; 
 const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
 // حالة التطبيق
@@ -654,13 +653,13 @@ function setupAuthHandlers() {
         const email = isLoginMode ? null : document.getElementById('email').value;
 
         try {
-            const response = await fetch(`${API_BASE_URL}/users.php`, {
+            const endpoint = isLoginMode ? 'login' : 'register';
+            const response = await fetch(`${API_BASE_URL}/users.php?action=${endpoint}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    action: isLoginMode ? 'login' : 'register',
                     username,
                     password,
                     email
@@ -687,11 +686,11 @@ function setupAuthHandlers() {
                     authForm.reset();
                 }
             } else {
-                alert(data.error || 'Authentication failed');
+                throw new Error(data.error || 'Authentication failed');
             }
         } catch (error) {
             console.error('Error:', error);
-            alert('An error occurred. Please try again.');
+            alert(error.message || 'An error occurred. Please try again.');
         }
     });
 
@@ -705,7 +704,7 @@ async function checkAuthState() {
 
     try {
         // التحقق من صحة التوكن مع الخادم
-        const response = await fetch(`${API_BASE_URL}/users.php`, {
+        const response = await fetch(`${API_BASE_URL}/users.php?action=validate`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
