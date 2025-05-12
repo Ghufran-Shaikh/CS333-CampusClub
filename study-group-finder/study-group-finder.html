@@ -211,47 +211,52 @@
          </div>
          <input type="text" id="group-session-repetition" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="e.g Every monday" >
     </div>
-        <div class="flex">
-            <div class="flex items-center me-4">
-                <input id="inline-checkbox" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                <label for="inline-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Female</label>
-            </div>
-            <div class="flex items-center me-4">
-                <input id="inline-2-checkbox" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                <label for="inline-2-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Male</label>
-            </div>
-        </div>
-        <br>
-    <label for="members-quantity-constraint" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-    Members Quantity Limit
+    <label for="members-constraint" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+    Members Constraints
   </label>
-  <div
-    class="relative flex items-center max-w-[11rem] border border-gray-300 rounded-lg focus-within:ring-1 focus-within:ring-blue-500 dark:border-gray-600 dark:focus-within:ring-blue-500 mb-4">
-    <button type="button" id="decrement-button" data-input-counter-decrement="quantiy-limit"
-      class="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 hover:bg-gray-200 border-r dark:border-gray-600 border-gray-300 rounded-s-lg p-3 h-11">
-      <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-        fill="none" viewBox="0 0 18 2">
-        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
-      </svg>
-    </button>
-    <input type="text" id="quantiy-limit" data-input-counter data-input-counter-min="1" data-input-counter-max="5"
-      aria-describedby="helper-text-explanation"
-      class="flex items-center justify-center bg-gray-50 border-x-0 h-11 font-medium text-center text-gray-900 text-sm w-full dark:bg-gray-700 dark:hover:bg-gray-600 hover:bg-gray-200 dark:text-white"
-      value="0" />
-    <button type="button" id="increment-button" data-input-counter-increment="quantiy-limit"
-      class="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 hover:bg-gray-200 border-l dark:border-gray-600 border-gray-300 rounded-e-lg p-3 h-11">
-      <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-        fill="none" viewBox="0 0 18 18">
-        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M9 1v16M1 9h16" />
-      </svg>
-    </button>
-  </div>
+         <div class="members-constraint border border-gray-200 dark:border-gray-600  pt-4 p-4 rounded-lg">
 
-        <br>
-
-<label for="members-list" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Member List</label>
-<textarea id="agenda" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="add members..."></textarea>
+            <div class="flex">
+                <div class="flex items-center me-4">
+                    <input id="inline-checkbox" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                    <label for="inline-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Female</label>
+                </div>
+                <div class="flex items-center me-4">
+                    <input id="inline-2-checkbox" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                    <label for="inline-2-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Male</label>
+                </div>
+            </div>
+            <br>
+        <label for="members-quantity-constraint" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+        Members Quantity Limit
+          </label>
+          <div
+        class="relative flex items-center max-w-[11rem] border border-gray-300 rounded-lg focus-within:ring-1 focus-within:ring-blue-500 dark:border-gray-600 dark:focus-within:ring-blue-500 mb-4">
+        <button type="button" id="decrement-button" data-input-counter-decrement="quantiy-limit"
+          class="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 hover:bg-gray-200 border-r dark:border-gray-600 border-gray-300 rounded-s-lg p-3 h-11">
+          <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+            fill="none" viewBox="0 0 18 2">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
+          </svg>
+        </button>
+        <input type="text" id="quantiy-limit" data-input-counter data-input-counter-min="1" data-input-counter-max="5"
+          aria-describedby="helper-text-explanation"
+          class="flex items-center justify-center bg-gray-50 border-x-0 h-11 font-medium text-center text-gray-900 text-sm w-full dark:bg-gray-700 dark:hover:bg-gray-600 hover:bg-gray-200 dark:text-white"
+          value="0" />
+        <button type="button" id="increment-button" data-input-counter-increment="quantiy-limit"
+          class="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 hover:bg-gray-200 border-l dark:border-gray-600 border-gray-300 rounded-e-lg p-3 h-11">
+          <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+            fill="none" viewBox="0 0 18 18">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 1v16M1 9h16" />
+          </svg>
+        </button>
+          </div>
+        
+        
+        <label for="members-list" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Member List</label>
+        <textarea id="agenda" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="add members..."></textarea>
+    </div>
 <br>
 <label for="agenda" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Agenda</label>
 <textarea id="agenda" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Write your agenda here..."></textarea>
