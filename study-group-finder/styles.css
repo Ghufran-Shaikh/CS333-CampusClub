@@ -1,5 +1,6 @@
 /* Import Tailwind CSS */
 @import "tailwindcss";
+@source "../node_modules/flowbite-datepicker";
 
 /* Form popup styles */
 .form-popup {
