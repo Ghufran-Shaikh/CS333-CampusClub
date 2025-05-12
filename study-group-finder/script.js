@@ -233,7 +233,7 @@ fetch('courses.json')
         // Render current page groups
         currentGroups.forEach(group => {
             const groupDiv = document.createElement('div');
-            groupDiv.className = 'w-[215px] max-w-sm h-[204px] bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700 cursor-pointer';
+            groupDiv.className = 'w-[215px] max-w-sm h-[204px] bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700 cursor-pointer hover:bg-blue-100 dark:hover:bg-gray-700';
             groupDiv.innerHTML = `
                 <img class="rounded-t-lg w-full h-[100px] object-cover" src="https://cdn.vectorstock.com/i/500p/33/40/study-concept-for-banner-design-vector-42473340.jpg" alt="study banner" />
                 <div class="p-2">
@@ -269,7 +269,7 @@ fetch('courses.json')
         paginationList.innerHTML += `
             <li>
                 <button onclick="changePage(${currentPage - 1}, ${totalPages})" 
-                    class="flex items-center justify-center px-3 h-8 ms-0 leading-tight ${prevDisabled ? 'text-gray-500 cursor-not-allowed' : 'text-gray-500 hover:text-white'} bg-transparent border border-gray-300 rounded-s-lg ${prevDisabled ? '' : 'hover:bg-gray-700'} dark:border-gray-700 dark:text-gray-400" 
+                    class="flex items-center justify-center px-3 h-8 ms-0 leading-tight ${prevDisabled ? 'text-gray-500 cursor-not-allowed' : 'text-gray-500 hover:text-white'} bg-transparent border border-gray-300 rounded-s-lg ${prevDisabled ? '' : 'dark:hover:bg-gray-700 hover:bg-blue-600'} dark:border-gray-700 dark:text-gray-400 " 
                     ${prevDisabled ? 'disabled' : ''}>
                     <span class="sr-only">Previous</span>
                     <svg class="w-2.5 h-2.5 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
@@ -285,7 +285,7 @@ fetch('courses.json')
             paginationList.innerHTML += `
                 <li>
                     <button onclick="changePage(${i}, ${totalPages})" 
-                        class="flex items-center justify-center px-3 h-8 leading-tight ${isActive ? 'text-blue-600 bg-blue-50 dark:bg-gray-700 dark:text-white' : 'text-gray-500 hover:text-white'} bg-transparent border border-gray-300 ${isActive ? '' : 'hover:bg-gray-700'} dark:border-gray-700 dark:text-gray-400">${i}</button>
+                        class="flex items-center justify-center px-3 h-8 leading-tight ${isActive ? 'text-blue-600 bg-blue-100 dark:bg-gray-700 dark:text-white' : 'text-gray-500 hover:text-white'} bg-transparent border border-gray-300 ${isActive ? '' : 'dark:hover:bg-gray-700  hover:bg-blue-600'} dark:border-gray-700 dark:text-gray-400">${i}</button>
                 </li>
             `;
         }
@@ -295,7 +295,7 @@ fetch('courses.json')
         paginationList.innerHTML += `
             <li>
                 <button onclick="changePage(${currentPage + 1}, ${totalPages})" 
-                    class="flex items-center justify-center px-3 h-8 leading-tight ${nextDisabled ? 'text-gray-500 cursor-not-allowed' : 'text-gray-500 hover:text-white'} bg-transparent border border-gray-300 rounded-e-lg ${nextDisabled ? '' : 'hover:bg-gray-700'} dark:border-gray-700 dark:text-gray-400" 
+                    class="flex items-center justify-center px-3 h-8 ms-0 leading-tight ${nextDisabled ? 'text-gray-500 cursor-not-allowed' : 'text-gray-500 hover:text-white'} bg-transparent border border-gray-300 rounded-e-lg ${nextDisabled ? '' : 'dark:hover:bg-gray-700 hover:bg-blue-600'} dark:border-gray-700 dark:text-gray-400 "
                     ${nextDisabled ? 'disabled' : ''}>
                     <span class="sr-only">Next</span>
                     <svg class="w-2.5 h-2.5 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
