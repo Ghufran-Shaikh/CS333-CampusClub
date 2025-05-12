@@ -61,6 +61,28 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 0);
   });
     }
+    
+     document.getElementById('saveTimeButton').addEventListener('click', function () {
+    const startTime = document.getElementById('start-time').value;
+    const endTime = document.getElementById('end-time').value;
+
+    if (!startTime || !endTime) {
+      alert("Please select both start and end times.");
+      return;
+    }
+
+    if (startTime >= endTime) {
+      alert("End time must be after start time.");
+      return;
+    }
+
+    console.log("Time saved:", startTime, "to", endTime);
+
+    // Optional: hide dropdown after saving
+    document.getElementById('dropdownTimepicker').classList.add('hidden');
+  });
+
+  
 
     let allGroups = []; // Store all groups for filtering/sorting
     let filteredGroups = []; // Store filtered groups

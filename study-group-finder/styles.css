@@ -77,3 +77,21 @@ main {
   opacity: 1;
   transform: translateY(0);
 }
+
+/* Ensure Flowbite datepicker is not clipped and is above modals/forms */
+  .datepicker-dropdown {
+    z-index: 9999 !important;
+  }
+
+  /* If inside overflow-hidden parent */
+  .overflow-fix {
+    overflow: visible !important;
+  }
+
+  .flowbite-datepicker-container {
+  position: absolute !important;
+  top: 100% !important;
+  left: 0 !important;
+  z-index: 9999 !important;
+  margin-top: 0.25rem;
+  }
