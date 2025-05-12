@@ -306,19 +306,31 @@
 <label for="agenda" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Agenda</label>
 <textarea id="agenda" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-600 focus:border-blue-600 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-600 dark:focus:border-blue-600" placeholder="Write your agenda here..."></textarea>
 <br>
+
 <label for="attachments" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Attachments:</label>
-<div class="flex items-center justify-center w-full">
-    <label for="dropzone-file" class="flex flex-col self-auto justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
-        <div class="flex flex-col items-center justify-center pt-5 pb-6">
-            <svg class="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5A5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
-            </svg>
-            <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Click to upload</span> or drag and drop</p>
-            <p class="text-xs text-gray-500 dark:text-gray-400">SVG, PNG, JPG or GIF (MAX. 800x400px)</p>
-        </div>
-        <input id="dropzone-file" type="file" class="hidden" />
-    </label>
-</div> 
+
+<input type="file" id="dropzone-file" class="hidden" multiple />
+
+<div id="dropzone"
+     class="relative flex flex-col items-center justify-center w-full h-64 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 cursor-pointer">
+  <label for="dropzone-file" class="absolute inset-0 z-10"></label>
+
+  <!-- Icon & instructions -->
+  <div class="pointer-events-none text-center z-0">
+    <svg class="w-8 h-8 mx-auto mb-2 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 20 16">
+      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5A5.5 5.5 0 0 0 5.2 5.02C5.13 5.02 5.07 5 5 5a4 4 0 0 0 0 8h2.17M10 15V6m0 0L8 8m2-2 2 2"/>
+    </svg>
+    <p class="text-sm text-gray-500 dark:text-gray-400">Click to upload or drag and drop</p>
+    <p class="text-xs text-gray-400">Images only (JPG, PNG, GIF) • Max 800×400</p>
+  </div>
+
+  <!-- Previews -->
+ <div id="file-preview" class="absolute top-2 left-4 right-4 grid grid-cols-6 gap-2 overflow-y-auto max-h-32 z-0">
+</div>
+</div>
+
+
 <br>
 <div class="flex items-center justify-center w-full">
     <button type="submit" class="text-gray-900 dark:text-white  focus:ring-2 focus:outline-none  font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Save</button>

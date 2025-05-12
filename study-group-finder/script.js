@@ -52,6 +52,9 @@ document.addEventListener('DOMContentLoaded', () => {
          resetBtn.addEventListener('click', (e) => {
     // Wait for the reset to happen
     setTimeout(() => {
+        selectedFiles = []; // Clear the selected files array
+  input.value = ''; // Reset the file input
+  renderPreview(); // Clear the preview
       // Remove focus from any element
       document.activeElement.blur();
             e.preventDefault();
@@ -104,6 +107,86 @@ fetch('courses.json')
       plugins: ['dropdown_input']
     });
   });
+
+const input = document.getElementById('dropzone-file');
+const dropzone = document.getElementById('dropzone');
+const preview = document.getElementById('file-preview');
+let selectedFiles = [];
+
+function renderPreview() {
+  preview.innerHTML = '';
+
+  selectedFiles.forEach((file, index) => {
+    const fileDiv = document.createElement('div');
+    fileDiv.className = 'relative group flex flex-col items-center text-center';
+
+    // Remove button
+    const removeBtn = document.createElement('button');
+    removeBtn.className = 'absolute top-0 right-0 text-white bg-red-500 hover:bg-red-600 rounded-full text-xs p-1 z-10 hidden group-hover:block';
+    removeBtn.innerText = '×';
+    removeBtn.onclick = () => {
+      selectedFiles.splice(index, 1);
+      renderPreview();
+    };
+    fileDiv.appendChild(removeBtn);
+
+    if (file.type.startsWith('image/')) {
+      // Show image thumbnail
+      const img = document.createElement('img');
+      img.src = URL.createObjectURL(file);
+      img.className = 'w-14 h-14 object-cover rounded shadow border';
+      fileDiv.appendChild(img);
+    } else {
+      // Use icon for non-image files
+      const icon = document.createElement('div');
+      icon.className = 'w-14 h-14 flex items-center justify-center bg-gray-200 text-gray-600 rounded shadow border text-sm font-bold';
+      icon.innerText = getFileExtension(file.name).toUpperCase();
+      fileDiv.appendChild(icon);
+    }
+
+    // Filename (below preview)
+    const label = document.createElement('p');
+    label.textContent = file.name.length > 20 ? file.name.slice(0, 17) + '...' : file.name;
+    label.className = 'text-[10px] text-gray-700 dark:text-gray-300 mt-1 break-words w-14';
+    fileDiv.appendChild(label);
+
+    preview.appendChild(fileDiv);
+  });
+}
+
+function getFileExtension(filename) {
+  return filename.split('.').pop();
+}
+
+
+function addFiles(fileList) {
+  for (const file of fileList) {
+    const exists = selectedFiles.some(f => f.name === file.name && f.size === file.size);
+    if (!exists) {
+      selectedFiles.push(file);
+    }
+  }
+  renderPreview();
+}
+
+input.addEventListener('change', (e) => addFiles(e.target.files));
+
+dropzone.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  dropzone.classList.add('ring-2', 'ring-blue-500');
+});
+
+dropzone.addEventListener('dragleave', () => {
+  dropzone.classList.remove('ring-2', 'ring-blue-500');
+});
+
+dropzone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  dropzone.classList.remove('ring-2', 'ring-blue-500');
+  addFiles(e.dataTransfer.files);
+});
+
+
 
     let allGroups = []; // Store all groups for filtering/sorting
     let filteredGroups = []; // Store filtered groups
