@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const openFormBtn = document.getElementById('openFormBtn');
     const addGroupForm = document.getElementById('myForm');
     const closeBtn = addGroupForm ? addGroupForm.querySelector('.close-form') : null;
+    const resetBtn = addGroupForm ? addGroupForm.querySelector('.resetBtn') : null;
     if (addGroupForm) {
         addGroupForm.style.display = 'none';
     }
@@ -33,13 +34,32 @@ document.addEventListener('DOMContentLoaded', () => {
             addGroupForm.style.display = 'block';
             addGroupForm.scrollTop = 0; // Scroll to top of form
             window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll window to top
+            // Hide pagination and its bar when form is open
+            const paginationContainer = document.querySelector('.pagination-container');
+            if (paginationContainer) paginationContainer.style.display = 'none';
         });
     }
     if (closeBtn) {
         closeBtn.addEventListener('click', (e) => {
             e.preventDefault();
             addGroupForm.style.display = 'none';
+            // Show pagination and its bar when form is closed
+            const paginationContainer = document.querySelector('.pagination-container');
+            if (paginationContainer) paginationContainer.style.display = '';
         });
+    }
+    if (resetBtn) {
+         resetBtn.addEventListener('click', (e) => {
+    // Wait for the reset to happen
+    setTimeout(() => {
+      // Remove focus from any element
+      document.activeElement.blur();
+            e.preventDefault();
+            addGroupForm.style.display = 'block';
+            addGroupForm.scrollTop = 0; // Scroll to top of form
+            window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll window to top
+    }, 0);
+  });
     }
 
     let allGroups = []; // Store all groups for filtering/sorting
