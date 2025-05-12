@@ -83,6 +83,27 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   
+fetch('courses.json')
+  .then(res => res.json())
+  .then(allCourses => {
+    new TomSelect("#group-subject", {
+      valueField: "id",
+      labelField: "text",
+      searchField: "text",
+      maxItems: 1, //Allow only one selection
+      preload: true,
+      load: function(query, callback) {
+        if (!query.length) return callback(allCourses.slice(0, 50));
+
+        const filtered = allCourses.filter(course =>
+          course.text.toLowerCase().includes(query.toLowerCase())
+        );
+
+        callback(filtered);
+      },
+      plugins: ['dropdown_input']
+    });
+  });
 
     let allGroups = []; // Store all groups for filtering/sorting
     let filteredGroups = []; // Store filtered groups
