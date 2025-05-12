@@ -233,18 +233,18 @@ fetch('courses.json')
         // Render current page groups
         currentGroups.forEach(group => {
             const groupDiv = document.createElement('div');
-            groupDiv.className = 'w-[215px] max-w-sm h-[204px] bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700 cursor-pointer hover:bg-blue-100 dark:hover:bg-gray-700';
+            groupDiv.className = 'group w-[215px] max-w-sm h-[204px] bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700 cursor-pointer hover:bg-blue-700 dark:hover:bg-gray-700 hover:text-white dark:hover:text-white transition duration-300';
             groupDiv.innerHTML = `
                 <img class="rounded-t-lg w-full h-[100px] object-cover" src="https://cdn.vectorstock.com/i/500p/33/40/study-concept-for-banner-design-vector-42473340.jpg" alt="study banner" />
                 <div class="p-2">
-                    <h6 class="line-clamp-1 mb-0.5 text-sm font-bold tracking-tight text-gray-900 dark:text-white">${group.name}</h6>
+                    <h6 class="line-clamp-1 mb-0.5 text-sm font-bold tracking-tight text-gray-900 dark:text-white group-hover:text-white">${group.name}</h6>
                     <div class="m-0.5 flex relative flex-col items-start justify-start">
-                        <span class="text-xs font-normal text-gray-700 dark:text-gray-400">${group.subject}</span>
+                        <span class="text-xs font-normal text-gray-700 dark:text-gray-400 group-hover:text-white">${group.subject}</span>
                         <div>
-                            <span class="text-xs font-normal text-gray-700 dark:text-gray-400">${group.date}</span>
-                            <span class="text-xs font-normal text-gray-700 dark:text-gray-400">${group.startTime}-${group.endTime}</span>
+                            <span class="text-xs font-normal text-gray-700 dark:text-gray-400 group-hover:text-white">${group.date}</span>
+                            <span class="text-xs font-normal text-gray-700 dark:text-gray-400 group-hover:text-white">${group.startTime}-${group.endTime}</span>
                         </div>
-                        <span class="text-xs font-normal text-gray-700 dark:text-gray-400">${group.seats} Seats Available</span>
+                        <span class="text-xs font-normal text-gray-700 dark:text-gray-400 group-hover:text-white">${group.seats} Seats Available</span>
                     </div>
                 </div>
             `;
