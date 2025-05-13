@@ -24,10 +24,9 @@ async function fetchActivities() {
   activityList.innerHTML = "<p>Loading activities...</p>";
 
   try {
-    const response = await fetch('https://jsonplaceholder.typicode.com/posts?_limit=15'); // Example API
+    const response = await fetch('https://jsonplaceholder.typicode.com/posts?_limit=15');
     const data = await response.json();
 
-    // Map API data into our structure
     activities = data.map((item, index) => ({
       id: item.id,
       club: "Club " + (index + 1),
@@ -112,12 +111,13 @@ function nextPage() {
   }
 }
 
-//Search activities
+//Search activities(Real-time Search)
 searchInput.addEventListener('input', () => {
   const query = searchInput.value.toLowerCase();
   filteredActivities = activities.filter(activity => 
     activity.title.toLowerCase().includes(query) || 
-    activity.club.toLowerCase().includes(query)
+    activity.club.toLowerCase().includes(query) ||
+    activity.description.toLowerCase().includes(query)
   );
   currentPage = 1;
   renderActivities();
@@ -131,7 +131,7 @@ sortButton.addEventListener('click', () => {
   renderActivities();
 }); 
 
-//Open Detail View
+//Open Detail View (Dynamic Details)
 function openDetailView(id) {
   const activity = activities.find(a => a.id === id);
 
@@ -160,30 +160,3 @@ function openDetailView(id) {
     </p>
   `;
 }
-
-// Form validation
-function addFormValidation() {
-  form.addEventListener('submit', function(event) {
-    event.preventDefault();
-    const inputs = form.querySelectorAll('input[required], textarea');
-
-    let valid = true;
-    inputs.forEach(input => {
-      if (!input.value.trim()) {
-        valid = false;
-        input.style.border = "1px solid red";
-      } else {
-        input.style.border = "1px solid #ddd";
-      }
-    });
-
-    if (valid) {
-      alert("Form is valid! (Simulation, not actually submitted)");
-      form.reset();
-    } else {
-      alert("Please fill all required fields!");
-    }
-}
-    )
-    }
-  
