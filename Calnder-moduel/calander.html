@@ -44,7 +44,7 @@
             position: fixed;  
             right: 20px;
             top: 100px;
-            width: 400px; /* Increased width from 300px to 400px */
+            width: 400px;
             max-height: calc(100vh - 120px);
             overflow-y: auto;
             background-color: white;
@@ -53,14 +53,42 @@
             padding: 15px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
+        .comments-section {
+            margin: 40px auto;
+            padding: 20px;
+            width: 100%;
+            max-width: 800px;
+        }
+        .comment {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #f8fafc;
+        }
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #4a5568;
+        }
+        .comment-content {
+            color: #2d3748;
+            line-height: 1.5;
+        }
+        .event-name {
+            font-weight: bold;
+            color: #2b6cb0;
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+        }
         @media (max-width: 768px) {
             .calendar {
                 grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
             }
-        }
-        @media (max-width: 1024px) {
             .upcoming-events {
-                position: static; 
+                position: static;
                 width: 100%;
                 max-height: none;
                 margin-top: 20px;
@@ -119,6 +147,12 @@
             <ul id="eventList" class="list-disc pl-5"></ul>
         </div>
     </div>
+
+    <!-- قسم التعليقات -->
+    <div class="comments-section">
+        <h2 class="text-2xl font-bold mb-6 text-blue-800">Event Comments</h2>
+        <div id="commentsContainer"></div>
+    </div>
 </main>
 
 <footer class="bg-blue-800 text-white py-4 text-center mt-8">
@@ -132,26 +166,24 @@
     </div>
 </footer>
 
-
 <script>
-// -------------------- Full JavaScript for Event Calendar  --------------------
-
 const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-let events = []; // Holds all current events
-let editingEventId = null; // Track if currently editing an event
+let events = [];
+let editingEventId = null;
 
 const externalDataUrl = 'https://raw.githubusercontent.com/Ghufran-Shaikh/CS333-CampusClub/refs/heads/Calander-moduel(Phase2)/Calnder-moduel/EventData.json';
+const commentsUrl = 'https://raw.githubusercontent.com/Ghufran-Shaikh/CS333-CampusClub/refs/heads/Calander-moduel(Phase2)/Calnder-moduel/comment.json';
 
-const eventsPerPage = 5;  // Number of events per page for pagination
-let currentPage = 1;      // Current visible page in pagination
-let filteredEvents = [];  // Store filtered events to paginate
+const eventsPerPage = 5;
+let currentPage = 1;
+let filteredEvents = [];
 
-// Generate calendar for given year and month
+// إنشاء التقويم
 const generateCalendar = (year, month) => {
     const calendar = document.getElementById('calendar');
-    calendar.innerHTML = ''; 
-    const daysInMonth = new Date(year, month + 1, 0).getDate(); 
+    calendar.innerHTML = '';
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
 
     for (let day = 1; day <= daysInMonth; day++) {
         const dayElement = document.createElement('div');
@@ -166,35 +198,31 @@ const generateCalendar = (year, month) => {
     }
 };
 
-// Populate month and year selectors
+// تعبئة خيارات الشهر والسنة
 const populateSelects = () => {
     const monthSelect = document.getElementById('monthSelect');
     const yearSelect = document.getElementById('yearSelect');
 
-    if (monthSelect.options.length === 0) {
-        months.forEach((month, index) => {
-            const option = document.createElement('option');
-            option.value = index;
-            option.textContent = month;
-            monthSelect.appendChild(option);
-        });
-    }
+    months.forEach((month, index) => {
+        const option = document.createElement('option');
+        option.value = index;
+        option.textContent = month;
+        monthSelect.appendChild(option);
+    });
 
-    if (yearSelect.options.length === 0) {
-        const currentYear = new Date().getFullYear();
-        for (let i = currentYear; i <= currentYear + 10; i++) {
-            const option = document.createElement('option');
-            option.value = i;
-            option.textContent = i;
-            yearSelect.appendChild(option);
-        }
+    const currentYear = new Date().getFullYear();
+    for (let i = currentYear; i <= currentYear + 10; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.textContent = i;
+        yearSelect.appendChild(option);
     }
 };
 
-// Open event form for adding or editing event
+// فتح نموذج الحدث
 function openEventForm(year, month, day, event = null) {
     const eventForm = document.getElementById('eventForm');
-    eventForm.style.display = 'block'; 
+    eventForm.style.display = 'block';
     document.getElementById('eventName').value = event ? event.title : '';
     const eventDateTimeInput = document.getElementById('eventDateTime');
     if (event) {
@@ -206,7 +234,7 @@ function openEventForm(year, month, day, event = null) {
     }
 }
 
-// Render event list with current page's events, add pagination controls
+// عرض الأحداث
 const renderEvents = () => {
     const eventList = document.getElementById('eventList');
     eventList.innerHTML = '';
@@ -253,19 +281,18 @@ const renderEvents = () => {
     renderPaginationControls();
 };
 
-// Render pagination controls below event list
+// عناصر التحكم في الصفحات
 const renderPaginationControls = () => {
     removePaginationControls();
 
     const eventListContainer = document.getElementById('eventList').parentNode;
-
     const paginationDiv = document.createElement('div');
     paginationDiv.id = 'paginationControls';
     paginationDiv.classList.add('flex', 'justify-center', 'gap-2', 'mt-4', 'flex-wrap');
 
     const totalPages = Math.ceil(filteredEvents.length / eventsPerPage);
 
-    // Previous button
+    // زر السابق
     const prevBtn = document.createElement('button');
     prevBtn.textContent = 'Previous';
     prevBtn.disabled = currentPage === 1;
@@ -278,8 +305,7 @@ const renderPaginationControls = () => {
     };
     paginationDiv.appendChild(prevBtn);
 
-    // Page numbers - show max 5 pages with current in center
-    // Calculate start and end page for pagination window
+    // أرقام الصفحات
     let startPage = Math.max(1, currentPage - 2);
     let endPage = Math.min(totalPages, startPage + 4);
     if (endPage - startPage < 4) {
@@ -301,7 +327,7 @@ const renderPaginationControls = () => {
         paginationDiv.appendChild(pageBtn);
     }
 
-    // Next button
+    // زر التالي
     const nextBtn = document.createElement('button');
     nextBtn.textContent = 'Next';
     nextBtn.disabled = currentPage === totalPages;
@@ -317,7 +343,6 @@ const renderPaginationControls = () => {
     eventListContainer.appendChild(paginationDiv);
 };
 
-// Remove existing pagination controls
 const removePaginationControls = () => {
     const existingControls = document.getElementById('paginationControls');
     if (existingControls) {
@@ -325,13 +350,11 @@ const removePaginationControls = () => {
     }
 };
 
-// Filter events by search term
 const filterEventsList = () => {
     const searchTerm = document.getElementById('event-search').value.toLowerCase();
     filteredEvents = events.filter(event => event.title.toLowerCase().includes(searchTerm));
 };
 
-// Sort filtered events array
 const sortFilteredEvents = () => {
     const sortCriteria = document.getElementById('sortSelect').value;
 
@@ -344,15 +367,13 @@ const sortFilteredEvents = () => {
     });
 };
 
-// Update event list with sorting, filtering, and pagination
 const updateEventList = () => {
-    currentPage = 1; // Reset to first page on any update
+    currentPage = 1;
     filterEventsList();
     sortFilteredEvents();
     renderEvents();
 };
 
-// Save event from form (add new or update existing)
 const saveEvent = () => {
     const eventNameInput = document.getElementById('eventName');
     const eventDateTimeInput = document.getElementById('eventDateTime');
@@ -397,7 +418,6 @@ const saveEvent = () => {
     updateEventList();
 };
 
-// Delete event by id
 const deleteEvent = (id) => {
     if (confirm('Are you sure you want to delete this event?')) {
         events = events.filter(ev => ev.id !== id);
@@ -405,7 +425,6 @@ const deleteEvent = (id) => {
     }
 };
 
-// Open event form with event details for editing
 const openEventFormFromId = (id) => {
     const event = events.find(ev => ev.id === id);
     if (event) {
@@ -413,7 +432,7 @@ const openEventFormFromId = (id) => {
     }
 };
 
-// Fetch external events
+// جلب الأحداث الخارجية
 async function fetchExternalEvents() {
     const eventList = document.getElementById('eventList');
     const loadingItem = document.createElement('li');
@@ -421,7 +440,7 @@ async function fetchExternalEvents() {
     eventList.appendChild(loadingItem);
 
     try {
-        const response = await fetch(externalDataUrl);
+        const response = await fetch(`${externalDataUrl}?t=${new Date().getTime()}`);
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
@@ -453,8 +472,96 @@ async function fetchExternalEvents() {
     }
 }
 
-// Event listeners setup
-window.onload = () => {
+// جلب وعرض التعليقات
+async function fetchAndDisplayComments() {
+    const commentsContainer = document.getElementById('commentsContainer');
+    commentsContainer.innerHTML = '<p>Loading comments...</p>';
+
+    try {
+        // إضافة طابع زمني لمنع التخزين المؤقت
+        const response = await fetch(`${commentsUrl}?t=${new Date().getTime()}`);
+        
+        if (!response.ok) {
+            throw new Error(`Failed to load comments: ${response.status}`);
+        }
+
+        const comments = await response.json();
+        
+        if (!comments || comments.length === 0) {
+            commentsContainer.innerHTML = '<p>No comments available yet.</p>';
+            return;
+        }
+
+        commentsContainer.innerHTML = '';
+        
+        // تجميع التعليقات حسب الحدث
+        const commentsByEvent = {};
+        comments.forEach(comment => {
+            if (!commentsByEvent[comment.event_id]) {
+                commentsByEvent[comment.event_id] = [];
+            }
+            commentsByEvent[comment.event_id].push(comment);
+        });
+
+        // عرض التعليقات
+        for (const eventId in commentsByEvent) {
+            const eventComments = commentsByEvent[eventId];
+            
+            const eventGroup = document.createElement('div');
+            eventGroup.className = 'event-comments-group mb-8 p-4 bg-blue-50 rounded-lg';
+            
+            // البحث عن اسم الحدث
+            const event = events.find(e => e.id == eventId);
+            const eventTitle = event ? event.title : `Event ID: ${eventId}`;
+            
+            const eventTitleElement = document.createElement('h3');
+            eventTitleElement.className = 'event-name';
+            eventTitleElement.textContent = eventTitle;
+            eventGroup.appendChild(eventTitleElement);
+            
+            eventComments.forEach(comment => {
+                const commentElement = document.createElement('div');
+                commentElement.className = 'comment';
+                
+                const header = document.createElement('div');
+                header.className = 'comment-header';
+                
+                const authorSpan = document.createElement('span');
+                authorSpan.textContent = `By: ${comment.author}`;
+                
+                const dateSpan = document.createElement('span');
+                const commentDate = new Date(comment.created_at);
+                dateSpan.textContent = commentDate.toLocaleString();
+                
+                header.appendChild(authorSpan);
+                header.appendChild(dateSpan);
+                
+                const content = document.createElement('div');
+                content.className = 'comment-content mt-2';
+                content.textContent = comment.comment;
+                
+                commentElement.appendChild(header);
+                commentElement.appendChild(content);
+                
+                eventGroup.appendChild(commentElement);
+            });
+            
+            commentsContainer.appendChild(eventGroup);
+        }
+
+    } catch (error) {
+        console.error('Error loading comments:', error);
+        commentsContainer.innerHTML = `
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                <strong>Error loading comments:</strong> ${error.message}
+                <br>Please check the console for details.
+            </div>
+        `;
+    }
+}
+
+// تحميل الصفحة
+window.onload = async () => {
     populateSelects();
     const today = new Date();
     document.getElementById('monthSelect').value = today.getMonth();
@@ -465,14 +572,13 @@ window.onload = () => {
     document.getElementById('sortSelect').addEventListener('change', updateEventList);
     document.getElementById('event-search').addEventListener('input', updateEventList);
 
-    fetchExternalEvents();
+    try {
+        await fetchExternalEvents();
+        await fetchAndDisplayComments();
+    } catch (error) {
+        console.error('Initialization error:', error);
+    }
 };
-
-
-
 </script>
-
-
-
 </body>
 </html>
