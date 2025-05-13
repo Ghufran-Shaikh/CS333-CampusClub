@@ -6,6 +6,7 @@
     <title>Event Calendar</title>
     <link rel="icon" type="image/x-icon" href="Calendar-icon.jpeg">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    
     <style>
         body {
             display: flex;
@@ -44,7 +45,7 @@
             position: fixed;  
             right: 20px;
             top: 100px;
-            width: 400px; /* Increased width from 300px to 400px */
+            width: 400px; 
             max-height: calc(100vh - 120px);
             overflow-y: auto;
             background-color: white;
@@ -65,6 +66,41 @@
                 max-height: none;
                 margin-top: 20px;
             }
+        }
+        /* Modal styles */
+        .modal {
+            display: flex;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -104,6 +140,13 @@
                 <input type="datetime-local" id="eventDateTime" class="w-full p-2 border border-gray-300 rounded mb-2" />
                 <button id="saveEventBtn" class="bg-blue-800 text-white font-bold py-2 px-4 rounded mt-2">Submit</button>
             </div>
+
+            <div id="eventComments" class="event-comments mt-4">
+                <h4 class="font-bold mb-2">Comments</h4>
+                <ul id="commentList" class="list-disc pl-5"></ul>
+                <input type="text" id="commentInput" class="w-full p-2 border border-gray-300 rounded mb-2" placeholder="Add a comment..." />
+                <button id="addCommentBtn" class="bg-blue-800 text-white font-bold py-2 px-4 rounded mt-2">Add Comment</button>
+            </div>
         </div>
 
         <div class="upcoming-events">
@@ -133,17 +176,16 @@
 </footer>
 
 
+
 <script>
-// -------------------- Full JavaScript for Event Calendar  --------------------
-
-
-
+// -------------------- Full JavaScript for Event Calendar --------------------
 const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
 let events = []; // Holds all current events
 let editingEventId = null; // Track if currently editing an event
 
-const externalDataUrl = 'https://raw.githubusercontent.com/Ghufran-Shaikh/CS333-CampusClub/refs/heads/demo/Calnder-moduel/EventData.json';
+const externalDataUrl ='https://b93f06a9-58d9-4783-b144-c3ff3f5f0fc5-00-10att636lrm9h.pike.replit.dev/api.php';
+
 
 const eventsPerPage = 5;  // Number of events per page for pagination
 let currentPage = 1;      // Current visible page in pagination
@@ -202,20 +244,21 @@ function openEventForm(year, month, day, event = null) {
     if (event) {
         eventDateTimeInput.value = `${event.date}T${event.time}`;
         editingEventId = event.id;
+        renderComments(event.id);
     } else {
         eventDateTimeInput.value = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T00:00`;
         editingEventId = null;
     }
 }
 
-// Render event list with current page's events, add pagination controls
+// Render events
 const renderEvents = () => {
     const eventList = document.getElementById('eventList');
     eventList.innerHTML = '';
 
     if (filteredEvents.length === 0) {
         const emptyItem = document.createElement('li');
-        emptyItem.textContent = 'No matching events.';
+        emptyItem.textContent = 'No matching events found';
         eventList.appendChild(emptyItem);
         removePaginationControls();
         return;
@@ -227,28 +270,49 @@ const renderEvents = () => {
 
     eventsToShow.forEach(event => {
         const eventItem = document.createElement('li');
-        eventItem.classList.add('event-item');
+        eventItem.classList.add('event-item', 'flex', 'justify-between', 'items-center', 'p-2', 'border-b');
+
+        const eventInfo = document.createElement('div');
         const eventDate = new Date(`${event.date}T${event.time}`);
-        eventItem.textContent = `${eventDate.toLocaleString()} - ${event.title}`;
+        eventInfo.innerHTML = `<strong>${event.title}</strong><br><small>${eventDate.toLocaleString()}</small>`;
 
-        const btnContainer = document.createElement('span');
-        btnContainer.style.marginLeft = '10px';
+        const actionSelect = document.createElement('select');
+        actionSelect.classList.add('border', 'border-gray-300', 'p-1', 'rounded', 'ml-4');
 
-        const editBtn = document.createElement('button');
-        editBtn.textContent = 'Edit';
-        editBtn.style.marginRight = '5px';
-        editBtn.classList.add('bg-yellow-400', 'text-black', 'rounded', 'px-2', 'py-0.5', 'hover:bg-yellow-500', 'cursor-pointer');
-        editBtn.onclick = () => openEventFormFromId(event.id);
+        const placeholderOption = document.createElement('option');
+        placeholderOption.textContent = 'Options';
+        placeholderOption.disabled = true;
+        placeholderOption.selected = true;
+        actionSelect.appendChild(placeholderOption);
 
-        const deleteBtn = document.createElement('button');
-        deleteBtn.textContent = 'Delete';
-        deleteBtn.classList.add('bg-red-600', 'text-white', 'rounded', 'px-2', 'py-0.5', 'hover:bg-red-700', 'cursor-pointer');
-        deleteBtn.onclick = () => deleteEvent(event.id);
+        const detailsOption = document.createElement('option');
+        detailsOption.value = 'details';
+        detailsOption.textContent = 'Details';
+        actionSelect.appendChild(detailsOption);
 
-        btnContainer.appendChild(editBtn);
-        btnContainer.appendChild(deleteBtn);
-        eventItem.appendChild(btnContainer);
+        const editOption = document.createElement('option');
+        editOption.value = 'edit';
+        editOption.textContent = 'Edit';
+        actionSelect.appendChild(editOption);
 
+        const deleteOption = document.createElement('option');
+        deleteOption.value = 'delete';
+        deleteOption.textContent = 'Delete';
+        actionSelect.appendChild(deleteOption);
+
+        actionSelect.addEventListener('change', (e) => {
+            if (e.target.value === 'details') {
+                showEventDetails(event); 
+            } else if (e.target.value === 'edit') {
+                openEventFormFromId(event.id);
+            } else if (e.target.value === 'delete') {
+                deleteEvent(event.id);
+            }
+            actionSelect.value = ''; // Reset selection
+        });
+
+        eventItem.appendChild(eventInfo);
+        eventItem.appendChild(actionSelect);
         eventList.appendChild(eventItem);
     });
 
@@ -281,7 +345,6 @@ const renderPaginationControls = () => {
     paginationDiv.appendChild(prevBtn);
 
     // Page numbers - show max 5 pages with current in center
-    // Calculate start and end page for pagination window
     let startPage = Math.max(1, currentPage - 2);
     let endPage = Math.min(totalPages, startPage + 4);
     if (endPage - startPage < 4) {
@@ -355,7 +418,7 @@ const updateEventList = () => {
 };
 
 // Save event from form (add new or update existing)
-const saveEvent = () => {
+const saveEvent = async () => {
     const eventNameInput = document.getElementById('eventName');
     const eventDateTimeInput = document.getElementById('eventDateTime');
     const eventName = eventNameInput.value.trim();
@@ -373,108 +436,161 @@ const saveEvent = () => {
     const datePart = eventDateTimeVal.split('T')[0];
     const timePart = eventDateTimeVal.split('T')[1];
 
-    if (editingEventId !== null) {
-        const idx = events.findIndex(e => e.id === editingEventId);
-        if (idx !== -1) {
-            events[idx].title = eventName;
-            events[idx].date = datePart;
-            events[idx].time = timePart;
-        }
-    } else {
-        const newId = events.length > 0 ? Math.max(...events.map(e => e.id)) + 1 : 1;
-        const newEvent = {
-            id: newId,
-            title: eventName,
-            description: '',
-            date: datePart,
-            time: timePart
-        };
-        events.push(newEvent);
-    }
-
-    editingEventId = null;
-    document.getElementById('eventForm').style.display = 'none';
-    eventNameInput.value = '';
-    eventDateTimeInput.value = '';
-    updateEventList();
-};
-
-// Delete event by id
-const deleteEvent = (id) => {
-    if (confirm('Are you sure you want to delete this event?')) {
-        events = events.filter(ev => ev.id !== id);
-        updateEventList();
-    }
-};
-
-// Open event form with event details for editing
-const openEventFormFromId = (id) => {
-    const event = events.find(ev => ev.id === id);
-    if (event) {
-        openEventForm(null, null, null, event);
-    }
-};
-
-// Fetch external events
-async function fetchExternalEvents() {
-    const eventList = document.getElementById('eventList');
-    const loadingItem = document.createElement('li');
-    loadingItem.textContent = 'Loading events...';
-    eventList.appendChild(loadingItem);
-
+    const eventData = {
+        title: eventName,
+        description: '',
+        date: datePart,
+        time: timePart
+    };
+const externalDataUrl = 'https://b93f06a9-58d9-4783-b144-c3ff3f5f0fc5-00-10att636lrm9h.pike.replit.dev/api.php';
     try {
-        const response = await fetch(externalDataUrl);
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-
-        const data = await response.json();
-
-        data.forEach((ev) => {
-            const existing = events.find(e => e.title === ev.title && e.date === ev.date && e.time === ev.time);
-            if (!existing) {
-                events.push({
-                    id: events.length > 0 ? Math.max(...events.map(e => e.id)) + 1 : 1,
-                    title: ev.title,
-                    description: ev.description || '',
-                    date: ev.date,
-                    time: ev.time + (ev.time.length === 5 ? ':00' : '')
-                });
+        const response = await fetch('externalDataUrl', {
+            method: 'POST',
+            body: JSON.stringify(eventData),
+            headers: {
+                'Content-Type': 'application/json',
             }
         });
 
-        updateEventList();
-
+        const result = await response.json();
+        if (result.message === 'Event saved successfully') {
+            events.push({
+                id: events.length + 1,
+                title: eventName,
+                description: '',
+                date: datePart,
+                time: timePart,
+                comments: []
+            });
+            updateEventList();
+        }
     } catch (error) {
-        eventList.innerHTML = '';
-        const errorItem = document.createElement('li');
-        errorItem.textContent = 'Failed to load events. Please try again later.';
-        errorItem.style.color = 'red';
-        eventList.appendChild(errorItem);
-        console.error('Error fetching events:', error);
+        console.error('Error saving event:', error);
     }
-}
+};
 
-// Event listeners setup
+
+// Delete event by id
+const deleteEvent = async (id) => {
+    if (confirm('Are you sure you want to delete this event?')) {
+        try {
+            const response = await fetch('api.php', {
+                method: 'DELETE',
+                body: JSON.stringify({ id }),
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            const result = await response.json();
+            if (result.message === 'Event deleted successfully') {
+                events = events.filter(event => event.id !== id);
+                updateEventList();
+            }
+        } catch (error) {
+            console.error('Error deleting event:', error);
+        }
+    }
+};
+
+
+// Show event details in a modal
+const showEventDetails = (event) => {
+    // Create modal container
+    const modal = document.createElement('div');
+    modal.classList.add('modal');
+    
+    const modalContent = document.createElement('div');
+    modalContent.classList.add('modal-content');
+
+    const closeButton = document.createElement('span');
+    closeButton.classList.add('close');
+    closeButton.innerHTML = '&times;';
+    closeButton.onclick = () => {
+        modal.remove();
+    };
+
+    const eventDate = new Date(`${event.date}T${event.time}`);
+    modalContent.innerHTML = `
+        <h2 class="text-2xl font-bold mb-4">${event.title}</h2>
+        <p><strong>Date -Time:</strong> ${eventDate.toLocaleString()}</p>
+        <p class="mt-2"><strong>Description:</strong> ${event.description || 'No description'}</p>
+    `;
+    modalContent.appendChild(closeButton);
+    modal.appendChild(modalContent);
+    document.body.appendChild(modal);
+};
+
+// Load external data
+const loadExternalData = async () => {
+    try {
+        const response = await fetch('api.php');
+        const data = await response.json();
+        events = data.map((event, index) => ({
+            id: event.id,
+            title: event.title,
+            description: event.description,
+            date: event.date,
+            time: event.time,
+            comments: []
+        }));
+        updateEventList();
+    } catch (error) {
+        console.error('Error loading external data:', error);
+    }
+};
+
 window.onload = () => {
     populateSelects();
     const today = new Date();
     document.getElementById('monthSelect').value = today.getMonth();
     document.getElementById('yearSelect').value = today.getFullYear();
     generateCalendar(today.getFullYear(), today.getMonth());
-
-    document.getElementById('saveEventBtn').addEventListener('click', saveEvent);
-    document.getElementById('sortSelect').addEventListener('change', updateEventList);
-    document.getElementById('event-search').addEventListener('input', updateEventList);
-
-    fetchExternalEvents();
+    loadExternalData();
 };
 
+document.getElementById('generateBtn').addEventListener('click', () => {
+    const year = parseInt(document.getElementById('yearSelect').value);
+    const month = parseInt(document.getElementById('monthSelect').value);
+    generateCalendar(year, month);
+});
 
+document.getElementById('saveEventBtn').addEventListener('click', saveEvent);
+// Fetch all events from the backend
+const fetchEvents = async () => {
+    try {
+        const response = await fetch('api.php');
+        const data = await response.json();
+        events = data;
+        updateEventList();
+    } catch (error) {
+        console.error('Error fetching events:', error);
+    }
+};
+
+// Call fetchEvents on page load
+document.addEventListener('DOMContentLoaded', () => {
+    populateSelects();
+
+    const today = new Date();
+    document.getElementById('monthSelect').value = today.getMonth();
+    document.getElementById('yearSelect').value = today.getFullYear();
+    generateCalendar(today.getFullYear(), today.getMonth());
+
+    document.getElementById('generateBtn').addEventListener('click', () => {
+        const selectedMonth = parseInt(document.getElementById('monthSelect').value);
+        const selectedYear = parseInt(document.getElementById('yearSelect').value);
+        generateCalendar(selectedYear, selectedMonth);
+    });
+
+    document.getElementById('saveEventBtn').addEventListener('click', saveEvent);
+    document.getElementById('addCommentBtn').addEventListener('click', addComment);
+
+    // 👇 Fetch the events when page loads
+    fetchEvents();
+});
 
 </script>
-
-
 
 </body>
 </html>
