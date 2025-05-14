@@ -1,0 +1,37 @@
+[
+  {
+    "id": 1,
+    "event_id": 101,
+    "author": "Ali",
+    "comment": "Really excited for this event! 😍",
+    "created_at": "2025-05-13T10:30:00Z"
+  },
+  {
+    "id": 2,
+    "event_id": 101,
+    "author": "Sara",
+    "comment": "Do we need to register in advance?",
+    "created_at": "2025-05-13T11:00:00Z"
+  },
+  {
+    "id": 3,
+    "event_id": 102,
+    "author": "Mohammed",
+    "comment": "Looks like a great event, but please clarify the location.",
+    "created_at": "2025-05-13T12:15:00Z"
+  },
+  {
+    "id": 4,
+    "event_id": 103,
+    "author": "Lina",
+    "comment": "Will there be food or drinks provided?",
+    "created_at": "2025-05-13T13:45:00Z"
+  },
+  {
+    "id": 5,
+    "event_id": 103,
+    "author": "John",
+    "comment": "Can’t wait to meet everyone there!",
+    "created_at": "2025-05-13T14:00:00Z"
+  }
+]

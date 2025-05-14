@@ -1,0 +1,98 @@
+[
+  {
+    "id": 1,
+    "title": "Math Club Meetup",
+    "description": "Join us for a session on problem solving and competition prep.",
+    "date": "2025-05-15",
+    "time": "14:00",
+    "details": "Event: Math Club Meetup\nDescription: Join us for a session on problem solving and competition prep.\nDate: 2025-05-15\nTime: 14:00"
+  },
+  {
+    "id": 2,
+    "title": "AI Workshop",
+    "description": "A beginner-friendly workshop on AI and machine learning.",
+    "date": "2025-05-18",
+    "time": "10:00",
+    "details": "Event: AI Workshop\nDescription: A beginner-friendly workshop on AI and machine learning.\nDate: 2025-05-18\nTime: 10:00"
+  },
+  {
+    "id": 3,
+    "title": "Graduation Ceremony",
+    "description": "Celebrate the class of 2025!",
+    "date": "2025-05-25",
+    "time": "09:00",
+    "details": "Event: Graduation Ceremony\nDescription: Celebrate the class of 2025!\nDate: 2025-05-25\nTime: 09:00"
+  },
+  {
+    "id": 4,
+    "title": "Tech Talk: Cybersecurity",
+    "description": "An expert-led talk about the latest in cybersecurity.",
+    "date": "2025-06-01",
+    "time": "16:00",
+    "details": "Event: Tech Talk: Cybersecurity\nDescription: An expert-led talk about the latest in cybersecurity.\nDate: 2025-06-01\nTime: 16:00"
+  },
+  {
+    "id": 5,
+    "title": "Cultural Festival",
+    "description": "A celebration of diverse cultures with food, music, and performances.",
+    "date": "2025-06-05",
+    "time": "12:00",
+    "details": "Event: Cultural Festival\nDescription: A celebration of diverse cultures with food, music, and performances.\nDate: 2025-06-05\nTime: 12:00"
+  },
+  {
+    "id": 6,
+    "title": "Entrepreneurship Panel",
+    "description": "Hear from successful entrepreneurs about their journeys.",
+    "date": "2025-06-07",
+    "time": "15:00",
+    "details": "Event: Entrepreneurship Panel\nDescription: Hear from successful entrepreneurs about their journeys.\nDate: 2025-06-07\nTime: 15:00"
+  },
+  {
+    "id": 7,
+    "title": "Summer Coding Bootcamp",
+    "description": "An intensive bootcamp covering web development basics.",
+    "date": "2025-06-10",
+    "time": "09:30",
+    "details": "Event: Summer Coding Bootcamp\nDescription: An intensive bootcamp covering web development basics.\nDate: 2025-06-10\nTime: 09:30"
+  },
+  {
+    "id": 8,
+    "title": "Volunteer Day",
+    "description": "Join us to give back to the community through various activities.",
+    "date": "2025-06-12",
+    "time": "08:00",
+    "details": "Event: Volunteer Day\nDescription: Join us to give back to the community through various activities.\nDate: 2025-06-12\nTime: 08:00"
+  },
+  {
+    "id": 9,
+    "title": "Photography Exhibition",
+    "description": "Showcasing student photography projects.",
+    "date": "2025-06-15",
+    "time": "11:00",
+    "details": "Event: Photography Exhibition\nDescription: Showcasing student photography projects.\nDate: 2025-06-15\nTime: 11:00"
+  },
+  {
+    "id": 10,
+    "title": "Career Fair",
+    "description": "Meet recruiters from top companies and explore job opportunities.",
+    "date": "2025-06-18",
+    "time": "13:00",
+    "details": "Event: Career Fair\nDescription: Meet recruiters from top companies and explore job opportunities.\nDate: 2025-06-18\nTime: 13:00"
+  },
+  {
+    "id": 11,
+    "title": "Chess Tournament",
+    "description": "Compete in our annual chess tournament with prizes for winners.",
+    "date": "2025-06-20",
+    "time": "10:00",
+    "details": "Event: Chess Tournament\nDescription: Compete in our annual chess tournament with prizes for winners.\nDate: 2025-06-20\nTime: 10:00"
+  },
+  {
+    "id": 12,
+    "title": "Science Fair",
+    "description": "Discover innovative projects and experiments by students.",
+    "date": "2025-07-01",
+    "time": "09:00",
+    "details": "Event: Science Fair\nDescription: Discover innovative projects and experiments by students.\nDate: 2025-07-01\nTime: 09:00"
+  }
+]
