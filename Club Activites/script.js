@@ -140,7 +140,7 @@ function setupCommentForm(activityId) {
     if (!comment) return;
 
     try {
-      const res = await fetch("https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/comments.php", {
+      const res = await fetch("https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/comment.php", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ activity_id: activityId, content: comment })
@@ -164,7 +164,7 @@ async function loadComments(activityId) {
   list.innerHTML = "<li>Loading comments...</li>";
 
   try {
-    const res = await fetch(`https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/comments.php?activity_id=${activityId}`);
+    const res = await fetch(`https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/comment.php?activity_id=${activityId}`);
     const comments = await res.json();
 
     if (!Array.isArray(comments)) {
