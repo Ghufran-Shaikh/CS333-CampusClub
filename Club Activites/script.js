@@ -100,46 +100,35 @@ function showDetails(activity) {
 
   const detailDiv = document.getElementById("activity-detail");
   detailDiv.innerHTML = `
+    <h2>Club Activity Details</h2>
     <p><strong>Club:</strong> ${activity.club}</p>
     <p><strong>Event:</strong> ${activity.title}</p>
     <p><strong>Date & Time:</strong> ${activity.date} at ${activity.time}</p>
     <p><strong>Location:</strong> ${activity.location}</p>
     <p><strong>Description:</strong> ${activity.description}</p>
 
+    <div class="card-buttons">
+      <button id="edit-btn">Edit</button>
+      <button id="delete-btn" style="background-color: #e74c3c; color: white;">Delete</button>
+    </div>
+
     <hr>
+
     <h3>Comments</h3>
-    <div id="comments-container"></div>
+    <ul id="comment-list"></ul>
 
     <form id="comment-form">
-      <input type="text" name="name" placeholder="Your name" required />
-      <textarea name="comment" placeholder="Write a comment..." required></textarea>
+      <input type="text" id="comment-input" placeholder="Write a comment..." required />
       <button type="submit">Add Comment</button>
     </form>
   `;
 
-  loadComments(activity.id);
-
-  document.getElementById("comment-form").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const data = Object.fromEntries(formData.entries());
-
-    await fetch('https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/comment.php', {
-      method: 'POST',
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        activity_id: activity.id,
-        name: data.name,
-        comment: data.comment
-      })
-    });
-
-    e.target.reset();
-    loadComments(activity.id);
-  });
-
   document.getElementById("detail").scrollIntoView({ behavior: "smooth" });
+
+  loadComments(activity.id); // Load existing comments
+  setupCommentForm(activity.id); // Set up new comment submission
 }
+
 
 
 async function loadComments(activityId) {
