@@ -248,3 +248,21 @@ function openEditForm(activityId) {
     updateActivity(updatedActivity);
   };
 }
+function defaultSubmitHandler(event) {
+  event.preventDefault();
+
+  const newActivity = {
+    club: form.querySelector('[name="club"]').value,
+    title: form.querySelector('[name="title"]').value,
+    date: form.querySelector('[name="date"]').value,
+    time: form.querySelector('[name="time"]').value,
+    location: form.querySelector('[name="location"]').value,
+    description: form.querySelector('[name="description"]').value,
+  };
+
+  createActivity(newActivity);
+}
+
+// Set default submit handler initially
+form.onsubmit = defaultSubmitHandler;
+
