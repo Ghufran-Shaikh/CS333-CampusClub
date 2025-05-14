@@ -11,7 +11,6 @@ const filterButton = document.querySelector('.filters button:nth-child(2)');
 const sortButton = document.querySelector('.filters button:nth-child(3)');
 const paginationSection = document.querySelector('.pagination');
 const detailSection = document.getElementById('detail');
-const form = document.querySelector('#create form');
 
 // Fetch activities from the API
 async function fetchActivities(page = 1, limit = 4) {
@@ -46,7 +45,7 @@ function renderActivities() {
         <h2>${activity.title}</h2>
         <p class="subdued-text">${activity.activity_date} • ${activity.location}</p>
         <p>${activity.description}</p>
-        <a href="#detail" onclick="openDetailView(${activity.id})">View Details</a>
+        <a href="#" onclick="openDetailView(${activity.id})">View Details</a>
       </div>
     `;
   });
