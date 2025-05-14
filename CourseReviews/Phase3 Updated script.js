@@ -1,6 +1,6 @@
 const REVIEWS_PER_PAGE = 3;
 const MINIMUM_PAGES = 3;
-const API_URL = 'https://replit.com/@nohaidris17/my-app'; 
+const API_URL = 'https://replit.com/@nohaidris17/my-app?v=1'; 
 let reviews = [];
 let filteredReviews = [];
 let currentPage = 1;
