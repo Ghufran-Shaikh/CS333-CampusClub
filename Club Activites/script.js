@@ -1,26 +1,27 @@
 document.addEventListener("DOMContentLoaded", () => {
   loadActivities();
+
   document.getElementById("comment-form")?.addEventListener("submit", async (e) => {
     e.preventDefault();
     const textarea = e.target.elements.content;
     const content = textarea.value;
-  
+
     const activityId = window.currentActivity?.id;
     if (!activityId) return alert("No activity selected");
-  
+
     const res = await fetch("https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/api/comment.php", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ activity_id: activityId, content })
     });
-  
+
     if (res.ok) {
       textarea.value = "";
-      loadComments(activityId);
+      loadComments(activityId);  // Reload comments after posting a new one
     } else {
       alert("Error posting comment.");
     }
-  });  
+  });
 
   document.querySelector("form").addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -39,7 +40,6 @@ document.addEventListener("DOMContentLoaded", () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
       });
-      
 
       if (res.ok) {
         form.reset();
@@ -79,13 +79,37 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
+async function loadComments(activityId) {
+  const list = document.getElementById("comment-list");
+  list.innerHTML = "<li>Loading comments...</li>";
+
+  try {
+    const res = await fetch(`https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/comment.php?activity_id=${activityId}`);
+    const comments = await res.json();
+
+    if (!Array.isArray(comments)) {
+      list.innerHTML = "<li>No comments found.</li>";
+      return;
+    }
+
+    list.innerHTML = "";
+    comments.forEach(comment => {
+      const li = document.createElement("li");
+      li.textContent = comment.content;
+      list.appendChild(li);
+    });
+  } catch (err) {
+    console.error(err);
+    list.innerHTML = "<li>Error loading comments.</li>";
+  }
+}
+
 async function loadActivities() {
   try {
     const res = await fetch("https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/api/activities.php");
-    if (!res.ok) {
-      throw new Error('Failed to load activities');
-    }
-    const activities = await res.json();
+    if (!res.ok) throw new Error("Failed to load activities");
+
+    let activities = await res.json();
 
     const container = document.querySelector(".activity-list");
     container.innerHTML = "";
@@ -98,12 +122,10 @@ async function loadActivities() {
         <p class="subdued-text">${activity.club} | ${activity.date} • ${activity.time} | ${activity.location}</p>
         <p>${activity.description}</p>
         <button class="view-btn" data-id='${activity.id}'>View Details</button>
-        
       `;
       container.appendChild(card);
     });
 
-    // Add event listeners for the 'View Details' buttons
     document.querySelectorAll(".view-btn").forEach(btn => {
       btn.addEventListener("click", async () => {
         const id = btn.dataset.id;
@@ -145,196 +167,5 @@ function showDetails(activity) {
     </form>
   `;
 
-  document.getElementById("detail").scrollIntoView({ behavior: "smooth" });
-
   loadComments(activity.id); // Load existing comments
-  setupCommentForm(activity.id); // Set up new comment submission
-  loadComments(activity.id);
 }
-
-async function loadComments(activityId) {
-  const res = await fetch(`https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/comment.php?activity_id=${activityId}`);
-  const comments = await res.json();
-
-  const list = document.getElementById("comments-list");
-  list.innerHTML = "";
-
-  comments.forEach(comment => {
-    const p = document.createElement("p");
-    p.textContent = comment.content;
-    list.appendChild(p);
-  });
-}
-
-function setupCommentForm(activityId) {
-  const form = document.getElementById("comment-form");
-  const input = document.getElementById("comment-input");
-
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const comment = input.value.trim();
-    if (!comment) return;
-
-    try {
-      const res = await fetch("https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/comment.php", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ activity_id: activityId, content: comment })
-      });
-
-      if (res.ok) {
-        input.value = "";
-        loadComments(activityId);
-      } else {
-        alert("Failed to post comment.");
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Error posting comment.");
-    }
-  });
-}
-
-async function loadComments(activityId) {
-  const list = document.getElementById("comment-list");
-  list.innerHTML = "<li>Loading comments...</li>";
-
-  try {
-    const res = await fetch(`https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/comment.php?activity_id=${activityId}`);
-    const comments = await res.json();
-
-    if (!Array.isArray(comments)) {
-      list.innerHTML = "<li>No comments found.</li>";
-      return;
-    }
-
-    list.innerHTML = "";
-    comments.forEach(comment => {
-      const li = document.createElement("li");
-      li.textContent = comment.content;
-      list.appendChild(li);
-    });
-  } catch (err) {
-    console.error(err);
-    list.innerHTML = "<li>Error loading comments.</li>";
-  }
-}
-
-
-
-async function loadComments(activityId) {
-  const res = await fetch(`https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/comment.php?activity_id=${activityId}`);
-  const comments = await res.json();
-  const container = document.getElementById("comments-container");
-  container.innerHTML = comments.map(c => `
-    <div class="comment">
-      <strong>${c.name}</strong> <em>${new Date(c.created_at).toLocaleString()}</em>
-      <p>${c.comment}</p>
-    </div>
-  `).join('');
-}
-
-async function loadActivities() {
-  try {
-    const res = await fetch("https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/api/activities.php");
-    if (!res.ok) throw new Error("Failed to load activities");
-
-    let activities = await res.json();
-
-    // 🎯 Populate club filter dynamically
-    const filterSelect = document.getElementById("filterClub");
-    if (filterSelect && filterSelect.options.length <= 1) {
-      const clubs = [...new Set(activities.map(a => a.club))];
-      clubs.forEach(club => {
-        const option = document.createElement("option");
-        option.value = club;
-        option.textContent = club;
-        filterSelect.appendChild(option);
-      });
-    }
-
-    // 🔍 Search
-    const searchText = document.getElementById("searchInput")?.value.toLowerCase() || "";
-    if (searchText) {
-      activities = activities.filter(act =>
-        act.title.toLowerCase().includes(searchText)
-      );
-    }
-
-    // 📌 Filter
-    const selectedClub = filterSelect?.value || "";
-    if (selectedClub) {
-      activities = activities.filter(act => act.club === selectedClub);
-    }
-
-    // ↕️ Sort
-    const sortOption = document.getElementById("sortSelect")?.value || "";
-    if (sortOption === "title") {
-      activities.sort((a, b) => a.title.localeCompare(b.title));
-    } else if (sortOption === "date") {
-      activities.sort((a, b) => new Date(a.date) - new Date(b.date));
-    }
-
-    const container = document.querySelector(".activity-list");
-    container.innerHTML = "";
-
-    activities.forEach(activity => {
-      const card = document.createElement("div");
-      card.className = "activity-card";
-      card.innerHTML = `
-        <h2>${activity.title}</h2>
-        <p class="subdued-text">${activity.club} | ${activity.date} • ${activity.time} | ${activity.location}</p>
-        <p>${activity.description}</p>
-        <button class="view-btn" data-id='${activity.id}'>View Details</button>
-      `;
-      container.appendChild(card);
-    });
-
-    document.querySelectorAll(".view-btn").forEach(btn => {
-      btn.addEventListener("click", async () => {
-        const id = btn.dataset.id;
-        const activity = activities.find(a => a.id == id);
-        showDetails(activity);
-      });
-    });
-
-  } catch (err) {
-    console.error("Error:", err);
-    alert("Failed to load activities.");
-  }
-}
-
-async function deleteActivity(id) {
-  if (!confirm("Are you sure you want to delete this activity?")) return;
-
-  try {
-    const res = await fetch("https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/api/activities.php", {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id })  
-    });    
-
-    if (res.ok) {
-      alert("Activity deleted successfully.");
-      document.getElementById("detail").style.scrollBehavior = "auto";
-      document.getElementById("detail").scrollIntoView({ block: "start" });
-      loadActivities();
-      console.log("Deleting activity ID:", id);
-    } else {
-      const error = await res.json();
-      console.error("Server responded with error:", error); 
-      alert(`Failed to delete activity: ${error.error || 'Unknown error'}`);
-    }
-  } catch (err) {
-    console.error("Network or parsing error:", err); 
-    alert("An error occurred while deleting the activity.");
-  }
-}
-
-
-
-document.getElementById("searchInput")?.addEventListener("input", loadActivities);
-document.getElementById("filterClub")?.addEventListener("change", loadActivities);
-document.getElementById("sortSelect")?.addEventListener("change", loadActivities);
-
