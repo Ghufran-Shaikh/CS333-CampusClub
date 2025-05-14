@@ -36,6 +36,22 @@ async function fetchActivities(page = 1, limit = 4) {
   }
 }
 
+// Render Activities
+function renderActivities() {
+  activityList.innerHTML = '';
+
+  activities.forEach(activity => {
+    activityList.innerHTML += `
+      <div class="activity-card">
+        <h2>${activity.title}</h2>
+        <p class="subdued-text">${activity.activity_date} • ${activity.location}</p>
+        <p>${activity.description}</p>
+        <a href="#detail" onclick="openDetailView(${activity.id})">View Details</a>
+      </div>
+    `;
+  });
+}
+
 // Render Pagination
 function renderPagination(totalPages, currentPage) {
   paginationSection.innerHTML = `
