@@ -155,7 +155,7 @@ async function loadComments(activityId) {
 
 async function loadActivities() {
   try {
-    const res = await fetch("https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/comment.php");
+    const res = await fetch("https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/api/activities.php");
     if (!res.ok) throw new Error("Failed to load activities");
 
     let activities = await res.json();
