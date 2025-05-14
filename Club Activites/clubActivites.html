@@ -169,47 +169,7 @@
     <!-- Placeholder for Activities List -->
     <section class="activity-list">
       <!-- Example Activity Cards -->
-      <div class="activity-card">
-        <h2>Sketch Night</h2>
-        <p class="subdued-text">Art Club | April 15, 2025 • 6:00 PM | Room B101</p>
-        <p>Join fellow artists for a relaxing night of sketching and snacks.</p>
-        <a href="#detail" onclick="openDetailView(1)">View Details</a>
-      </div>
-
-      <div class="activity-card">
-        <h2>Astronomy Viewing</h2>
-        <p class="subdued-text">Science Club | April 20, 2025 • 9:00 PM | Observatory</p>
-        <p>Come and gaze at the stars with the Science Club! Telescopes provided.</p>
-        <a href="#detail" onclick="openDetailView(2)">View Details</a>
-      </div>
-
-      <div class="activity-card">
-        <h2>Photography Workshop</h2>
-        <p class="subdued-text">Photography Club | April 25, 2025 • 10:00 AM | Photography Studio</p>
-        <p>Learn the basics of photography and composition in this hands-on workshop.</p>
-        <a href="#detail" onclick="openDetailView(3)">View Details</a>
-      </div>
-
-      <div class="activity-card">
-        <h2>Coding Bootcamp</h2>
-        <p class="subdued-text">Tech Club | May 1, 2025 • 11:00 AM | Room C201</p>
-        <p>Join our coding bootcamp to learn essential programming skills for the modern world.</p>
-        <a href="#detail" onclick="openDetailView(4)">View Details</a>
-      </div>
-
-      <div class="activity-card">
-        <h2>Creative Writing Session</h2>
-        <p class="subdued-text">Literature Club | May 5, 2025 • 2:00 PM | Room A102</p>
-        <p>Join us for a creative writing session where we explore storytelling and creative expression.</p>
-        <a href="#detail" onclick="openDetailView(5)">View Details</a>
-      </div>
-
-      <div class="activity-card">
-        <h2>Public Speaking Practice</h2>
-        <p class="subdued-text">Debate Club | May 10, 2025 • 4:00 PM | Auditorium</p>
-        <p>Improve your public speaking and presentation skills in this supportive environment.</p>
-        <a href="#detail" onclick="openDetailView(6)">View Details</a>
-      </div>
+  
 
       <!-- Add other activities here similarly -->
     </section>
@@ -284,7 +244,58 @@
   
   <script>
     // Example of dynamically opening an activity detail
-  
+    function openDetailView(activityId) {
+      const activityDetails = {
+        1: {
+          club: "Art Club",
+          title: "Sketch Night",
+          date: "April 15, 2025",
+          time: "6:00 PM",
+          location: "Room B101",
+          description: "Join fellow artists for a relaxing night of sketching and snacks."
+        },
+        2: {
+          club: "Science Club",
+          title: "Astronomy Viewing",
+          date: "April 20, 2025",
+          time: "9:00 PM",
+          location: "Observatory",
+          description: "Come and gaze at the stars with the Science Club! Telescopes provided."
+        },
+        3: {
+          club: "Photography Club",
+          title: "Photography Workshop",
+          date: "April 25, 2025",
+          time: "10:00 AM",
+          location: "Photography Studio",
+          description: "Learn the basics of photography and composition in this hands-on workshop."
+        },
+        4: {
+          club: "Tech Club",
+          title: "Coding Bootcamp",
+          date: "May 1, 2025",
+          time: "11:00 AM",
+          location: "Room C201",
+          description: "Join our coding bootcamp to learn essential programming skills for the modern world."
+        },
+        5: {
+          club: "Literature Club",
+          title: "Creative Writing Session",
+          date: "May 5, 2025",
+          time: "2:00 PM",
+          location: "Room A102",
+          description: "Join us for a creative writing session where we explore storytelling and creative expression."
+        },
+        6: {
+          club: "Debate Club",
+          title: "Public Speaking Practice",
+          date: "May 10, 2025",
+          time: "4:00 PM",
+          location: "Auditorium",
+          description: "Improve your public speaking and presentation skills in this supportive environment."
+        }
+        // Add more activities as needed
+      };
 
       const activity = activityDetails[activityId];
 
@@ -296,6 +307,7 @@
         <p><strong>Location:</strong> ${activity.location}</p>
         <p><strong>Description:</strong> ${activity.description}</p>
       `;
+    }
   
   </script>
 
