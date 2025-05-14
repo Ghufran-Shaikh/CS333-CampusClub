@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const activityId = window.currentActivity?.id;
     if (!activityId) return alert("No activity selected");
   
-    const res = await fetch("https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/api/comments.php", {
+    const res = await fetch("https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/api/comment.php", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ activity_id: activityId, content })
