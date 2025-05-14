@@ -76,7 +76,7 @@ async function loadActivities() {
         <p class="subdued-text">${activity.club} | ${activity.date} • ${activity.time} | ${activity.location}</p>
         <p>${activity.description}</p>
         <button class="view-btn" data-id='${activity.id}'>View Details</button>
-        <button onclick="deleteActivity(${activity.id})">Delete</button>
+        
       `;
       container.appendChild(card);
     });
