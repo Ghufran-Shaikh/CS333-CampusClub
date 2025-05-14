@@ -128,6 +128,60 @@ function showDetails(activity) {
   loadComments(activity.id); // Load existing comments
   setupCommentForm(activity.id); // Set up new comment submission
 }
+function setupCommentForm(activityId) {
+  const form = document.getElementById("comment-form");
+  const input = document.getElementById("comment-input");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const comment = input.value.trim();
+    if (!comment) return;
+
+    try {
+      const res = await fetch("https://YOUR_API_URL/comments.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ activity_id: activityId, content: comment })
+      });
+
+      if (res.ok) {
+        input.value = "";
+        loadComments(activityId);
+      } else {
+        alert("Failed to post comment.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error posting comment.");
+    }
+  });
+}
+
+async function loadComments(activityId) {
+  const list = document.getElementById("comment-list");
+  list.innerHTML = "<li>Loading comments...</li>";
+
+  try {
+    const res = await fetch(`https://YOUR_API_URL/comments.php?activity_id=${activityId}`);
+    const comments = await res.json();
+
+    if (!Array.isArray(comments)) {
+      list.innerHTML = "<li>No comments found.</li>";
+      return;
+    }
+
+    list.innerHTML = "";
+    comments.forEach(comment => {
+      const li = document.createElement("li");
+      li.textContent = comment.content;
+      list.appendChild(li);
+    });
+  } catch (err) {
+    console.error(err);
+    list.innerHTML = "<li>Error loading comments.</li>";
+  }
+}
 
 
 
