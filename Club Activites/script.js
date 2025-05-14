@@ -169,4 +169,7 @@ async function loadActivities() {
     alert("Failed to load activities.");
   }
 }
+document.getElementById("searchInput")?.addEventListener("input", loadActivities);
+document.getElementById("filterClub")?.addEventListener("change", loadActivities);
+document.getElementById("sortSelect")?.addEventListener("change", loadActivities);
 
