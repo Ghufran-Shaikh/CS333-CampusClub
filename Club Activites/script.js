@@ -12,27 +12,57 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const method = editingId ? "PUT" : "POST";
 
-    const res = await fetch("https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/api/activities.php", {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data)
-    });
-    
-    if (res.ok) {
-      form.reset();
-      delete form.dataset.editingId;
-      loadActivities();
-    } else {
-      const error = await res.json();
-      alert(`Failed to save activity: ${error.error || 'Unknown error'}`);
+    try {
+      const res = await fetch("https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/api/activities.php", {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+
+      if (res.ok) {
+        form.reset();
+        delete form.dataset.editingId;
+        loadActivities();
+      } else {
+        const error = await res.json();
+        alert(`Failed to save activity: ${error.error || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error("Error in submitting activity:", error);
+      alert("An error occurred while saving the activity.");
     }
-    
+  });
+
+  // Edit button for activity detail view
+  document.querySelector("#detail .card-buttons button:first-child")?.addEventListener("click", () => {
+    if (!window.currentActivity) return;
+
+    const form = document.querySelector("form");
+    form.club.value = window.currentActivity.club;
+    form.title.value = window.currentActivity.title;
+    form.date.value = window.currentActivity.date;
+    form.time.value = window.currentActivity.time;
+    form.location.value = window.currentActivity.location;
+    form.description.value = window.currentActivity.description;
+
+    form.dataset.editingId = window.currentActivity.id;
+    document.getElementById("create").scrollIntoView({ behavior: "smooth" });
+  });
+
+  // Delete button in activity detail view
+  document.querySelector("#detail .card-buttons button:last-child")?.addEventListener("click", () => {
+    if (window.currentActivity) {
+      deleteActivity(window.currentActivity.id);
+    }
   });
 });
 
 async function loadActivities() {
   try {
     const res = await fetch("https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/api/activities.php");
+    if (!res.ok) {
+      throw new Error('Failed to load activities');
+    }
     const activities = await res.json();
 
     const container = document.querySelector(".activity-list");
@@ -51,6 +81,7 @@ async function loadActivities() {
       container.appendChild(card);
     });
 
+    // Add event listeners for the 'View Details' buttons
     document.querySelectorAll(".view-btn").forEach(btn => {
       btn.addEventListener("click", async () => {
         const id = btn.dataset.id;
@@ -60,6 +91,7 @@ async function loadActivities() {
     });
   } catch (err) {
     console.error("Error:", err);
+    alert("Failed to load activities.");
   }
 }
 
@@ -81,36 +113,23 @@ function showDetails(activity) {
 async function deleteActivity(id) {
   if (!confirm("Are you sure you want to delete this activity?")) return;
 
-  await fetch("https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/api/activities.php", {
-    method: "DELETE",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ id })
-  });
+  try {
+    const res = await fetch("https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/api/activities.php", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id })
+    });
 
-  loadActivities();
-  document.getElementById("activity-detail").innerHTML = "";
-  window.currentActivity = null;
-}
-
-// Edit button
-document.querySelector("#detail .card-buttons button:first-child").addEventListener("click", () => {
-  if (!window.currentActivity) return;
-
-  const form = document.querySelector("form");
-  form.club.value = window.currentActivity.club;
-  form.title.value = window.currentActivity.title;
-  form.date.value = window.currentActivity.date;
-  form.time.value = window.currentActivity.time;
-  form.location.value = window.currentActivity.location;
-  form.description.value = window.currentActivity.description;
-
-  form.dataset.editingId = window.currentActivity.id;
-  document.getElementById("create").scrollIntoView({ behavior: "smooth" });
-});
-
-// Delete button in detail view
-document.querySelector("#detail .card-buttons button:last-child").addEventListener("click", () => {
-  if (window.currentActivity) {
-    deleteActivity(window.currentActivity.id);
+    if (res.ok) {
+      loadActivities();
+      document.getElementById("activity-detail").innerHTML = "";
+      window.currentActivity = null;
+    } else {
+      const error = await res.json();
+      alert(`Failed to delete activity: ${error.error || 'Unknown error'}`);
+    }
+  } catch (err) {
+    console.error("Error deleting activity:", err);
+    alert("An error occurred while deleting the activity.");
   }
-});
+}
