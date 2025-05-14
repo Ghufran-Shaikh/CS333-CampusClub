@@ -1,10 +1,10 @@
-//Global variables
+// Global variables
 let activities = [];
 let filteredActivities = [];
 let currentPage = 1;
 const itemsPerPage = 4;
 
-//DOM Elements
+// DOM Elements
 const activityList = document.querySelector('.activity-list');
 const searchInput = document.querySelector('.filters input[type="text"]');
 const filterButton = document.querySelector('.filters button:nth-child(2)');
@@ -13,30 +13,27 @@ const paginationSection = document.querySelector('.pagination');
 const detailSection = document.getElementById('detail');
 const form = document.querySelector('#create form');
 
-// Fetch activities from mock API
+// Fetch activities from the API
 document.addEventListener('DOMContentLoaded', () => {
   fetchActivities();
   addFormValidation();
 });
 
-//Fetch Data
+// Fetch activities from the backend
 async function fetchActivities() {
   activityList.innerHTML = "<p>Loading activities...</p>";
 
   try {
-    const response = await fetch('https://jsonplaceholder.typicode.com/posts?_limit=15');
+    const response = await fetch('https://my-app.alanoudahmed62.repl.co/api/activities.php');
     const data = await response.json();
 
-    activities = data.map((item, index) => ({
-      id: item.id,
-      club: "Club " + (index + 1),
-      title: item.title.slice(0, 20),
-      date: randomDate(),
-      time: randomTime(),
-      location: "Room " + (100 + index),
-      description: item.body.slice(0, 80)
-    }));
+    if (data.error) {
+      activityList.innerHTML = "<p>Failed to load activities. Please try again later.</p>";
+      return;
+    }
 
+    console.log(data);  // Log the fetched data to inspect it
+    activities = data;
     filteredActivities = [...activities];
     renderActivities();
     renderPagination();
@@ -46,22 +43,81 @@ async function fetchActivities() {
   }
 }
 
-//Random date/time generators for demo
-function randomDate() {
-  const start = new Date();
-  const end = new Date(2025, 4, 30);
-  const randomDate = new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
-  return randomDate.toISOString().split('T')[0];
+// Create new activity (POST request)
+async function createActivity(activityData) {
+  try {
+    const response = await fetch('https://my-app.alanoudahmed62.repl.co/api/activities.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(activityData),
+    });
+
+    const data = await response.json();
+    if (data.message) {
+      alert('Activity created successfully!');
+      fetchActivities(); // Reload the activities list
+    } else {
+      alert('Failed to create activity');
+    }
+  } catch (error) {
+    console.error(error);
+    alert('An error occurred while creating the activity.');
+  }
 }
 
-function randomTime() {
-  const hour = Math.floor(Math.random() * 12) + 1;
-  const minute = Math.floor(Math.random() * 60);
-  const ampm = Math.random() > 0.5 ? 'AM' : 'PM';
-  return `${hour}:${minute.toString().padStart(2, '0')} ${ampm}`;
+// Update activity (PUT request)
+async function updateActivity(activityData) {
+  try {
+    const response = await fetch('https://my-app.alanoudahmed62.repl.co/api/activities.php', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(activityData),
+    });
+
+    const data = await response.json();
+    if (data.message) {
+      alert('Activity updated successfully!');
+      fetchActivities(); // Reload the activities list
+    } else {
+      alert('Failed to update activity');
+    }
+  } catch (error) {
+    console.error(error);
+    alert('An error occurred while updating the activity.');
+  }
 }
 
-//Render activities based on page
+// Delete activity (DELETE request)
+async function deleteActivity(activityId) {
+  if (!confirm("Are you sure you want to delete this activity?")) return;
+
+  try {
+    const response = await fetch('https://my-app.alanoudahmed62.repl.co/api/activities.php', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id: activityId }),
+    });
+
+    const data = await response.json();
+    if (data.message) {
+      alert('Activity deleted successfully!');
+      fetchActivities(); // Reload the activities list
+    } else {
+      alert('Failed to delete activity');
+    }
+  } catch (error) {
+    console.error(error);
+    alert('An error occurred while deleting the activity.');
+  }
+}
+
+// Render activities based on current page
 function renderActivities() {
   activityList.innerHTML = "";
 
@@ -81,12 +137,13 @@ function renderActivities() {
       <p class="subdued-text">${activity.date} • ${activity.location}</p>
       <p>${activity.description}</p>
       <a href="#detail" onclick="openDetailView(${activity.id})">View Details</a>
+      <button onclick="deleteActivity(${activity.id})">Delete</button>
     `;
     activityList.appendChild(card);
   });
 }
 
-//Render Pagination
+// Render Pagination
 function renderPagination() {
   paginationSection.innerHTML = `
     <button onclick="prevPage()">Prev</button>
@@ -111,27 +168,33 @@ function nextPage() {
   }
 }
 
-//Search activities(Real-time Search)
+// Search activities (Real-time Search)
 searchInput.addEventListener('input', () => {
-  const query = searchInput.value.toLowerCase();
-  filteredActivities = activities.filter(activity => 
-    activity.title.toLowerCase().includes(query) || 
-    activity.club.toLowerCase().includes(query) ||
-    activity.description.toLowerCase().includes(query)
-  );
-  currentPage = 1;
+  const query = searchInput.value.trim().toLowerCase();
+
+  // If search query is empty, show all activities
+  if (query === '') {
+    filteredActivities = [...activities];  // Show all activities
+  } else {
+    filteredActivities = activities.filter(activity =>
+      activity.title.toLowerCase().includes(query) ||
+      activity.description.toLowerCase().includes(query)
+    );
+  }
+
+  currentPage = 1;  // Reset to first page
   renderActivities();
   renderPagination();
 });
 
-//Sort activities by title
+// Sort activities by title
 sortButton.addEventListener('click', () => {
   filteredActivities.sort((a, b) => a.title.localeCompare(b.title));
   currentPage = 1;
   renderActivities();
 }); 
 
-//Open Detail View (Dynamic Details)
+// Open Detail View (Dynamic Details)
 function openDetailView(id) {
   const activity = activities.find(a => a.id === id);
 
@@ -146,8 +209,8 @@ function openDetailView(id) {
     <p><strong>Description:</strong> ${activity.description}</p>
 
     <div class="card-buttons">
-      <button>Edit</button>
-      <button style="background-color: #dc3545;">Delete</button>
+      <button onclick="openEditForm(${activity.id})">Edit</button>
+      <button onclick="deleteActivity(${activity.id})" style="background-color: #dc3545;">Delete</button>
     </div>
 
     <div class="comment-box">
@@ -159,4 +222,29 @@ function openDetailView(id) {
       <a href="#">← Back to listing</a>
     </p>
   `;
+}
+
+// Open Edit Form
+function openEditForm(activityId) {
+  const activity = activities.find(a => a.id === activityId);
+
+  if (!activity) return;
+
+  document.querySelector('#create input[name="title"]').value = activity.title;
+  document.querySelector('#create input[name="date"]').value = activity.date;
+  document.querySelector('#create input[name="location"]').value = activity.location;
+  document.querySelector('#create textarea[name="description"]').value = activity.description;
+
+  // Update form to handle edit
+  form.onsubmit = function(event) {
+    event.preventDefault();
+    const updatedActivity = {
+      id: activity.id,
+      title: form.querySelector('[name="title"]').value,
+      date: form.querySelector('[name="date"]').value,
+      location: form.querySelector('[name="location"]').value,
+      description: form.querySelector('[name="description"]').value,
+    };
+    updateActivity(updatedActivity);
+  };
 }
