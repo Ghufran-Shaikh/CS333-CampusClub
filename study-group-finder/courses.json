@@ -1,0 +1,26 @@
+[
+  {
+    "id": "CS101",
+    "text": "CS101 - Introduction to Computer Science"
+  },
+  {
+    "id": "MATH202",
+    "text": "MATH202 - Linear Algebra"
+  },
+  {
+    "id": "ENG301",
+    "text": "ENG301 - Academic Writing"
+  },
+  {
+    "id": "PHY105",
+    "text": "PHY105 - Classical Mechanics"
+  },
+  {
+    "id": "BIO150",
+    "text": "BIO150 - Cell Biology"
+  },
+  {
+    "id": "CHE110",
+    "text": "CHE110 - Organic Chemistry"
+  }
+]
