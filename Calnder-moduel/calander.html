@@ -7,7 +7,591 @@
     <link rel="icon" type="image/x-icon" href="Calendar-icon.jpeg">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
-        /* Your existing styles */
+
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-top: 16px;
+        }
+        .day {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .day:hover {
+            background-color: #ebf8ff;
+            border-color: #90cdf4;
+        }
+        .day.today {
+            background-color: #ebf8ff;
+            border-color: #63b3ed;
+            font-weight: bold;
+        }
+        .day.has-events {
+            background-color: #f0fff4;
+            border-color: #9ae6b4;
+        }
+        .event-details {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .event-details.active {
+            max-height: 500px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-blue-800 fixed top-0 left-0 right-0 z-10 py-4 px-6 shadow-md">
+        <nav>
+            <ul class="flex space-x-6 justify-center items-center text-white font-bold">
+                <li><a href="../index.html" class="hover:text-orange-500 transition-colors">Home</a></li>
+                <li><a href="calander.html" class="hover:text-orange-500 transition-colors">Event Calendar</a></li>
+                <li><a href="../study-group-finder/study-group-finder.html" class="hover:text-orange-500 transition-colors">Study Group Finder</a></li>
+                <li><a href="../CourseReviews/CourseReviews.html" class="hover:text-orange-500 transition-colors">Course Reviews</a></li>
+                <li><a href="../Course Notes/CourseNote.html" class="hover:text-orange-500 transition-colors">Course Note</a></li>
+                <li><a href="../Club Activites/clubActivites.html" class="hover:text-orange-500 transition-colors">Clubs Activities</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow flex flex-col items-center pt-24 px-4 pb-8">
+        <div class="max-w-5xl w-full grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Calendar Section -->
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h1 class="text-3xl font-bold text-blue-800 mb-2">Event Calendar</h1>
+                <p class="text-gray-600 mb-4">Choose a date to add or view events</p>
+
+                <div class="flex gap-3 mb-6 flex-wrap">
+                    <select id="monthSelect" class="border border-gray-300 p-2 rounded flex-1 min-w-[120px] focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></select>
+                    <select id="yearSelect" class="border border-gray-300 p-2 rounded flex-1 min-w-[120px] focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></select>
+                    <button id="generateBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-colors">Generate</button>
+                </div>
+
+                <div id="calendar" class="calendar"></div>
+
+                <!-- Event Form (Hidden by default) -->
+                <div id="eventForm" class="event-form mt-6 p-4 border border-gray-200 rounded-lg hidden">
+                    <h3 class="text-xl font-bold mb-3 text-blue-800">
+                        <span id="formTitle">Add New Event</span>
+                    </h3>
+                    <div class="space-y-3">
+                        <div>
+                            <label for="eventName" class="block text-sm font-medium text-gray-700">Event Name:</label>
+                            <input type="text" id="eventName" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label for="eventDescription" class="block text-sm font-medium text-gray-700">Description:</label>
+                            <textarea id="eventDescription" rows="3" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"></textarea>
+                        </div>
+                        <div>
+                            <label for="eventDateTime" class="block text-sm font-medium text-gray-700">Date & Time:</label>
+                            <input type="datetime-local" id="eventDateTime" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div class="flex justify-end space-x-3 pt-2">
+                            <button id="cancelEventBtn" type="button" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors">Cancel</button>
+                            <button id="saveEventBtn" type="button" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">Save Event</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Events Section -->
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-2xl font-bold mb-4 text-blue-800">Upcoming Events</h2>
+                
+                <div class="mb-6">
+                    <input type="text" id="event-search" placeholder="🔍 Search events..." class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                
+                <div class="flex justify-between items-center mb-4">
+                    <label for="sortSelect" class="text-sm font-medium text-gray-700">Sort By:</label>
+                    <select id="sortSelect" class="border border-gray-300 p-2 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500">
+                        <option value="date">Date (Soonest)</option>
+                        <option value="name">Name (A-Z)</option>
+                    </select>
+                </div>
+                
+                <ul id="eventList" class="space-y-3">
+                    <!-- Events will be loaded here -->
+                </ul>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-blue-800 text-white py-6 text-center">
+        <div class="container mx-auto px-4">
+            <div>&copy; 2025 ITCS333 Project. All rights reserved.</div>
+            <div class="flex justify-center gap-4 mt-3">
+                <a href="#" class="hover:text-orange-300 transition-colors">Club Policy</a>
+                <a href="#" class="hover:text-orange-300 transition-colors">Terms</a>
+                <a href="#" class="hover:text-orange-300 transition-colors">Contact</a>
+                <a href="#" class="hover:text-orange-300 transition-colors">About</a>
+                <a href="#" class="hover:text-orange-300 transition-colors">Help</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Constants
+        const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        const API_URL = 'https://47d4b4e2-bb43-4d33-a107-08c8c1d57aee-00-2s8qb456kkmea.pike.replit.dev/main.php';
+
+        // DOM Elements
+        const elements = {
+            monthSelect: document.getElementById('monthSelect'),
+            yearSelect: document.getElementById('yearSelect'),
+            generateBtn: document.getElementById('generateBtn'),
+            calendar: document.getElementById('calendar'),
+            eventForm: document.getElementById('eventForm'),
+            formTitle: document.getElementById('formTitle'),
+            eventName: document.getElementById('eventName'),
+            eventDescription: document.getElementById('eventDescription'),
+            eventDateTime: document.getElementById('eventDateTime'),
+            saveEventBtn: document.getElementById('saveEventBtn'),
+            cancelEventBtn: document.getElementById('cancelEventBtn'),
+            eventList: document.getElementById('eventList'),
+            eventSearch: document.getElementById('event-search'),
+            sortSelect: document.getElementById('sortSelect')
+        };
+
+        // State
+        let state = {
+            events: [],
+            selectedDate: null,
+            editingEventId: null
+        };
+
+        // Calendar Functions
+        function generateCalendar(year, month) {
+            elements.calendar.innerHTML = '';
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const firstDayOfMonth = new Date(year, month, 1).getDay();
+
+            // Add empty cells for days before the first day of the month
+            for (let i = 0; i < firstDayOfMonth; i++) {
+                const emptyCell = document.createElement('div');
+                emptyCell.classList.add('day', 'invisible');
+                elements.calendar.appendChild(emptyCell);
+            }
+
+            // Add day cells
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayElement = document.createElement('div');
+                dayElement.classList.add('day');
+                dayElement.textContent = day;
+
+                // Highlight current day
+                const today = new Date();
+                if (year === today.getFullYear() && month === today.getMonth() && day === today.getDate()) {
+                    dayElement.classList.add('today');
+                }
+
+                // Check if day has events
+                const hasEvents = state.events.some(event => {
+                    const eventDate = new Date(event.event_datetime);
+                    return eventDate.getFullYear() === year && 
+                           eventDate.getMonth() === month && 
+                           eventDate.getDate() === day;
+                });
+
+                if (hasEvents) {
+                    dayElement.classList.add('has-events');
+                    const dot = document.createElement('div');
+                    dot.classList.add('w-2', 'h-2', 'bg-green-500', 'rounded-full', 'mx-auto', 'mt-1');
+                    dayElement.appendChild(dot);
+                }
+
+                dayElement.addEventListener('click', () => handleDayClick(year, month, day));
+                elements.calendar.appendChild(dayElement);
+            }
+        }
+
+        function handleDayClick(year, month, day) {
+            state.selectedDate = new Date(year, month, day);
+            elements.eventDateTime.value = formatDateTimeInput(state.selectedDate);
+            showEventForm();
+        }
+
+        function formatDateTimeInput(date) {
+            const isoString = date.toISOString();
+            return isoString.substring(0, isoString.length - 8);
+        }
+
+        function populateSelects() {
+            // Populate month select
+            MONTHS.forEach((month, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = month;
+                elements.monthSelect.appendChild(option);
+            });
+
+            // Populate year select
+            const currentYear = new Date().getFullYear();
+            for (let i = currentYear - 2; i <= currentYear + 5; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i;
+                elements.yearSelect.appendChild(option);
+            }
+        }
+
+        // Event Form Functions
+        function showEventForm() {
+            elements.eventForm.classList.remove('hidden');
+            elements.eventName.value = '';
+            elements.eventDescription.value = '';
+            elements.eventDateTime.value = formatDateTimeInput(state.selectedDate || new Date());
+            state.editingEventId = null;
+            elements.formTitle.textContent = 'Add New Event';
+        }
+
+        function hideEventForm() {
+            elements.eventForm.classList.add('hidden');
+        }
+
+        async function saveEvent() {
+            const eventData = {
+                title: elements.eventName.value.trim(),
+                description: elements.eventDescription.value.trim(),
+                event_datetime: elements.eventDateTime.value
+            };
+
+            if (!eventData.title) {
+                alert('Please enter an event name');
+                return;
+            }
+
+            try {
+                let response;
+                let method;
+                let url = API_URL;
+
+                if (state.editingEventId) {
+                    method = 'PUT';
+                    eventData.event_id = state.editingEventId;
+                    eventData.action = 'update_event';
+                } else {
+                    method = 'POST';
+                    eventData.action = 'add_event';
+                }
+
+                response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(eventData)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Failed to save event');
+                }
+
+                const result = await response.json();
+                if (result.success) {
+                    await fetchEvents();
+                    hideEventForm();
+                } else {
+                    alert(result.error || 'Error saving event');
+                }
+            } catch (error) {
+                console.error('Error saving event:', error);
+                alert(`Error: ${error.message}`);
+            }
+        }
+
+        // Events List Functions
+        async function fetchEvents() {
+            try {
+                const response = await fetch(`${API_URL}?action=get_events`);
+                if (!response.ok) throw new Error('Failed to fetch events');
+                
+                const data = await response.json();
+                state.events = Array.isArray(data) ? data : [];
+                renderEvents();
+                
+                // Regenerate calendar to show events
+                const year = parseInt(elements.yearSelect.value);
+                const month = parseInt(elements.monthSelect.value);
+                generateCalendar(year, month);
+            } catch (error) {
+                console.error('Error fetching events:', error);
+                elements.eventList.innerHTML = '<li class="text-red-500">Error loading events. Please try again.</li>';
+            }
+        }
+
+        function renderEvents() {
+            elements.eventList.innerHTML = '';
+
+            if (state.events.length === 0) {
+                elements.eventList.innerHTML = '<li class="text-gray-500 italic">No upcoming events</li>';
+                return;
+            }
+
+            // Sort events
+            const sortedEvents = [...state.events].sort((a, b) => {
+                if (elements.sortSelect.value === 'name') {
+                    return a.title.localeCompare(b.title);
+                }
+                return new Date(a.event_datetime) - new Date(b.event_datetime);
+            });
+
+            // Filter events based on search
+            const searchTerm = elements.eventSearch.value.toLowerCase();
+            const filteredEvents = searchTerm 
+                ? sortedEvents.filter(event => 
+                    event.title.toLowerCase().includes(searchTerm) || 
+                    (event.description && event.description.toLowerCase().includes(searchTerm)))
+                : sortedEvents;
+
+            if (filteredEvents.length === 0) {
+                elements.eventList.innerHTML = '<li class="text-gray-500 italic">No events match your search</li>';
+                return;
+            }
+
+            filteredEvents.forEach(event => {
+                const eventDate = new Date(event.event_datetime);
+                const eventItem = document.createElement('li');
+                eventItem.classList.add('event-item', 'p-4', 'bg-gray-50', 'rounded-lg', 'border', 'border-gray-200');
+                
+                eventItem.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-blue-800">${event.title}</h3>
+                            <p class="text-sm text-gray-600 mt-1">${event.description || 'No description'}</p>
+                            <p class="text-xs text-gray-500 mt-2">
+                                ${eventDate.toLocaleDateString()} at ${eventDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                            </p>
+                        </div>
+                        <div class="flex space-x-2 ml-3">
+                            <button onclick="editEvent('${event.event_id}')" class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded hover:bg-yellow-200 transition-colors">
+                                Edit
+                            </button>
+                            <button onclick="deleteEvent('${event.event_id}')" class="text-xs bg-red-100 text-red-800 px-2 py-1 rounded hover:bg-red-200 transition-colors">
+                                Delete
+                            </button>
+                            <button onclick="toggleEventDetails('${event.event_id}')" class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded hover:bg-blue-200 transition-colors">
+                                Details
+                            </button>
+                        </div>
+                    </div>
+                    <div id="details-${event.event_id}" class="event-details mt-3 pl-4 border-l-2 border-blue-200">
+                        <h4 class="font-medium text-gray-700">Event Details:</h4>
+                        <p class="text-sm text-gray-600 mt-1">${event.description || 'No additional details'}</p>
+                        <p class="text-xs text-gray-500 mt-2">Created: ${new Date(event.created_at || event.event_datetime).toLocaleString()}</p>
+                        
+                        <div class="mt-3">
+                            <h4 class="font-medium text-gray-700">Comments:</h4>
+                            <div id="comments-${event.event_id}" class="space-y-2 mt-2"></div>
+                            <div class="mt-3">
+                                <input type="text" id="comment-author-${event.event_id}" placeholder="Your name" class="w-full p-1 text-sm border rounded">
+                                <textarea id="comment-content-${event.event_id}" placeholder="Your comment" class="w-full p-1 text-sm border rounded mt-1"></textarea>
+                                <button onclick="addComment('${event.event_id}')" class="mt-1 px-2 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700">
+                                    Add Comment
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                elements.eventList.appendChild(eventItem);
+            });
+        }
+
+        // Event Actions
+        async function editEvent(eventId) {
+            const event = state.events.find(e => e.event_id == eventId);
+            if (!event) {
+                alert('Event not found');
+                return;
+            }
+
+            state.editingEventId = eventId;
+            elements.eventName.value = event.title;
+            elements.eventDescription.value = event.description || '';
+            
+            // Format date for datetime-local input
+            const eventDate = new Date(event.event_datetime);
+            const timezoneOffset = eventDate.getTimezoneOffset() * 60000;
+            const localDate = new Date(eventDate - timezoneOffset);
+            elements.eventDateTime.value = localDate.toISOString().slice(0, 16);
+            
+            elements.formTitle.textContent = 'Edit Event';
+            elements.eventForm.classList.remove('hidden');
+        }
+
+        async function deleteEvent(eventId) {
+            if (!confirm('Are you sure you want to delete this event?')) return;
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        event_id: eventId,
+                        action: 'delete_event'
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Failed to delete event');
+                }
+
+                const result = await response.json();
+                if (result.success) {
+                    await fetchEvents();
+                } else {
+                    alert(result.error || 'Error deleting event');
+                }
+            } catch (error) {
+                console.error('Error deleting event:', error);
+                alert(`Error: ${error.message}`);
+            }
+        }
+
+        function toggleEventDetails(eventId) {
+            const detailsDiv = document.getElementById(`details-${eventId}`);
+            detailsDiv.classList.toggle('active');
+            
+            // Load comments when details are shown
+            if (detailsDiv.classList.contains('active')) {
+                loadComments(eventId);
+            }
+        }
+
+        // Comments Functions
+        async function loadComments(eventId) {
+            const commentsDiv = document.getElementById(`comments-${eventId}`);
+            if (!commentsDiv) return;
+
+            try {
+                const response = await fetch(`${API_URL}?event_id=${eventId}&action=get_comments`);
+                if (!response.ok) throw new Error('Failed to load comments');
+                
+                const comments = await response.json();
+                commentsDiv.innerHTML = '';
+                
+                if (!comments || comments.length === 0) {
+                    commentsDiv.innerHTML = '<p class="text-sm text-gray-500 italic">No comments yet</p>';
+                } else {
+                    comments.forEach(comment => {
+                        const commentElement = document.createElement('div');
+                        commentElement.classList.add('p-2', 'bg-white', 'rounded', 'border', 'border-gray-200');
+                        commentElement.innerHTML = `
+                            <p class="text-sm font-medium">${comment.author || 'Anonymous'}</p>
+                            <p class="text-sm mt-1">${comment.content || comment.comment}</p>
+                            <p class="text-xs text-gray-500 mt-1">${new Date(comment.created_at || Date.now()).toLocaleString()}</p>
+                        `;
+                        commentsDiv.appendChild(commentElement);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading comments:', error);
+                commentsDiv.innerHTML = '<p class="text-sm text-red-500">Error loading comments</p>';
+            }
+        }
+
+        async function addComment(eventId) {
+            const authorInput = document.getElementById(`comment-author-${eventId}`);
+            const contentInput = document.getElementById(`comment-content-${eventId}`);
+            
+            const author = authorInput?.value.trim() || 'Anonymous';
+            const content = contentInput?.value.trim();
+
+            if (!content) {
+                alert('Please enter your comment');
+                return;
+            }
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        event_id: eventId,
+                        author: author,
+                        comment: content,
+                        action: 'add_comment'
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Failed to add comment');
+                }
+
+                const result = await response.json();
+                if (result.success) {
+                    if (contentInput) contentInput.value = '';
+                    if (authorInput) authorInput.value = '';
+                    loadComments(eventId);
+                } else {
+                    alert(result.error || 'Error adding comment');
+                }
+            } catch (error) {
+                console.error('Error adding comment:', error);
+                alert(`Error: ${error.message}`);
+            }
+        }
+
+        // Event Listeners
+        function setupEventListeners() {
+            // Calendar controls
+            elements.generateBtn.addEventListener('click', () => {
+                const year = parseInt(elements.yearSelect.value);
+                const month = parseInt(elements.monthSelect.value);
+                generateCalendar(year, month);
+            });
+
+            // Event form
+            elements.saveEventBtn.addEventListener('click', saveEvent);
+            elements.cancelEventBtn.addEventListener('click', hideEventForm);
+
+            // Events list
+            elements.eventSearch.addEventListener('input', renderEvents);
+            elements.sortSelect.addEventListener('change', renderEvents);
+        }
+
+        // Initialize
+        async function initialize() {
+            populateSelects();
+            setupEventListeners();
+            
+            // Set current month/year
+            const today = new Date();
+            elements.monthSelect.value = today.getMonth();
+            elements.yearSelect.value = today.getFullYear();
+            
+            // Generate calendar and load events
+            generateCalendar(today.getFullYear(), today.getMonth());
+            await fetchEvents();
+        }
+
+        // Make functions available globally
+        window.editEvent = editEvent;
+        window.deleteEvent = deleteEvent;
+        window.toggleEventDetails = toggleEventDetails;
+        window.addComment = addComment;
+
+        // Start the application
+        document.addEventListener('DOMContentLoaded', initialize);
+    </script>
+
     </style>
 </head>
 <body>
@@ -233,5 +817,6 @@ window.onload = async () => {
     await fetchEvents();
 };
 </script>
+
 </body>
 </html>
