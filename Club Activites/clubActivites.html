@@ -153,31 +153,47 @@
   </header>
 
   <main>
- 
+    
+    <!-- Section for Filters -->
     <section class="filters">
       <input type="text" placeholder="Search club activities..." />
       <button>Filter</button>
       <button>Sort</button>
     </section>
-
     
+    <!-- Section to Add New Activity -->
     <section>
       <a href="#create" class="button">+ Add New Activity</a>
     </section>
 
-   
+    <!-- Placeholder for Activities List -->
     <section class="activity-list">
-      <!-- Placeholder for Activities List -->
+      <!-- Example Activity Cards -->
+      <div class="activity-card">
+        <h2>Sketch Night</h2>
+        <p class="subdued-text">Art Club | April 15, 2025 • 6:00 PM | Room B101</p>
+        <p>Join fellow artists for a relaxing night of sketching and snacks.</p>
+        <a href="#detail" onclick="openDetailView(1)">View Details</a>
+      </div>
+
+      <div class="activity-card">
+        <h2>Astronomy Viewing</h2>
+        <p class="subdued-text">Science Club | April 20, 2025 • 9:00 PM | Observatory</p>
+        <p>Come and gaze at the stars with the Science Club! Telescopes provided.</p>
+        <a href="#detail" onclick="openDetailView(2)">View Details</a>
+      </div>
+
+      <!-- Add other activities here similarly -->
     </section>
 
-    
+    <!-- Pagination Section -->
     <section class="pagination">
       <button>Prev</button>
       <span>Page 1 of 3</span>
       <button>Next</button>
     </section>
 
-    
+    <!-- Add New Activity Form -->
     <section id="create">
       <h2>Add New Club Activity</h2>
       <form>
@@ -212,14 +228,14 @@
       </form>
     </section>
 
-    
+    <!-- Activity Detail View -->
     <section id="detail" class="detail-section">
       <h2>Club Activity Details</h2>
-      <p><strong>Club:</strong> Art Club</p>
-      <p><strong>Event:</strong> Sketch Night</p>
-      <p><strong>Date & Time:</strong> April 15, 2025 at 6:00 PM</p>
-      <p><strong>Location:</strong> Room B101</p>
-      <p><strong>Description:</strong> Join fellow artists for a relaxing night of sketching and snacks.</p>
+      
+      <!-- Example Activity Details -->
+      <div id="activity-detail">
+        <!-- This will be dynamically filled based on the selected activity -->
+      </div>
 
       <div class="card-buttons">
         <button>Edit</button>
@@ -238,7 +254,41 @@
 
   </main>
   
-  <script src="script.js"></script>
+  <script>
+    // Example of dynamically opening an activity detail
+    function openDetailView(activityId) {
+      const activityDetails = {
+        1: {
+          club: "Art Club",
+          title: "Sketch Night",
+          date: "April 15, 2025",
+          time: "6:00 PM",
+          location: "Room B101",
+          description: "Join fellow artists for a relaxing night of sketching and snacks."
+        },
+        2: {
+          club: "Science Club",
+          title: "Astronomy Viewing",
+          date: "April 20, 2025",
+          time: "9:00 PM",
+          location: "Observatory",
+          description: "Come and gaze at the stars with the Science Club! Telescopes provided."
+        }
+        // Add more activities as needed
+      };
 
+      const activity = activityDetails[activityId];
+
+      const activityDetailDiv = document.getElementById("activity-detail");
+      activityDetailDiv.innerHTML = `
+        <p><strong>Club:</strong> ${activity.club}</p>
+        <p><strong>Event:</strong> ${activity.title}</p>
+        <p><strong>Date & Time:</strong> ${activity.date} at ${activity.time}</p>
+        <p><strong>Location:</strong> ${activity.location}</p>
+        <p><strong>Description:</strong> ${activity.description}</p>
+      `;
+    }
+  </script>
+  
 </body>
 </html>
