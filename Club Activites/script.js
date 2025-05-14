@@ -124,7 +124,7 @@ function showDetails(activity) {
     const formData = new FormData(e.target);
     const data = Object.fromEntries(formData.entries());
 
-    await fetch('https://YOUR_DOMAIN/api/comments.php', {
+    await fetch('https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/comment.php', {
       method: 'POST',
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -142,7 +142,7 @@ function showDetails(activity) {
 }
 
 async function loadComments(activityId) {
-  const res = await fetch(`https://YOUR_DOMAIN/api/comments.php?activity_id=${activityId}`);
+  const res = await fetch(`https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/comment.php?activity_id=${activityId}`);
   const comments = await res.json();
   const container = document.getElementById("comments-container");
   container.innerHTML = comments.map(c => `
@@ -155,7 +155,7 @@ async function loadComments(activityId) {
 
 async function loadActivities() {
   try {
-    const res = await fetch("https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/api/activities.php");
+    const res = await fetch("https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/comment.php");
     if (!res.ok) throw new Error("Failed to load activities");
 
     let activities = await res.json();
