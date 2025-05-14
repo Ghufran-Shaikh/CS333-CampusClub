@@ -13,14 +13,17 @@ document.addEventListener("DOMContentLoaded", () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
-
-      const result = await response.json();
-      console.log("رد السيرفر:", result); // ✅ هذا هو السطر المهم الذي أضفته
-
+    
+      const text = await response.text(); // ← نطبع الرد كـ نص بدل JSON
+      console.log("رد السيرفر (كنص):", text);
+    
+      // إذا أردت تحويله إلى JSON لاحقًا:
+      // const result = JSON.parse(text);
     } catch (error) {
-      console.error("خطأ في الإرسال:", error); // في حال فشل الاتصال نفسه
+      console.error("خطأ في الاتصال أو التنفيذ:", error);
     }
-
+    
+     
     e.target.reset();
     loadActivities();
   });
