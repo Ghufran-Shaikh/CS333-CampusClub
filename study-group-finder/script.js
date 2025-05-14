@@ -1,4 +1,4 @@
-import { fetchGroups } from './api.js';  // Adjust the path based on your project structure
+import { fetchGroups, fetchSubjects, fetchLocations, fetchStudents, createGroup, createSubject, createLocation, createStudent, updateGroup, updateSubject, updateLocation, updateStudent, deleteGroup, deleteSubject, deleteLocation, deleteStudent} from './api.js';  // Adjust the path based on your project structure
 document.addEventListener('DOMContentLoaded', () => {
     // Speed dial toggle functionality (cleaned up)
     const speedDialButton = document.querySelector('[data-dial-toggle]');
@@ -86,28 +86,59 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('dropdownTimepicker').classList.add('hidden');
   });
 
-  
-fetch('courses.json')
-  .then(res => res.json())
-  .then(allCourses => {
-    new TomSelect("#group-subject", {
-      valueField: "id",
-      labelField: "text",
-      searchField: "text",
-      maxItems: 1, //Allow only one selection
-      preload: true,
-      load: function(query, callback) {
-        if (!query.length) return callback(allCourses.slice(0, 50));
+fetchSubjects().then(allSubjects => {
+  // Map the subjects to fit TomSelect's structure
+  const mappedSubjects = allSubjects.map(subject => ({
+    id: subject.id,           // ID of the subject
+    text: subject.code        // Code of the subject to display
+  }));
 
-        const filtered = allCourses.filter(course =>
-          course.text.toLowerCase().includes(query.toLowerCase())
-        );
+  new TomSelect("#group-subject", {
+    valueField: "id",        // 'id' will be used as the value
+    labelField: "text",      // 'text' is what will be shown in the dropdown
+    searchField: "text",     // Search will be based on the 'text' field (subject code)
+    maxItems: 1,             // Only allow one selection
+    preload: true,
+    load: function(query, callback) {
+      if (!query.length) return callback(mappedSubjects.slice(0, 50));  // Return first 50 if no query
 
-        callback(filtered);
-      },
-      plugins: ['dropdown_input']
-    });
+      // Filter subjects based on the search query
+      const filtered = mappedSubjects.filter(subject =>
+        subject.text.toLowerCase().includes(query.toLowerCase())
+      );
+
+      callback(filtered);
+    },
+    plugins: ['dropdown_input']
   });
+});
+
+fetchLocations().then(allLocations => {
+  // Map the locations to fit TomSelect's structure
+  const mappedLocations = allLocations.map(location => ({
+    id: location.id,
+    text: location.name      // Assuming locations have a 'name' property
+  }));
+
+  new TomSelect("#group-location", {  // Make sure you have an input with id="group-location"
+    valueField: "id",
+    labelField: "text",
+    searchField: "text",
+    maxItems: 1,
+    preload: true,
+    load: function(query, callback) {
+      if (!query.length) return callback(mappedLocations.slice(0, 50));
+
+      const filtered = mappedLocations.filter(location =>
+        location.text.toLowerCase().includes(query.toLowerCase())
+      );
+
+      callback(filtered);
+    },
+    plugins: ['dropdown_input']
+  });
+});
+
 
 const input = document.getElementById('dropzone-file');
 const dropzone = document.getElementById('dropzone');
@@ -291,14 +322,14 @@ dropzone.addEventListener('drop', (e) => {
         renderGroups(sortedGroups);
     }
 
-   function renderGroups(groups) {
+function renderGroups(groups) {
     const groupList = document.querySelector('.study-group-list');
     if (!groupList) return;
 
     // Keep the "Add Group" button
-    const addButton = groupList.querySelector('#openFormBtn').parentElement;
+    const addButton = groupList.querySelector('#openFormBtn')?.parentElement;
     groupList.innerHTML = '';
-    groupList.appendChild(addButton);
+    if (addButton) groupList.appendChild(addButton);
 
     if (groups.length === 0) {
         const emptyDiv = document.createElement('div');
@@ -308,13 +339,48 @@ dropzone.addEventListener('drop', (e) => {
         return;
     }
 
-    // Calculate pagination
-    const totalPages = Math.ceil(groups.length / itemsPerPage);
+    const transformedGroups = groups.map(group => {
+        // Format dates
+        const startDate = group.start_date ? formatDate(group.start_date) : null;
+        const endDate = group.end_date ? formatDate(group.end_date) : null;
+        
+        // Determine date display
+        let dateDisplay;
+        if (!startDate && !endDate) {
+            dateDisplay = 'No dates specified';
+        } else if (startDate && !endDate) {
+            dateDisplay = `Starts: ${startDate}`;
+        } else if (!startDate && endDate) {
+            dateDisplay = `Ends: ${endDate}`;
+        } else if (startDate === endDate) {
+            dateDisplay = startDate;
+        } else {
+            dateDisplay = `${startDate} - ${endDate}`;
+        }
+
+        // Determine time display - FIXED THIS SECTION
+        let timeDisplay = 'No times specified';
+        if (group.start_time || group.end_time) {
+            const startTime = group.start_time ? formatTime(group.start_time) : '--:--';
+            const endTime = group.end_time ? formatTime(group.end_time) : '--:--';
+            timeDisplay = `${startTime} - ${endTime}`;
+        }
+
+        return {
+            id: group.id,
+            name: group.name,
+            subject: group.subject_id ? getSubjectName(group.subject_id) : 'No subject specified',
+            dateDisplay: dateDisplay,
+            timeDisplay: timeDisplay,
+            seats: group.members_quantity_limit ?? 0
+        };
+    });
+
+    const totalPages = Math.ceil(transformedGroups.length / itemsPerPage);
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    const currentGroups = groups.slice(startIndex, endIndex);
+    const currentGroups = transformedGroups.slice(startIndex, endIndex);
 
-    // Render current page groups
     currentGroups.forEach(group => {
         const groupDiv = document.createElement('div');
         groupDiv.className = 'group w-[215px] max-w-sm h-[204px] bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700 cursor-pointer hover:bg-blue-700 dark:hover:bg-gray-700 hover:text-white dark:hover:text-white transition duration-300';
@@ -322,12 +388,10 @@ dropzone.addEventListener('drop', (e) => {
             <img class="rounded-t-lg w-full h-[100px] object-cover" src="https://cdn.vectorstock.com/i/500p/33/40/study-concept-for-banner-design-vector-42473340.jpg" alt="study banner" />
             <div class="p-2">
                 <h6 class="line-clamp-1 mb-0.5 text-sm font-bold tracking-tight text-gray-900 dark:text-white group-hover:text-white">${group.name}</h6>
-                <div class="m-0.5 flex relative flex-col items-start justify-start">
+                <div class="m-0.5 flex relative flex-col items-start justify-start space-y-1">
                     <span class="text-xs font-normal text-gray-700 dark:text-gray-400 group-hover:text-white">${group.subject}</span>
-                    <div>
-                        <span class="text-xs font-normal text-gray-700 dark:text-gray-400 group-hover:text-white">${group.date}</span>
-                        <span class="text-xs font-normal text-gray-700 dark:text-gray-400 group-hover:text-white">${group.startTime}-${group.endTime}</span>
-                    </div>
+                    <span class="text-xs font-normal text-gray-700 dark:text-gray-400 group-hover:text-white">${group.dateDisplay}</span>
+                    <span class="text-xs font-normal text-gray-700 dark:text-gray-400 group-hover:text-white">${group.timeDisplay}</span>
                     <span class="text-xs font-normal text-gray-700 dark:text-gray-400 group-hover:text-white">${group.seats} Seats Available</span>
                 </div>
             </div>
@@ -338,60 +402,73 @@ dropzone.addEventListener('drop', (e) => {
         groupList.appendChild(groupDiv);
     });
 
-    // Update pagination UI
     updatePagination(totalPages);
 }
 
-// Update pagination UI
+// Helper function to get subject name from ID (you'll need to implement this)
+function getSubjectName(subjectId) {
+    // You'll need to implement this based on how you store subject data
+    // This could be a lookup in an array or an API call
+    return `Subject ${subjectId}`; // Placeholder implementation
+}
+
+function formatDate(dateString) {
+    if (!dateString) return null;
+    const options = { year: 'numeric', month: 'short', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+}
+
+function formatTime(timeString) {
+    if (!timeString) return null;
+    // Ensure the time is in HH:MM format
+    if (typeof timeString === 'string') {
+        return timeString.length >= 5 ? timeString.substring(0, 5) : timeString;
+    }
+    // If it's a time object, you might need to format it differently
+    return timeString;
+}
+
 function updatePagination(totalPages) {
     const paginationList = document.querySelector('nav[aria-label="Page navigation example"] ul');
     if (!paginationList) return;
 
     paginationList.innerHTML = '';
 
-    // Previous button
     const prevDisabled = currentPage === 1;
     paginationList.innerHTML += `
         <li>
             <button onclick="changePage(${currentPage - 1}, ${totalPages})" 
-                class="flex items-center justify-center px-3 h-8 ms-0 leading-tight ${prevDisabled ? 'text-gray-500 cursor-not-allowed' : 'text-gray-500 hover:text-white'} bg-transparent border border-gray-300 rounded-s-lg ${prevDisabled ? '' : 'dark:hover:bg-gray-700 hover:bg-blue-600'} dark:border-gray-700 dark:text-gray-400 " 
+                class="flex items-center justify-center px-3 h-8 ms-0 leading-tight ${prevDisabled ? 'text-gray-500 cursor-not-allowed' : 'text-gray-500 hover:text-white'} bg-transparent border border-gray-300 rounded-s-lg ${prevDisabled ? '' : 'dark:hover:bg-gray-700 hover:bg-blue-600'} dark:border-gray-700 dark:text-gray-400" 
                 ${prevDisabled ? 'disabled' : ''}>
                 <span class="sr-only">Previous</span>
-                <svg class="w-2.5 h-2.5 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 1 1 5l4 4"/>
-                </svg>
+                <svg class="w-2.5 h-2.5 rtl:rotate-180" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 1 1 5l4 4"/></svg>
             </button>
         </li>
     `;
 
-    // Page numbers
     for (let i = 1; i <= totalPages; i++) {
         const isActive = currentPage === i;
         paginationList.innerHTML += `
             <li>
                 <button onclick="changePage(${i}, ${totalPages})" 
-                    class="flex items-center justify-center px-3 h-8 leading-tight ${isActive ? 'text-blue-600 bg-blue-100 dark:bg-gray-700 dark:text-white' : 'text-gray-500 hover:text-white'} bg-transparent border border-gray-300 ${isActive ? '' : 'dark:hover:bg-gray-700  hover:bg-blue-600'} dark:border-gray-700 dark:text-gray-400">${i}</button>
+                    class="flex items-center justify-center px-3 h-8 leading-tight ${isActive ? 'text-blue-600 bg-blue-100 dark:bg-gray-700 dark:text-white' : 'text-gray-500 hover:text-white'} bg-transparent border border-gray-300 ${isActive ? '' : 'dark:hover:bg-gray-700 hover:bg-blue-600'} dark:border-gray-700 dark:text-gray-400">${i}</button>
             </li>
         `;
     }
 
-    // Next button
     const nextDisabled = currentPage === totalPages;
     paginationList.innerHTML += `
         <li>
             <button onclick="changePage(${currentPage + 1}, ${totalPages})" 
-                class="flex items-center justify-center px-3 h-8 ms-0 leading-tight ${nextDisabled ? 'text-gray-500 cursor-not-allowed' : 'text-gray-500 hover:text-white'} bg-transparent border border-gray-300 rounded-e-lg ${nextDisabled ? '' : 'dark:hover:bg-gray-700 hover:bg-blue-600'} dark:border-gray-700 dark:text-gray-400 "
+                class="flex items-center justify-center px-3 h-8 ms-0 leading-tight ${nextDisabled ? 'text-gray-500 cursor-not-allowed' : 'text-gray-500 hover:text-white'} bg-transparent border border-gray-300 rounded-e-lg ${nextDisabled ? '' : 'dark:hover:bg-gray-700 hover:bg-blue-600'} dark:border-gray-700 dark:text-gray-400"
                 ${nextDisabled ? 'disabled' : ''}>
                 <span class="sr-only">Next</span>
-                <svg class="w-2.5 h-2.5 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
-                </svg>
+                <svg class="w-2.5 h-2.5 rtl:rotate-180" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/></svg>
             </button>
         </li>
     `;
 }
 
-// Add this function to the global scope
 window.changePage = function(newPage, totalPages) {
     if (newPage >= 1 && newPage <= totalPages) {
         currentPage = newPage;
@@ -399,23 +476,20 @@ window.changePage = function(newPage, totalPages) {
     }
 };
 
-// Fetch and initialize groups
+// Initial fetch logic
 const groupList = document.querySelector('.study-group-list');
 if (groupList) {
-    // Remove all group cards except the add button
     Array.from(groupList.children).forEach(child => {
         if (!child.querySelector('#openFormBtn')) {
             child.remove();
         }
     });
-    
-    // Show loading state
+
     const loadingDiv = document.createElement('div');
     loadingDiv.textContent = 'Loading...';
     loadingDiv.className = 'text-center w-full';
     groupList.appendChild(loadingDiv);
 
-    // Fetch groups using the API function
     fetchGroups()
         .then(groups => {
             loadingDiv.remove();
@@ -428,5 +502,6 @@ if (groupList) {
             loadingDiv.className = 'text-red-600 w-full text-center';
         });
 }
+
 
 });
