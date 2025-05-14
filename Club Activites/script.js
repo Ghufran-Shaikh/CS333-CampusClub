@@ -17,14 +17,16 @@ document.addEventListener("DOMContentLoaded", () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data)
     });
-
+    
     if (res.ok) {
       form.reset();
       delete form.dataset.editingId;
       loadActivities();
     } else {
-      alert("Failed to save activity");
+      const error = await res.json();
+      alert(`Failed to save activity: ${error.error || 'Unknown error'}`);
     }
+    
   });
 });
 
