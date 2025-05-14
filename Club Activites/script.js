@@ -18,6 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
       });
+      
 
       if (res.ok) {
         form.reset();
@@ -139,7 +140,7 @@ function setupCommentForm(activityId) {
     if (!comment) return;
 
     try {
-      const res = await fetch("https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/comments.php", {
+      const res = await fetch("https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/comment.php, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ activity_id: activityId, content: comment })
@@ -163,7 +164,7 @@ async function loadComments(activityId) {
   list.innerHTML = "<li>Loading comments...</li>";
 
   try {
-    const res = await fetch(`https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/comments.php?activity_id=${activityId}`);
+    const res = await fetch(`https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/comment.php?activity_id=${activityId}`);
     const comments = await res.json();
 
     if (!Array.isArray(comments)) {
@@ -274,7 +275,7 @@ async function deleteActivity(id) {
     const res = await fetch("https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/api/activities.php", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id })  // 👈 هذا ما يحتاجه الـ PHP
+      body: JSON.stringify({ id })  
     });    
 
     if (res.ok) {
@@ -285,11 +286,11 @@ async function deleteActivity(id) {
       console.log("Deleting activity ID:", id);
     } else {
       const error = await res.json();
-      console.error("Server responded with error:", error); // ⬅️ اطبع رسالة الخطأ
+      console.error("Server responded with error:", error); 
       alert(`Failed to delete activity: ${error.error || 'Unknown error'}`);
     }
   } catch (err) {
-    console.error("Network or parsing error:", err); // ⬅️ اطبع الخطأ الكامل
+    console.error("Network or parsing error:", err); 
     alert("An error occurred while deleting the activity.");
   }
 }
