@@ -2,354 +2,145 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Campus Hub - Club Activities</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Activity Manager</title>
   <style>
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #ffffff;
-      margin: 0;
-      padding: 0;
-      color: #333;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      max-width: 800px;
+      margin: auto;
     }
 
-    header {
-      background-color: #ffffff;
-      padding: 21px 0;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
-      text-align: center;
-    }
-
-    header h1 {
-      margin: 0;
-      font-size: 2rem;
-      color: #222;
-    }
-
-    main {
-      max-width: 1000px;
-      margin: 31px auto;
-      padding: 0 20px;
-    }
-
-    section {
-      margin-bottom: 30px;
-    }
-
-    input[type="text"],
-    input[type="date"],
-    input[type="time"],
-    input[type="email"],
-    textarea {
-      width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      background-color: #fff;
-    }
-
-    button,
-    a.button {
-      background-color: #4a90e2;
-      color: #fff;
-      padding: 10px 16px;
-      text-decoration: none;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    button:hover,
-    a.button:hover {
-      background-color: #357ab8;
-    }
-
-    .filters,
-    .form-buttons,
-    .card-buttons,
-    .pagination {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 10px;
+    .filters {
+      margin-bottom: 20px;
     }
 
     .activity-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
     }
 
     .activity-card {
-      background-color: #ffffff;
-      padding: 15px;
+      border: 1px solid #ccc;
       border-radius: 8px;
-      border: 1px solid #eee;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+      padding: 15px;
+      background-color: #f9f9f9;
     }
 
     .activity-card h2 {
-      margin: 0 0 5px;
-      font-size: 1.2rem;
-      color: #222;
-    }
-
-    .activity-card p {
-      margin: 4px 0;
-      color: #555;
-    }
-
-    .pagination {
-      justify-content: center;
-      align-items: center;
-    }
-
-    form label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 500;
-    }
-
-    .form-group {
-      margin-bottom: 16px;
-    }
-
-    .comment-box {
-      margin-top: 20px;
-    }
-
-    .comment-box textarea {
-      resize: vertical;
-    }
-
-    a {
-      color: #4a90e2;
-      text-decoration: none;
-    }
-
-    a:hover {
-      text-decoration: underline;
-    }
-
-    .detail-section {
-      background-color: #fff;
-      padding: 20px;
-      border-radius: 8px;
-      border: 1px solid #eee;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+      margin-top: 0;
     }
 
     .subdued-text {
-      color: #888;
-      font-size: 0.9rem;
+      color: gray;
+      font-size: 0.9em;
+      margin-bottom: 10px;
+    }
+
+    .card-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .card-buttons button {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      background-color: #007bff;
+      color: white;
+    }
+
+    .card-buttons button:hover {
+      opacity: 0.8;
+    }
+
+    .pagination {
+      margin-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    form {
+      margin-top: 40px;
+      border-top: 1px solid #ccc;
+      padding-top: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 8px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+
+    .form-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .form-buttons button {
+      padding: 8px 16px;
     }
   </style>
 </head>
 <body>
 
-  <header>
-    <h1>Campus Hub - Club Activities</h1>
-  </header>
+  <h1>Activity Manager</h1>
 
-  <main>
-    
-    <!-- Section for Filters -->
-    <section class="filters">
-      <input type="text" placeholder="Search club activities..." />
-      <button>Filter</button>
-      <button>Sort</button>
-    </section>
-    
-    <!-- Section to Add New Activity -->
-    <section>
-      <a href="#create" class="button">+ Add New Activity</a>
-    </section>
+  <div class="filters">
+    <input type="text" placeholder="Search by title or description..." />
+  </div>
 
-    <!-- Placeholder for Activities List -->
-    <section class="activity-list">
-      <!-- Example Activity Cards -->
-      <div class="activity-card">
-        <h2>Sketch Night</h2>
-        <p class="subdued-text">Art Club | April 15, 2025 • 6:00 PM | Room B101</p>
-        <p>Join fellow artists for a relaxing night of sketching and snacks.</p>
-        <a href="#detail" onclick="openDetailView(1)">View Details</a>
-      </div>
+  <section class="activity-list"></section>
 
-      <div class="activity-card">
-        <h2>Astronomy Viewing</h2>
-        <p class="subdued-text">Science Club | April 20, 2025 • 9:00 PM | Observatory</p>
-        <p>Come and gaze at the stars with the Science Club! Telescopes provided.</p>
-        <a href="#detail" onclick="openDetailView(2)">View Details</a>
-      </div>
+  <div class="pagination"></div>
 
-      <div class="activity-card">
-        <h2>Photography Workshop</h2>
-        <p class="subdued-text">Photography Club | April 25, 2025 • 10:00 AM | Photography Studio</p>
-        <p>Learn the basics of photography and composition in this hands-on workshop.</p>
-        <a href="#detail" onclick="openDetailView(3)">View Details</a>
-      </div>
+  <form id="activity-form">
+    <div class="form-group">
+      <label>Club Name *</label>
+      <input type="text" name="club" required />
+    </div>
+    <div class="form-group">
+      <label>Event Title *</label>
+      <input type="text" name="title" required />
+    </div>
+    <div class="form-group">
+      <label>Date *</label>
+      <input type="date" name="date" required />
+    </div>
+    <div class="form-group">
+      <label>Time *</label>
+      <input type="time" name="time" required />
+    </div>
+    <div class="form-group">
+      <label>Location *</label>
+      <input type="text" name="location" required />
+    </div>
+    <div class="form-group">
+      <label>Description</label>
+      <textarea rows="4" name="description"></textarea>
+    </div>
+    <div class="form-buttons">
+      <button type="submit">Submit</button>
+      <button type="reset">Cancel</button>
+    </div>
+  </form>
 
-      <div class="activity-card">
-        <h2>Coding Bootcamp</h2>
-        <p class="subdued-text">Tech Club | May 1, 2025 • 11:00 AM | Room C201</p>
-        <p>Join our coding bootcamp to learn essential programming skills for the modern world.</p>
-        <a href="#detail" onclick="openDetailView(4)">View Details</a>
-      </div>
-
-      <div class="activity-card">
-        <h2>Creative Writing Session</h2>
-        <p class="subdued-text">Literature Club | May 5, 2025 • 2:00 PM | Room A102</p>
-        <p>Join us for a creative writing session where we explore storytelling and creative expression.</p>
-        <a href="#detail" onclick="openDetailView(5)">View Details</a>
-      </div>
-
-      <div class="activity-card">
-        <h2>Public Speaking Practice</h2>
-        <p class="subdued-text">Debate Club | May 10, 2025 • 4:00 PM | Auditorium</p>
-        <p>Improve your public speaking and presentation skills in this supportive environment.</p>
-        <a href="#detail" onclick="openDetailView(6)">View Details</a>
-      </div>
-
-      <!-- Add other activities here similarly -->
-    </section>
-
-    <!-- Pagination Section -->
-    <section class="pagination">
-      <button>Prev</button>
-      <span>Page 1 of 3</span>
-      <button>Next</button>
-    </section>
-
-    <!-- Add New Activity Form -->
-    <section id="create">
-      <h2>Add New Club Activity</h2>
-      <form>
-        <div class="form-group">
-          <label>Club Name *</label>
-          <input type="text" required />
-        </div>
-        <div class="form-group">
-          <label>Event Title *</label>
-          <input type="text" required />
-        </div>
-        <div class="form-group">
-          <label>Date *</label>
-          <input type="date" required />
-        </div>
-        <div class="form-group">
-          <label>Time *</label>
-          <input type="time" required />
-        </div>
-        <div class="form-group">
-          <label>Location *</label>
-          <input type="text" required />
-        </div>
-        <div class="form-group">
-          <label>Description</label>
-          <textarea rows="4"></textarea>
-        </div>
-        <div class="form-buttons">
-          <button type="submit">Submit</button>
-          <button type="reset">Cancel</button>
-        </div>
-      </form>
-    </section>
-
-    <!-- Activity Detail View -->
-    <section id="detail" class="detail-section">
-      <h2>Club Activity Details</h2>
-      
-      <!-- Example Activity Details -->
-      <div id="activity-detail">
-        
-      </div>
-
-      <div class="card-buttons">
-        <button>Edit</button>
-        <button style="background-color: #dc3545;">Delete</button>
-      </div>
-
-      <div class="comment-box">
-        <label>Comments</label>
-        <textarea placeholder="Write a comment..." rows="3"></textarea>
-      </div>
-
-      <p style="margin-top: 15px;">
-        <a href="#">← Back to listing</a>
-      </p>
-    </section>
-
-  </main>
-  
-  <script>
-    // Example of dynamically opening an activity detail
-    function openDetailView(activityId) {
-      const activityDetails = {
-        1: {
-          club: "Art Club",
-          title: "Sketch Night",
-          date: "April 15, 2025",
-          time: "6:00 PM",
-          location: "Room B101",
-          description: "Join fellow artists for a relaxing night of sketching and snacks."
-        },
-        2: {
-          club: "Science Club",
-          title: "Astronomy Viewing",
-          date: "April 20, 2025",
-          time: "9:00 PM",
-          location: "Observatory",
-          description: "Come and gaze at the stars with the Science Club! Telescopes provided."
-        },
-        3: {
-          club: "Photography Club",
-          title: "Photography Workshop",
-          date: "April 25, 2025",
-          time: "10:00 AM",
-          location: "Photography Studio",
-          description: "Learn the basics of photography and composition in this hands-on workshop."
-        },
-        4: {
-          club: "Tech Club",
-          title: "Coding Bootcamp",
-          date: "May 1, 2025",
-          time: "11:00 AM",
-          location: "Room C201",
-          description: "Join our coding bootcamp to learn essential programming skills for the modern world."
-        },
-        5: {
-          club: "Literature Club",
-          title: "Creative Writing Session",
-          date: "May 5, 2025",
-          time: "2:00 PM",
-          location: "Room A102",
-          description: "Join us for a creative writing session where we explore storytelling and creative expression."
-        },
-        6: {
-          club: "Debate Club",
-          title: "Public Speaking Practice",
-          date: "May 10, 2025",
-          time: "4:00 PM",
-          location: "Auditorium",
-          description: "Improve your public speaking and presentation skills in this supportive environment."
-        }
-        
-      };
-
-      const activity = activityDetails[activityId];
-
-      const activityDetailDiv = document.getElementById("activity-detail");
-      activityDetailDiv.innerHTML = `
-        <p><strong>Club:</strong> ${activity.club}</p>
-        <p><strong>Event:</strong> ${activity.title}</p>
-        <p><strong>Date & Time:</strong> ${activity.date} at ${activity.time}</p>
-        <p><strong>Location:</strong> ${activity.location}</p>
-        <p><strong>Description:</strong> ${activity.description}</p>
-      `;
-    }
-  </script>
- 
-
+  <!-- Link to the external JavaScript file -->
+  <script src="script.js"></script>
 </body>
 </html>
