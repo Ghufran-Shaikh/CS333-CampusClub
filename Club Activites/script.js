@@ -179,6 +179,29 @@ async function loadActivities() {
   }
 }
 
+async function deleteActivity(id) {
+  if (!confirm("Are you sure you want to delete this activity?")) return;
+
+  try {
+    const res = await fetch(`https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/api/activities.php?id=${id}`, {
+      method: "DELETE",
+    });
+
+    if (res.ok) {
+      alert("Activity deleted successfully.");
+      document.getElementById("detail").style.scrollBehavior = "auto";
+      document.getElementById("detail").scrollIntoView({ block: "start" });
+      loadActivities();
+    } else {
+      const error = await res.json();
+      alert(`Failed to delete activity: ${error.error || 'Unknown error'}`);
+    }
+  } catch (err) {
+    console.error("Delete error:", err);
+    alert("An error occurred while deleting the activity.");
+  }
+}
+
 
 document.getElementById("searchInput")?.addEventListener("input", loadActivities);
 document.getElementById("filterClub")?.addEventListener("change", loadActivities);
