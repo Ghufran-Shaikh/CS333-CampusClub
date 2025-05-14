@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Course Comments</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body { font-family: 'Poppins', sans-serif; background-color: #f8f9fa; }
+    .notification {
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #4caf50;
+      color: white;
+      padding: 15px;
+      border-radius: 5px;
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body class="bg-gray-100">
+    <!-- Navigation Bar -->
+      <nav class="bg-blue-950 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+          <div class="flex justify-center h-16 items-center">
+            <div class="flex space-x-4">
+              <a href="/index.html" class="text-white hover:text-blue-500 px-3 py-2 rounded-md text-sm font-medium">Home</a>
+              <a href="/Calnder-moduel/calander.html" class="text-white hover:text-blue-500 px-3 py-2 rounded-md text-sm font-medium">Event Calendar</a>
+              <a href="/study-group-finder/study-group-finder.html" class="text-white hover:text-blue-500 px-3 py-2 rounded-md text-sm font-medium">Study Group Finder</a>
+              <a href="/CourseReviews/CourseReviews.html" class="text-white hover:text-blue-500 px-3 py-2 rounded-md text-sm font-medium">Course Reviews</a>
+              <a href="/Course Notes/CourseNotes.html" class="text-blue-500 px-3 py-2 rounded-md text-sm font-medium">Course Note</a>
+              <a href="/Club Activites/clubActivites.html" class="text-white hover:text-blue-500 px-3 py-2 rounded-md text-sm font-medium">Clubs Activities</a>
+            </div>
+          </div>
+        </div>
+      </nav>
+    <main class="max-w-7xl mx-auto px-4 py-8">
+        <section class="mb-8">
+          <div class="bg-orange-400 rounded-3xl shadow p-6">
+            <div class="flex gap-4">
+              <div class="relative flex-1">
+                <input id="search-bar" type="text" placeholder="Search by course title..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+              </div>
+              <div class="flex space-x-2">
+                <select id="filter-dropdown" class="px-3 py-2 pr-4 border border-gray-300 rounded-2xl bg-white text-sm">
+                  <option value="recently-added">Recently Added</option>
+                  <option value="a-z">Course Title (A-Z)</option>
+                  <option value="z-a">Course Title (Z-A)</option>
+                </select>
+              </div>
+              
+            </div>
+          </div>
+        </section>
+
+
+        <div class="max-w-4xl mx-auto px-4 py-8">
+            <h1 class="text-2xl font-bold text-blue-950 mb-6">Course Comments</h1>
+
+            <!-- Comment Form (Initially Hidden) -->
+            <div id="commentFormContainer" class="hidden bg-white rounded-lg shadow-md p-6 mb-6">
+              <h2 class="text-xl font-semibold mb-4">Add New Comment</h2>
+              <form id="commentForm" class="space-y-4">
+                <div>
+                  <label for="commentName" class="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
+                  <input type="text" id="commentName" required 
+                         class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                <div>
+                  <label for="commentCourse" class="block text-sm font-medium text-gray-700 mb-1">Course</label>
+                  <select id="commentCourse" required 
+                          class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="1">Mathematics</option>
+                    <option value="2">Physics</option>
+                    <option value="3">Chemistry</option>
+                    <option value="4">Biology</option>
+                    <option value="5">Computer Science</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label for="commentText" class="block text-sm font-medium text-gray-700 mb-1">Comment</label>
+                  <textarea id="commentText" rows="4" required
+                            class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                </div>
+
+                <div class="flex justify-end space-x-3">
+                  <button type="button" id="cancelCommentBtn" 
+                          class="px-4 py-2 border rounded-md hover:bg-gray-100">Cancel</button>
+                  <button type="submit" 
+                          class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Submit</button>
+                </div>
+              </form>
+            </div>
+
+            <!-- Button to Show Comment Form -->
+            <button id="showCommentFormBtn" 
+                    class="mb-6 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+              <i class="fas fa-plus mr-2"></i>Add New Comment
+            </button>
+
+            <!-- Comments Container -->
+            <div id="commentsContainer" class="space-y-4"></div>
+          </div>
+
+          <div id="notification" class="notification"></div>
+
+          <script>
+            const url = "https://22dc9f8a-91aa-4bf0-8ae5-cda91c5728cf-00-1kektu7zbblns.sisko.replit.dev/apiComments.php"; // API URL
+            const commentsContainer = document.getElementById('commentsContainer');
+            const courseSelect = document.getElementById('commentCourse');
+
+            // Show the comment form when the button is clicked
+            document.getElementById('showCommentFormBtn').addEventListener('click', () => {
+                document.getElementById('commentFormContainer').classList.remove('hidden');
+            });
+
+            // Cancel button functionality
+            document.getElementById('cancelCommentBtn').addEventListener('click', () => {
+                document.getElementById('commentFormContainer').classList.add('hidden');
+            });
+
+            // Fetch comments for the selected course
+            async function fetchComments(courseId) {
+                try {
+                    const response = await fetch(`${url}?course_id=${encodeURIComponent(courseId)}`);
+                    if (!response.ok) throw new Error('Failed to fetch comments');
+                    const comments = await response.json();
+                    displayComments(comments);
+                } catch (error) {
+                    console.error('Error fetching comments:', error);
+                    showNotification('Error loading comments. Please try again.');
+                }
+            }
+
+            // Display comments
+            function displayComments(comments) {
+                commentsContainer.innerHTML = ''; // Clear existing comments
+
+                if (comments.length === 0) {
+                    commentsContainer.innerHTML = `
+                        <div class="bg-white rounded-lg p-6 shadow-md text-center">
+                            <p class="text-gray-500">No comments yet for this course</p>
+                        </div>`;
+                    return;
+                }
+
+                comments.forEach(comment => {
+                    const commentDiv = document.createElement('div');
+                    commentDiv.classList.add('bg-white', 'rounded-lg', 'p-6', 'shadow-md');
+                    commentDiv.innerHTML = `
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-semibold text-blue-950">${comment.user_name}</h3>
+                            <span class="text-xs text-gray-500">${formatDate(comment.created_at)}</span>
+                        </div>
+                        <p class="text-gray-700 mb-3">${comment.comment}</p>
+                        <button onclick="deleteComment(${comment.id})" 
+                                class="text-red-600 hover:text-red-800 text-sm">
+                            <i class="fas fa-trash mr-1"></i>Delete
+                        </button>
+                    `;
+                    commentsContainer.appendChild(commentDiv);
+                });
+            }
+
+            // Format date for display
+            function formatDate(dateString) {
+                if (!dateString) return '';
+                const date = new Date(dateString);
+                return date.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            }
+
+            // Add a new comment
+            document.getElementById('commentForm').addEventListener('submit', async (e) => {
+                e.preventDefault(); // Prevent default form submission
+
+                const user_name = document.getElementById('commentName').value;
+                const courseId = document.getElementById('commentCourse').value;
+                const comment = document.getElementById('commentText').value;
+
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ user_name, course_id: courseId, comment })
+                    });
+
+                    const result = await response.json();
+                    if (result.message) {
+                        showNotification('Comment added successfully!');
+                        fetchComments(courseId); // Refresh comments
+                        document.getElementById('commentFormContainer').classList.add('hidden');
+                        document.getElementById('commentForm').reset();
+                    } else {
+                        throw new Error(result.error || 'Failed to add comment');
+                    }
+                } catch (error) {
+                    console.error('Error adding comment:', error);
+                    showNotification('Error adding comment. Please try again.');
+                }
+            });
+
+            // Delete a comment
+            async function deleteComment(commentId) {
+                if (!confirm('Are you sure you want to delete this comment?')) return;
+
+                try {
+                    const response = await fetch(`${url}/${commentId}`, {
+                        method: 'DELETE'
+                    });
+                    const result = await response.json();
+                    if (result.message) {
+                        showNotification('Comment deleted successfully!');
+                        fetchComments(courseSelect.value); // Refresh comments
+                    } else {
+                        throw new Error(result.error || 'Failed to delete comment');
+                    }
+                } catch (error) {
+                    console.error('Error deleting comment:', error);
+                    showNotification('Error deleting comment. Please try again.');
+                }
+            }
+
+            // Notification function
+            function showNotification(message) {
+                const notification = document.getElementById('notification');
+                notification.textContent = message;
+                notification.style.display = 'block';
+                setTimeout(() => notification.style.display = 'none', 3000);
+            }
+
+            // Load comments for the selected course when the course changes
+            courseSelect.addEventListener('change', () => {
+                fetchComments(courseSelect.value);
+            });
+
+            // Load initial comments for the default selected course on page load
+            document.addEventListener('DOMContentLoaded', () => {
+                const selectedCourseId = courseSelect.value;
+                if (selectedCourseId) {
+                    fetchComments(selectedCourseId);
+                }
+            });
+          </script>
+
+        <div class="flex justify-center">
+          <nav aria-label="Page navigation" class="flex items-center space-x-2">
+            <button id="prev-page" class="px-4 py-2 rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300 disabled:opacity-50">
+              <i class="fas fa-chevron-left"></i> Previous
+            </button>
+            <div id="page-numbers" class="flex space-x-1"></div>
+            <button id="next-page" class="px-4 py-2 rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300 disabled:opacity-50">
+              Next <i class="fas fa-chevron-right"></i>
+            </button>
+          </nav>
+        </div>
+      </main>
+
+      <footer class="bg-blue-950 border-t mt-12 py-6">
+        <div class="container mx-auto flex justify-between items-center flex-wrap text-sm">
+          <div class="text-white hover:text-blue-500">&copy; 2025 ITCS333 Project</div>
+          <div class="flex gap-4">
+            <a href="#" class="text-white hover:text-blue-500 transition duration-300">Club Policy</a>
+            <a href="#" class="text-white hover:text-blue-500 transition duration-300">Terms</a>
+            <a href="#" class="text-white hover:text-blue-500 transition duration-300">Contact</a>
+            <a href="#" class="text-white hover:text-blue-500 transition duration-300">About</a>
+            <a href="#" class="text-white hover:text-blue-500 transition duration-300">Help</a>
+          </div>
+        </div>
+      </footer>
+
+</body>
+</html>
