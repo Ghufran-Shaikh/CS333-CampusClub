@@ -24,7 +24,7 @@ async function fetchActivities() {
   activityList.innerHTML = "<p>Loading activities...</p>";
 
   try {
-    const response = await fetch('https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/api/activites.php');
+    const response = await fetch('https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/api/activities.php');
     const data = await response.json();
 
     if (data.error) {
@@ -46,7 +46,7 @@ async function fetchActivities() {
 // Create new activity (POST request)
 async function createActivity(activityData) {
   try {
-    const response = await fetch('https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/api/activites.php', {
+    const response = await fetch('https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/api/activities.php', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -70,7 +70,7 @@ async function createActivity(activityData) {
 // Update activity (PUT request)
 async function updateActivity(activityData) {
   try {
-    const response = await fetch('https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/api/activites.php', {
+    const response = await fetch('https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/api/activities.php', {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -96,7 +96,8 @@ async function deleteActivity(activityId) {
   if (!confirm("Are you sure you want to delete this activity?")) return;
 
   try {
-    const response = await fetch('https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/api/activites.php', {
+    const response = await fetch('https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/api/activities.php'
+      , {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
