@@ -7,21 +7,22 @@ document.addEventListener("DOMContentLoaded", () => {
     const formData = new FormData(e.target);
     const data = Object.fromEntries(formData);
 
-    try {
-      const response = await fetch("https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/api/activities.php", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
+    async function loadActivities() {
+      try {
+        const response = await fetch("https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/api/activities.php");
     
-      const text = await response.text(); // ← نطبع الرد كـ نص بدل JSON
-      console.log("رد السيرفر (كنص):", text);
+        if (!response.ok) {
+          console.error("فشل في جلب البيانات:", response.status, response.statusText);
+          return;
+        }
     
-      // إذا أردت تحويله إلى JSON لاحقًا:
-      // const result = JSON.parse(text);
-    } catch (error) {
-      console.error("خطأ في الاتصال أو التنفيذ:", error);
+        const activities = await response.json();
+        console.log("النشاطات:", activities);
+      } catch (error) {
+        console.error("خطأ أثناء تحميل النشاطات:", error);
+      }
     }
+    
     
      
     e.target.reset();
