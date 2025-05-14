@@ -153,57 +153,83 @@
   </header>
 
   <main>
-    <!-- Filters -->
+ 
     <section class="filters">
       <input type="text" placeholder="Search club activities..." />
       <button>Filter</button>
       <button>Sort</button>
     </section>
 
-    <!-- Add New Activity Button -->
+    
     <section>
       <a href="#create" class="button">+ Add New Activity</a>
     </section>
 
-    <!-- Dynamic Activity List -->
+   
     <section class="activity-list">
-      <!-- Cards will be rendered here dynamically -->
+      <div class="activity-card">
+        <h2>Art Club Meetup</h2>
+        <p class="subdued-text">April 15, 2025 • Room B101</p>
+        <p>Join us for sketching and creativity!</p>
+        <a href="#detail">View Details</a>
+      </div>
+
+      <div class="activity-card">
+        <h2>Robotics Club Workshop</h2>
+        <p class="subdued-text">April 18, 2025 • Lab 204</p>
+        <p>Build your first Arduino robot!</p>
+        <a href="#detail">View Details</a>
+      </div>
+
+      <div class="activity-card">
+        <h2>Drama Club Rehearsal</h2>
+        <p class="subdued-text">April 19, 2025 • Theater Hall</p>
+        <p>Full cast rehearsal for the play.</p>
+        <a href="#detail">View Details</a>
+      </div>
+
+      <div class="activity-card">
+        <h2>Photography Club Walk</h2>
+        <p class="subdued-text">April 21, 2025 • Campus Gardens</p>
+        <p>Natural light and candid photo tour.</p>
+        <a href="#detail">View Details</a>
+      </div>
     </section>
 
-    <!-- Pagination -->
+    
     <section class="pagination">
       <button>Prev</button>
       <span>Page 1 of 3</span>
       <button>Next</button>
     </section>
 
-    <!-- Add Activity Form -->
+    
     <section id="create">
       <h2>Add New Club Activity</h2>
       <form>
         <div class="form-group">
           <label>Club Name *</label>
-          <input type="text" name="club" required />
+          <input type="text" required />
         </div>
         <div class="form-group">
           <label>Event Title *</label>
-          <input type="text" name="title" required />
+          <input type="text" required />
         </div>
         <div class="form-group">
           <label>Date *</label>
-          <input type="date" name="date" required />
+          <input type="date" required />
         </div>
         <div class="form-group">
           <label>Time *</label>
-          <input type="time" name="time" required />
+          <input type="time" required />
         </div>
         <div class="form-group">
           <label>Location *</label>
-          <input type="text" name="location" required />
+          <input type="text" required />
         </div>
         <div class="form-group">
           <label>Description</label>
-          <textarea name="description" rows="4"></textarea>
+          <textarea rows="4"></textarea>
         </div>
         <div class="form-buttons">
           <button type="submit">Submit</button>
@@ -212,13 +238,33 @@
       </form>
     </section>
 
-    <!-- Detail View -->
+    
     <section id="detail" class="detail-section">
-      <!-- Filled dynamically via JS -->
+      <h2>Club Activity Details</h2>
+      <p><strong>Club:</strong> Art Club</p>
+      <p><strong>Event:</strong> Sketch Night</p>
+      <p><strong>Date & Time:</strong> April 15, 2025 at 6:00 PM</p>
+      <p><strong>Location:</strong> Room B101</p>
+      <p><strong>Description:</strong> Join fellow artists for a relaxing night of sketching and snacks.</p>
+
+      <div class="card-buttons">
+        <button>Edit</button>
+        <button style="background-color: #dc3545;">Delete</button>
+      </div>
+
+      <div class="comment-box">
+        <label>Comments</label>
+        <textarea placeholder="Write a comment..." rows="3"></textarea>
+      </div>
+
+      <p style="margin-top: 15px;">
+        <a href="#">← Back to listing</a>
+      </p>
     </section>
 
   </main>
+  
+  <script src="script.js"></script>
 
-  <script src="script.js" defer></script>
 </body>
 </html>
