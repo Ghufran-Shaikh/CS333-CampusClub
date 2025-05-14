@@ -7,7 +7,7 @@ $db = getenv("db_name");
 
 // Set HTTP headers
 header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: GET, POST, DELETE, OPTIONS, PATCH");
+header("Access-Control-Allow-Methods: GET, POST, DELETE, OPTIONS, PATCH, PUT");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Content-Type: application/json");
 
@@ -19,34 +19,19 @@ try {
         exit(0);
     }
 
-    // Get all events with comments
-    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-        if (isset($_GET['event_id'])) {
-            $event_id = $_GET['event_id'];
-            $stmt = $pdo->prepare("SELECT * FROM comments WHERE event_id = ?");
-            $stmt->execute([$event_id]);
-            $comments = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $action = $_GET['action'] ?? null;
+    $data = json_decode(file_get_contents("php://input"), true) ?? [];
 
-            echo json_encode($comments);
-        } else {
-            $stmt = $pdo->query("SELECT * FROM event ORDER BY event_id DESC");
-            $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    // Handle Events
+    if ($_SERVER['REQUEST_METHOD'] === 'GET' && $action === 'get_events') {
+        $stmt = $pdo->query("SELECT * FROM event ORDER BY event_datetime ASC");
+        $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        echo json_encode($events);
+        exit;
+    }
 
-            foreach ($events as &$event) {
-                $event_id = $event['event_id'];
-                $commentStmt = $pdo->prepare("SELECT * FROM comments WHERE event_id = ?");
-                $commentStmt->execute([$event_id]);
-                $event['comments'] = $commentStmt->fetchAll(PDO::FETCH_ASSOC);
-            }
-
-            echo json_encode($events);
-        }
-
-    // Posting a new event
-    } elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $data = json_decode(file_get_contents("php://input"), true);
-
-        if (!isset($data['title'], $data['description'], $data['event_datetime'])) {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'add_event') {
+        if (!isset($data['title'], $data['event_datetime'])) {
             http_response_code(400);
             echo json_encode(["error" => "Missing required fields."]);
             exit;
@@ -55,64 +40,117 @@ try {
         $stmt = $pdo->prepare("INSERT INTO event (title, description, event_datetime) VALUES (?, ?, ?)");
         $stmt->execute([
             $data['title'],
-            $data['description'],
+            $data['description'] ?? null,
             $data['event_datetime']
         ]);
 
         echo json_encode([
             "success" => true,
             "message" => "Event added successfully.",
-            "data" => [
-                "id" => $pdo->lastInsertId(),
-                "title" => $data['title'],
-                "description" => $data['description'],
-                "event_datetime" => $data['event_datetime']
-            ]
+            "event_id" => $pdo->lastInsertId()
         ]);
+        exit;
+    }
 
-    // Adding a comment to a specific event
-    } elseif ($_SERVER['REQUEST_METHOD'] === 'PATCH') {
-        $data = json_decode(file_get_contents("php://input"), true);
-        $event_id = $data['event_id'] ?? null;
-        $newComment = $data['comment'] ?? null;
-
-        if (!$event_id || !$newComment) {
+    if ($_SERVER['REQUEST_METHOD'] === 'PUT' && $action === 'update_event') {
+        if (!isset($data['event_id'], $data['title'], $data['event_datetime'])) {
             http_response_code(400);
-            echo json_encode(["error" => "Missing event ID or comment."]);
+            echo json_encode(["error" => "Missing required fields."]);
             exit;
         }
 
-        $stmt = $pdo->prepare("INSERT INTO comments (comment, event_id) VALUES (?, ?)");
-        $stmt->execute([$newComment, $event_id]);
+        $stmt = $pdo->prepare("UPDATE event SET title = ?, description = ?, event_datetime = ? WHERE event_id = ?");
+        $stmt->execute([
+            $data['title'],
+            $data['description'] ?? null,
+            $data['event_datetime'],
+            $data['event_id']
+        ]);
 
-        echo json_encode(["success" => true, "message" => "Comment added."]);
+        echo json_encode([
+            "success" => true,
+            "message" => "Event updated successfully."
+        ]);
+        exit;
+    }
 
-    // Deleting an event
-    } elseif ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
-        parse_str($_SERVER['QUERY_STRING'], $queryParams);
-        $id = $queryParams['id'] ?? null;
-
-        if (!$id) {
+    if ($_SERVER['REQUEST_METHOD'] === 'DELETE' && $action === 'delete_event') {
+        if (!isset($data['event_id'])) {
             http_response_code(400);
             echo json_encode(["error" => "Missing event ID."]);
             exit;
         }
 
-        $stmt = $pdo->prepare("DELETE FROM event WHERE event_id = ?");
-        $stmt->execute([$id]);
+        
+        $pdo->beginTransaction();
 
-        if ($stmt->rowCount() === 0) {
-            http_response_code(404);
-            echo json_encode(["error" => "Event not found or already deleted."]);
-        } else {
-            echo json_encode(["success" => true, "message" => "Event deleted successfully."]);
+        try {
+          
+            $stmt = $pdo->prepare("DELETE FROM comments WHERE event_id = ?");
+            $stmt->execute([$data['event_id']]);
+
+           
+            $stmt = $pdo->prepare("DELETE FROM event WHERE event_id = ?");
+            $stmt->execute([$data['event_id']]);
+
+            $pdo->commit();
+
+            if ($stmt->rowCount() === 0) {
+                http_response_code(404);
+                echo json_encode(["error" => "Event not found or already deleted."]);
+            } else {
+                echo json_encode(["success" => true, "message" => "Event deleted successfully."]);
+            }
+        } catch (Exception $e) {
+            $pdo->rollBack();
+            http_response_code(500);
+            echo json_encode(["error" => "Database error: " . $e->getMessage()]);
         }
-
-    } else {
-        http_response_code(405);
-        echo json_encode(["error" => "Method not allowed"]);
+        exit;
     }
 
+    // Handle Comments
+    if ($_SERVER['REQUEST_METHOD'] === 'GET' && $action === 'get_comments') {
+        $event_id = $_GET['event_id'] ?? null;
+        if (!$event_id) {
+            http_response_code(400);
+            echo json_encode(["error" => "Missing event ID."]);
+            exit;
+        }
+
+        $stmt = $pdo->prepare("SELECT * FROM comments WHERE event_id = ? ORDER BY comment_id DESC");
+        $stmt->execute([$event_id]);
+        $comments = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        echo json_encode($comments);
+        exit;
+    }
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'add_comment') {
+        if (!isset($data['event_id'], $data['comment'])) {
+            http_response_code(400);
+            echo json_encode(["error" => "Missing required fields."]);
+            exit;
+        }
+
+        $author = $data['author'] ?? 'Anonymous';
+
+        $stmt = $pdo->prepare("INSERT INTO comments (event_id, comment) VALUES (?, ?)");
+        $stmt->execute([
+            $data['event_id'],
+            $data['comment']
+        ]);
+
+        echo json_encode([
+            "success" => true,
+            "message" => "Comment added successfully.",
+            "comment_id" => $pdo->lastInsertId(),
+            "author" => $author
+        ]);
+        exit;
+    }
+
+    http_response_code(405);
+    echo json_encode(["error" => "Method not allowed"]);
 } catch (PDOException $e) {
     http_response_code(500);
     echo json_encode(["error" => "Database error: " . $e->getMessage()]);
