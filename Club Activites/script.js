@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const data = Object.fromEntries(formData);
 
     try {
-      const response = await fetch("https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/api/activities.php", {
+      const response = await fetch("https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/activities.php", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 async function loadActivities() {
-  const response = await fetch("https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/api/activities.php");
+  const response = await fetch("https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/activities.php");
   const activities = await response.json();
 
 
@@ -53,7 +53,7 @@ async function loadActivities() {
 }
 
 async function deleteActivity(id) {
-  await fetch("https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/api/activities.php", {
+  await fetch("https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/activities.php", {
     method: "DELETE",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ id }),
