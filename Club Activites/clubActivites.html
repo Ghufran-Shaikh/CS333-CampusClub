@@ -155,11 +155,21 @@
   <main>
     
     <!-- Section for Filters -->
-    <section class="filters">
-      <input type="text" placeholder="Search club activities..." />
-      <button>Filter</button>
-      <button>Sort</button>
-    </section>
+    <input type="text" id="searchInput" placeholder="Search by title..." />
+
+<select id="filterClub">
+  <option value="">All Clubs</option>
+  <option value="Club A">Club A</option>
+  <option value="Club B">Club B</option>
+  <!-- Add more clubs here -->
+</select>
+
+<select id="sortSelect">
+  <option value="">Sort</option>
+  <option value="title">Title</option>
+  <option value="date">Date</option>
+</select>
+
     
     <!-- Section to Add New Activity -->
     <section>
@@ -244,7 +254,59 @@
   
   <script>
     // Example of dynamically opening an activity detail
-    
+    function openDetailView(activityId) {
+      const activityDetails = {
+        1: {
+          club: "Art Club",
+          title: "Sketch Night",
+          date: "April 15, 2025",
+          time: "6:00 PM",
+          location: "Room B101",
+          description: "Join fellow artists for a relaxing night of sketching and snacks."
+        },
+        2: {
+          club: "Science Club",
+          title: "Astronomy Viewing",
+          date: "April 20, 2025",
+          time: "9:00 PM",
+          location: "Observatory",
+          description: "Come and gaze at the stars with the Science Club! Telescopes provided."
+        },
+        3: {
+          club: "Photography Club",
+          title: "Photography Workshop",
+          date: "April 25, 2025",
+          time: "10:00 AM",
+          location: "Photography Studio",
+          description: "Learn the basics of photography and composition in this hands-on workshop."
+        },
+        4: {
+          club: "Tech Club",
+          title: "Coding Bootcamp",
+          date: "May 1, 2025",
+          time: "11:00 AM",
+          location: "Room C201",
+          description: "Join our coding bootcamp to learn essential programming skills for the modern world."
+        },
+        5: {
+          club: "Literature Club",
+          title: "Creative Writing Session",
+          date: "May 5, 2025",
+          time: "2:00 PM",
+          location: "Room A102",
+          description: "Join us for a creative writing session where we explore storytelling and creative expression."
+        },
+        6: {
+          club: "Debate Club",
+          title: "Public Speaking Practice",
+          date: "May 10, 2025",
+          time: "4:00 PM",
+          location: "Auditorium",
+          description: "Improve your public speaking and presentation skills in this supportive environment."
+        }
+        // Add more activities as needed
+      };
+
 
       const activity = activityDetails[activityId];
 
@@ -256,7 +318,7 @@
         <p><strong>Location:</strong> ${activity.location}</p>
         <p><strong>Description:</strong> ${activity.description}</p>
       `;
-  
+    }
   
   </script>
 
