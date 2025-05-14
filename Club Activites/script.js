@@ -192,15 +192,18 @@ async function deleteActivity(id) {
       document.getElementById("detail").style.scrollBehavior = "auto";
       document.getElementById("detail").scrollIntoView({ block: "start" });
       loadActivities();
+      console.log("Deleting activity ID:", id);
     } else {
       const error = await res.json();
+      console.error("Server responded with error:", error); // ⬅️ اطبع رسالة الخطأ
       alert(`Failed to delete activity: ${error.error || 'Unknown error'}`);
     }
   } catch (err) {
-    console.error("Delete error:", err);
+    console.error("Network or parsing error:", err); // ⬅️ اطبع الخطأ الكامل
     alert("An error occurred while deleting the activity.");
   }
 }
+
 
 
 document.getElementById("searchInput")?.addEventListener("input", loadActivities);
