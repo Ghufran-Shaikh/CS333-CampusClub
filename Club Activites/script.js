@@ -7,11 +7,19 @@ document.addEventListener("DOMContentLoaded", () => {
     const formData = new FormData(e.target);
     const data = Object.fromEntries(formData);
 
-    await fetch("https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/api/activities.php", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
+    try {
+      const response = await fetch("https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/api/activities.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+      console.log("رد السيرفر:", result); // ✅ هذا هو السطر المهم الذي أضفته
+
+    } catch (error) {
+      console.error("خطأ في الإرسال:", error); // في حال فشل الاتصال نفسه
+    }
 
     e.target.reset();
     loadActivities();
@@ -21,6 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
 async function loadActivities() {
   const response = await fetch("https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/api/activities.php");
   const activities = await response.json();
+
 
   const activityList = document.querySelector(".activity-list");
   activityList.innerHTML = "";
