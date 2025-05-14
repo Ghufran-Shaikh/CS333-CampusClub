@@ -1,84 +1,71 @@
 document.addEventListener("DOMContentLoaded", () => {
   loadActivities();
 
-  const form = document.querySelector("form");
-
-  form.addEventListener("submit", async (e) => {
+  document.querySelector("form").addEventListener("submit", async (e) => {
     e.preventDefault();
-
-    const formData = new FormData(e.target);
+    const form = e.target;
+    const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
 
-    const editingId = e.target.dataset.editingId;
-    const method = editingId ? "PUT" : "POST";
+    const editingId = form.dataset.editingId;
     if (editingId) data.id = editingId;
 
-    await fetch("https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/api/activities.php", {
+    const method = editingId ? "PUT" : "POST";
+
+    const res = await fetch("https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/api/activities.php", {
       method,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
+      body: JSON.stringify(data)
     });
 
-    e.target.reset();
-    delete e.target.dataset.editingId;
-    loadActivities();
+    if (res.ok) {
+      form.reset();
+      delete form.dataset.editingId;
+      loadActivities();
+    } else {
+      alert("Failed to save activity");
+    }
   });
 });
 
 async function loadActivities() {
   try {
-    const response = await fetch("https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/api/activities.php");
+    const res = await fetch("https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/api/activities.php");
+    const activities = await res.json();
 
-    if (!response.ok) {
-      console.error("فشل في جلب البيانات:", response.status, response.statusText);
-      return;
-    }
+    const container = document.querySelector(".activity-list");
+    container.innerHTML = "";
 
-    const activities = await response.json();
-    const activityList = document.querySelector(".activity-list");
-    activityList.innerHTML = "";
-
-    activities.forEach((activity) => {
-      const activityCard = document.createElement("div");
-      activityCard.className = "activity-card";
-
-      activityCard.innerHTML = `
+    activities.forEach(activity => {
+      const card = document.createElement("div");
+      card.className = "activity-card";
+      card.innerHTML = `
         <h2>${activity.title}</h2>
         <p class="subdued-text">${activity.club} | ${activity.date} • ${activity.time} | ${activity.location}</p>
         <p>${activity.description}</p>
-        <button onclick="viewDetails(${encodeURIComponent(JSON.stringify(activity))})">View Details</button>
+        <button class="view-btn" data-id='${activity.id}'>View Details</button>
         <button onclick="deleteActivity(${activity.id})">Delete</button>
       `;
-
-      activityList.appendChild(activityCard);
+      container.appendChild(card);
     });
-  } catch (error) {
-    console.error("خطأ أثناء تحميل النشاطات:", error);
+
+    document.querySelectorAll(".view-btn").forEach(btn => {
+      btn.addEventListener("click", async () => {
+        const id = btn.dataset.id;
+        const activity = activities.find(a => a.id == id);
+        showDetails(activity);
+      });
+    });
+  } catch (err) {
+    console.error("Error:", err);
   }
 }
 
-async function deleteActivity(id) {
-  const confirmDelete = confirm("هل تريد بالتأكيد حذف هذا النشاط؟");
-  if (!confirmDelete) return;
-
-  await fetch("https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/api/activities.php", {
-    method: "DELETE",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ id }),
-  });
-
-  loadActivities();
-  document.getElementById("activity-detail").innerHTML = "";
-  window.currentActivity = null;
-}
-
-// ✅ عرض تفاصيل النشاط في قسم التفاصيل
-function viewDetails(encodedData) {
-  const activity = JSON.parse(decodeURIComponent(encodedData));
+function showDetails(activity) {
   window.currentActivity = activity;
 
-  const activityDetailDiv = document.getElementById("activity-detail");
-  activityDetailDiv.innerHTML = `
+  const detailDiv = document.getElementById("activity-detail");
+  detailDiv.innerHTML = `
     <p><strong>Club:</strong> ${activity.club}</p>
     <p><strong>Event:</strong> ${activity.title}</p>
     <p><strong>Date & Time:</strong> ${activity.date} at ${activity.time}</p>
@@ -86,31 +73,42 @@ function viewDetails(encodedData) {
     <p><strong>Description:</strong> ${activity.description}</p>
   `;
 
-  // التمرير للقسم
   document.getElementById("detail").scrollIntoView({ behavior: "smooth" });
 }
 
-// ✅ زر التعديل
+async function deleteActivity(id) {
+  if (!confirm("Are you sure you want to delete this activity?")) return;
+
+  await fetch("https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/api/activities.php", {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ id })
+  });
+
+  loadActivities();
+  document.getElementById("activity-detail").innerHTML = "";
+  window.currentActivity = null;
+}
+
+// Edit button
 document.querySelector("#detail .card-buttons button:first-child").addEventListener("click", () => {
   if (!window.currentActivity) return;
 
   const form = document.querySelector("form");
-  const fields = form.querySelectorAll("input, textarea");
-
-  fields[0].value = window.currentActivity.club;
-  fields[1].value = window.currentActivity.title;
-  fields[2].value = window.currentActivity.date;
-  fields[3].value = window.currentActivity.time;
-  fields[4].value = window.currentActivity.location;
-  fields[5].value = window.currentActivity.description;
+  form.club.value = window.currentActivity.club;
+  form.title.value = window.currentActivity.title;
+  form.date.value = window.currentActivity.date;
+  form.time.value = window.currentActivity.time;
+  form.location.value = window.currentActivity.location;
+  form.description.value = window.currentActivity.description;
 
   form.dataset.editingId = window.currentActivity.id;
   document.getElementById("create").scrollIntoView({ behavior: "smooth" });
 });
 
-// ✅ زر الحذف داخل التفاصيل
-document.querySelector("#detail .card-buttons button:last-child").addEventListener("click", async () => {
+// Delete button in detail view
+document.querySelector("#detail .card-buttons button:last-child").addEventListener("click", () => {
   if (window.currentActivity) {
-    await deleteActivity(window.currentActivity.id);
+    deleteActivity(window.currentActivity.id);
   }
 });
