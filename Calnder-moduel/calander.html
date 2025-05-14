@@ -34,12 +34,13 @@
             background-color: #f0fff4;
             border-color: #9ae6b4;
         }
-        .event-item {
-            transition: all 0.2s;
+        .event-details {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
         }
-        .event-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        .event-details.active {
+            max-height: 500px;
         }
     </style>
 </head>
@@ -121,22 +122,6 @@
                 </ul>
             </div>
         </div>
-
-        <!-- Comments Section -->
-        <div class="max-w-5xl w-full bg-white p-6 rounded-lg shadow-md mt-8">
-            <h2 class="text-2xl font-bold mb-6 text-blue-800">Event Comments</h2>
-            <div id="commentsContainer" class="space-y-4 mb-6">
-                <!-- Comments will be loaded here -->
-            </div>
-            <div class="border-t pt-4">
-                <h3 class="text-lg font-semibold mb-3 text-gray-800">Add a Comment</h3>
-                <div class="space-y-3">
-                    <input type="text" id="newCommentAuthor" placeholder="Your name" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
-                    <textarea id="newCommentContent" placeholder="Your comment" rows="3" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"></textarea>
-                    <button id="addCommentBtn" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">Post Comment</button>
-                </div>
-            </div>
-        </div>
     </main>
 
     <!-- Footer -->
@@ -173,17 +158,12 @@
             cancelEventBtn: document.getElementById('cancelEventBtn'),
             eventList: document.getElementById('eventList'),
             eventSearch: document.getElementById('event-search'),
-            sortSelect: document.getElementById('sortSelect'),
-            commentsContainer: document.getElementById('commentsContainer'),
-            newCommentAuthor: document.getElementById('newCommentAuthor'),
-            newCommentContent: document.getElementById('newCommentContent'),
-            addCommentBtn: document.getElementById('addCommentBtn')
+            sortSelect: document.getElementById('sortSelect')
         };
 
         // State
         let state = {
             events: [],
-            currentEventId: null,
             selectedDate: null,
             editingEventId: null
         };
@@ -291,27 +271,30 @@
 
             try {
                 let response;
+                let method;
+                let url = API_URL;
+
                 if (state.editingEventId) {
-                    // Update existing event
-                    response = await fetch(`${API_URL}?event_id=${state.editingEventId}`, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(eventData)
-                    });
+                    method = 'PUT';
+                    eventData.event_id = state.editingEventId;
+                    eventData.action = 'update_event';
                 } else {
-                    // Create new event
-                    response = await fetch(API_URL, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(eventData)
-                    });
+                    method = 'POST';
+                    eventData.action = 'add_event';
                 }
 
-                if (!response.ok) throw new Error('Failed to save event');
+                response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(eventData)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Failed to save event');
+                }
 
                 const result = await response.json();
                 if (result.success) {
@@ -322,17 +305,18 @@
                 }
             } catch (error) {
                 console.error('Error saving event:', error);
-                alert('Error saving event. Please try again.');
+                alert(`Error: ${error.message}`);
             }
         }
 
         // Events List Functions
         async function fetchEvents() {
             try {
-                const response = await fetch(API_URL);
+                const response = await fetch(`${API_URL}?action=get_events`);
                 if (!response.ok) throw new Error('Failed to fetch events');
                 
-                state.events = await response.json();
+                const data = await response.json();
+                state.events = Array.isArray(data) ? data : [];
                 renderEvents();
                 
                 // Regenerate calendar to show events
@@ -389,32 +373,58 @@
                             </p>
                         </div>
                         <div class="flex space-x-2 ml-3">
-                            <button onclick="editEvent(${event.event_id})" class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded hover:bg-yellow-200 transition-colors">
+                            <button onclick="editEvent('${event.event_id}')" class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded hover:bg-yellow-200 transition-colors">
                                 Edit
                             </button>
-                            <button onclick="deleteEvent(${event.event_id})" class="text-xs bg-red-100 text-red-800 px-2 py-1 rounded hover:bg-red-200 transition-colors">
+                            <button onclick="deleteEvent('${event.event_id}')" class="text-xs bg-red-100 text-red-800 px-2 py-1 rounded hover:bg-red-200 transition-colors">
                                 Delete
                             </button>
-                            <button onclick="showEventComments(${event.event_id})" class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded hover:bg-blue-200 transition-colors">
-                                Comments
+                            <button onclick="toggleEventDetails('${event.event_id}')" class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded hover:bg-blue-200 transition-colors">
+                                Details
                             </button>
                         </div>
                     </div>
-                    <div id="comments-${event.event_id}" class="mt-3 hidden"></div>
+                    <div id="details-${event.event_id}" class="event-details mt-3 pl-4 border-l-2 border-blue-200">
+                        <h4 class="font-medium text-gray-700">Event Details:</h4>
+                        <p class="text-sm text-gray-600 mt-1">${event.description || 'No additional details'}</p>
+                        <p class="text-xs text-gray-500 mt-2">Created: ${new Date(event.created_at || event.event_datetime).toLocaleString()}</p>
+                        
+                        <div class="mt-3">
+                            <h4 class="font-medium text-gray-700">Comments:</h4>
+                            <div id="comments-${event.event_id}" class="space-y-2 mt-2"></div>
+                            <div class="mt-3">
+                                <input type="text" id="comment-author-${event.event_id}" placeholder="Your name" class="w-full p-1 text-sm border rounded">
+                                <textarea id="comment-content-${event.event_id}" placeholder="Your comment" class="w-full p-1 text-sm border rounded mt-1"></textarea>
+                                <button onclick="addComment('${event.event_id}')" class="mt-1 px-2 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700">
+                                    Add Comment
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 `;
                 
                 elements.eventList.appendChild(eventItem);
             });
         }
 
+        // Event Actions
         async function editEvent(eventId) {
-            const event = state.events.find(e => e.event_id === eventId);
-            if (!event) return;
+            const event = state.events.find(e => e.event_id == eventId);
+            if (!event) {
+                alert('Event not found');
+                return;
+            }
 
             state.editingEventId = eventId;
             elements.eventName.value = event.title;
             elements.eventDescription.value = event.description || '';
-            elements.eventDateTime.value = formatDateTimeInput(new Date(event.event_datetime));
+            
+            // Format date for datetime-local input
+            const eventDate = new Date(event.event_datetime);
+            const timezoneOffset = eventDate.getTimezoneOffset() * 60000;
+            const localDate = new Date(eventDate - timezoneOffset);
+            elements.eventDateTime.value = localDate.toISOString().slice(0, 16);
+            
             elements.formTitle.textContent = 'Edit Event';
             elements.eventForm.classList.remove('hidden');
         }
@@ -423,11 +433,21 @@
             if (!confirm('Are you sure you want to delete this event?')) return;
 
             try {
-                const response = await fetch(`${API_URL}?event_id=${eventId}`, {
-                    method: 'DELETE'
+                const response = await fetch(API_URL, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        event_id: eventId,
+                        action: 'delete_event'
+                    })
                 });
 
-                if (!response.ok) throw new Error('Failed to delete event');
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Failed to delete event');
+                }
 
                 const result = await response.json();
                 if (result.success) {
@@ -437,90 +457,94 @@
                 }
             } catch (error) {
                 console.error('Error deleting event:', error);
-                alert('Error deleting event. Please try again.');
+                alert(`Error: ${error.message}`);
+            }
+        }
+
+        function toggleEventDetails(eventId) {
+            const detailsDiv = document.getElementById(`details-${eventId}`);
+            detailsDiv.classList.toggle('active');
+            
+            // Load comments when details are shown
+            if (detailsDiv.classList.contains('active')) {
+                loadComments(eventId);
             }
         }
 
         // Comments Functions
-        async function showEventComments(eventId) {
-            state.currentEventId = eventId;
+        async function loadComments(eventId) {
             const commentsDiv = document.getElementById(`comments-${eventId}`);
-            
-            // Toggle comments visibility
-            if (commentsDiv.classList.contains('hidden')) {
-                try {
-                    const response = await fetch(`${API_URL}?event_id=${eventId}&action=comments`);
-                    if (!response.ok) throw new Error('Failed to fetch comments');
-                    
-                    const comments = await response.json();
-                    commentsDiv.innerHTML = '';
-                    
-                    if (comments.length === 0) {
-                        commentsDiv.innerHTML = '<p class="text-sm text-gray-500 italic">No comments yet</p>';
-                    } else {
-                        comments.forEach(comment => {
-                            const commentElement = document.createElement('div');
-                            commentElement.classList.add('p-3', 'bg-white', 'rounded', 'border', 'border-gray-200', 'mb-2');
-                            commentElement.innerHTML = `
-                                <p class="text-sm font-medium text-gray-800">${comment.author || 'Anonymous'}</p>
-                                <p class="text-sm mt-1 text-gray-700">${comment.comment}</p>
-                                <p class="text-xs text-gray-500 mt-1">${new Date(comment.created_at).toLocaleString()}</p>
-                            `;
-                            commentsDiv.appendChild(commentElement);
-                        });
-                    }
-                    
-                    commentsDiv.classList.remove('hidden');
-                } catch (error) {
-                    console.error('Error fetching comments:', error);
-                    commentsDiv.innerHTML = '<p class="text-sm text-red-500">Error loading comments</p>';
-                    commentsDiv.classList.remove('hidden');
+            if (!commentsDiv) return;
+
+            try {
+                const response = await fetch(`${API_URL}?event_id=${eventId}&action=get_comments`);
+                if (!response.ok) throw new Error('Failed to load comments');
+                
+                const comments = await response.json();
+                commentsDiv.innerHTML = '';
+                
+                if (!comments || comments.length === 0) {
+                    commentsDiv.innerHTML = '<p class="text-sm text-gray-500 italic">No comments yet</p>';
+                } else {
+                    comments.forEach(comment => {
+                        const commentElement = document.createElement('div');
+                        commentElement.classList.add('p-2', 'bg-white', 'rounded', 'border', 'border-gray-200');
+                        commentElement.innerHTML = `
+                            <p class="text-sm font-medium">${comment.author || 'Anonymous'}</p>
+                            <p class="text-sm mt-1">${comment.content || comment.comment}</p>
+                            <p class="text-xs text-gray-500 mt-1">${new Date(comment.created_at || Date.now()).toLocaleString()}</p>
+                        `;
+                        commentsDiv.appendChild(commentElement);
+                    });
                 }
-            } else {
-                commentsDiv.classList.add('hidden');
+            } catch (error) {
+                console.error('Error loading comments:', error);
+                commentsDiv.innerHTML = '<p class="text-sm text-red-500">Error loading comments</p>';
             }
         }
 
-        async function addNewComment() {
-            const author = elements.newCommentAuthor.value.trim();
-            const content = elements.newCommentContent.value.trim();
+        async function addComment(eventId) {
+            const authorInput = document.getElementById(`comment-author-${eventId}`);
+            const contentInput = document.getElementById(`comment-content-${eventId}`);
+            
+            const author = authorInput?.value.trim() || 'Anonymous';
+            const content = contentInput?.value.trim();
 
             if (!content) {
                 alert('Please enter your comment');
                 return;
             }
 
-            if (!state.currentEventId) {
-                alert('Please select an event first');
-                return;
-            }
-
             try {
                 const response = await fetch(API_URL, {
-                    method: 'PATCH',
+                    method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        event_id: state.currentEventId,
-                        author: author || 'Anonymous',
+                        event_id: eventId,
+                        author: author,
                         comment: content,
                         action: 'add_comment'
                     })
                 });
 
-                if (!response.ok) throw new Error('Failed to add comment');
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Failed to add comment');
+                }
 
                 const result = await response.json();
                 if (result.success) {
-                    elements.newCommentContent.value = '';
-                    showEventComments(state.currentEventId);
+                    if (contentInput) contentInput.value = '';
+                    if (authorInput) authorInput.value = '';
+                    loadComments(eventId);
                 } else {
                     alert(result.error || 'Error adding comment');
                 }
             } catch (error) {
                 console.error('Error adding comment:', error);
-                alert('Error adding comment. Please try again.');
+                alert(`Error: ${error.message}`);
             }
         }
 
@@ -540,9 +564,6 @@
             // Events list
             elements.eventSearch.addEventListener('input', renderEvents);
             elements.sortSelect.addEventListener('change', renderEvents);
-
-            // Comments
-            elements.addCommentBtn.addEventListener('click', addNewComment);
         }
 
         // Initialize
@@ -563,11 +584,11 @@
         // Make functions available globally
         window.editEvent = editEvent;
         window.deleteEvent = deleteEvent;
-        window.showEventComments = showEventComments;
+        window.toggleEventDetails = toggleEventDetails;
+        window.addComment = addComment;
 
         // Start the application
         document.addEventListener('DOMContentLoaded', initialize);
-        //finallllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllly:)
     </script>
 </body>
 </html>
