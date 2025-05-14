@@ -105,29 +105,37 @@ function showDetails(activity) {
     <p><strong>Date & Time:</strong> ${activity.date} at ${activity.time}</p>
     <p><strong>Location:</strong> ${activity.location}</p>
     <p><strong>Description:</strong> ${activity.description}</p>
-    
-    <!-- ✅ Move buttons here -->
-    <div class="card-buttons">
-      <button id="edit-btn">Edit</button>
-      <button id="delete-btn">Delete</button>
-    </div>
+
+    <hr>
+    <h3>Comments</h3>
+    <div id="comments-container"></div>
+
+    <form id="comment-form">
+      <input type="text" name="name" placeholder="Your name" required />
+      <textarea name="comment" placeholder="Write a comment..." required></textarea>
+      <button type="submit">Add Comment</button>
+    </form>
   `;
 
-  // ✅ Re-bind button actions
-  document.getElementById("edit-btn")?.addEventListener("click", () => {
-    const form = document.querySelector("form");
-    form.club.value = activity.club;
-    form.title.value = activity.title;
-    form.date.value = activity.date;
-    form.time.value = activity.time;
-    form.location.value = activity.location;
-    form.description.value = activity.description;
-    form.dataset.editingId = activity.id;
-    document.getElementById("create").scrollIntoView({ behavior: "smooth" });
-  });
+  loadComments(activity.id);
 
-  document.getElementById("delete-btn")?.addEventListener("click", () => {
-    deleteActivity(activity.id);
+  document.getElementById("comment-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData.entries());
+
+    await fetch('https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/comment.php', {
+      method: 'POST',
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        activity_id: activity.id,
+        name: data.name,
+        comment: data.comment
+      })
+    });
+
+    e.target.reset();
+    loadComments(activity.id);
   });
 
   document.getElementById("detail").scrollIntoView({ behavior: "smooth" });
