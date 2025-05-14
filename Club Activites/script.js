@@ -105,10 +105,54 @@ function showDetails(activity) {
     <p><strong>Date & Time:</strong> ${activity.date} at ${activity.time}</p>
     <p><strong>Location:</strong> ${activity.location}</p>
     <p><strong>Description:</strong> ${activity.description}</p>
+
+    <hr>
+    <h3>Comments</h3>
+    <div id="comments-container"></div>
+
+    <form id="comment-form">
+      <input type="text" name="name" placeholder="Your name" required />
+      <textarea name="comment" placeholder="Write a comment..." required></textarea>
+      <button type="submit">Add Comment</button>
+    </form>
   `;
+
+  loadComments(activity.id);
+
+  document.getElementById("comment-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData.entries());
+
+    await fetch('https://YOUR_DOMAIN/api/comments.php', {
+      method: 'POST',
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        activity_id: activity.id,
+        name: data.name,
+        comment: data.comment
+      })
+    });
+
+    e.target.reset();
+    loadComments(activity.id);
+  });
 
   document.getElementById("detail").scrollIntoView({ behavior: "smooth" });
 }
+
+async function loadComments(activityId) {
+  const res = await fetch(`https://YOUR_DOMAIN/api/comments.php?activity_id=${activityId}`);
+  const comments = await res.json();
+  const container = document.getElementById("comments-container");
+  container.innerHTML = comments.map(c => `
+    <div class="comment">
+      <strong>${c.name}</strong> <em>${new Date(c.created_at).toLocaleString()}</em>
+      <p>${c.comment}</p>
+    </div>
+  `).join('');
+}
+
 async function loadActivities() {
   try {
     const res = await fetch("https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/api/activities.php");
