@@ -100,89 +100,38 @@ function showDetails(activity) {
 
   const detailDiv = document.getElementById("activity-detail");
   detailDiv.innerHTML = `
-    <h2>Club Activity Details</h2>
     <p><strong>Club:</strong> ${activity.club}</p>
     <p><strong>Event:</strong> ${activity.title}</p>
     <p><strong>Date & Time:</strong> ${activity.date} at ${activity.time}</p>
     <p><strong>Location:</strong> ${activity.location}</p>
     <p><strong>Description:</strong> ${activity.description}</p>
-
+    
+    <!-- ✅ Move buttons here -->
     <div class="card-buttons">
       <button id="edit-btn">Edit</button>
-      <button id="delete-btn" style="background-color: #e74c3c; color: white;">Delete</button>
+      <button id="delete-btn">Delete</button>
     </div>
-
-    <hr>
-
-    <h3>Comments</h3>
-    <ul id="comment-list"></ul>
-
-    <form id="comment-form">
-      <input type="text" id="comment-input" placeholder="Write a comment..." required />
-      <button type="submit">Add Comment</button>
-    </form>
   `;
 
-  document.getElementById("detail").scrollIntoView({ behavior: "smooth" });
-
-  loadComments(activity.id); // Load existing comments
-  setupCommentForm(activity.id); // Set up new comment submission
-}
-function setupCommentForm(activityId) {
-  const form = document.getElementById("comment-form");
-  const input = document.getElementById("comment-input");
-
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const comment = input.value.trim();
-    if (!comment) return;
-
-    try {
-      const res = await fetch("https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/comments.php", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ activity_id: activityId, content: comment })
-      });
-
-      if (res.ok) {
-        input.value = "";
-        loadComments(activityId);
-      } else {
-        alert("Failed to post comment.");
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Error posting comment.");
-    }
+  // ✅ Re-bind button actions
+  document.getElementById("edit-btn")?.addEventListener("click", () => {
+    const form = document.querySelector("form");
+    form.club.value = activity.club;
+    form.title.value = activity.title;
+    form.date.value = activity.date;
+    form.time.value = activity.time;
+    form.location.value = activity.location;
+    form.description.value = activity.description;
+    form.dataset.editingId = activity.id;
+    document.getElementById("create").scrollIntoView({ behavior: "smooth" });
   });
+
+  document.getElementById("delete-btn")?.addEventListener("click", () => {
+    deleteActivity(activity.id);
+  });
+
+  document.getElementById("detail").scrollIntoView({ behavior: "smooth" });
 }
-
-async function loadComments(activityId) {
-  const list = document.getElementById("comment-list");
-  list.innerHTML = "<li>Loading comments...</li>";
-
-  try {
-    const res = await fetch(`https://YOUR_API_URL/comments.php?activity_id=${activityId}`);
-    const comments = await res.json();
-
-    if (!Array.isArray(comments)) {
-      list.innerHTML = "<li>No comments found.</li>";
-      return;
-    }
-
-    list.innerHTML = "";
-    comments.forEach(comment => {
-      const li = document.createElement("li");
-      li.textContent = comment.content;
-      list.appendChild(li);
-    });
-  } catch (err) {
-    console.error(err);
-    list.innerHTML = "<li>Error loading comments.</li>";
-  }
-}
-
 
 
 async function loadComments(activityId) {
