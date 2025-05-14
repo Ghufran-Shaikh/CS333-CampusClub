@@ -36,21 +36,46 @@ async function fetchActivities(page = 1, limit = 4) {
   }
 }
 
-// Search activities (Real-time Search)
-searchInput.addEventListener('input', () => {
-  searchActivities();
-});
-
-function searchActivities() {
-  const query = searchInput.value.trim().toLowerCase();
-  if (query === '') {
-    filteredActivities = [...activities];
-  } else {
-    filteredActivities = activities.filter(activity =>
-      activity.title.toLowerCase().includes(query) ||
-      activity.description.toLowerCase().includes(query)
-    );
-  }
-  renderActivities();
-  renderPagination(Math.ceil(filteredActivities.length / itemsPerPage), currentPage);
+// Render Pagination
+function renderPagination(totalPages, currentPage) {
+  paginationSection.innerHTML = `
+    <button onclick="prevPage(${currentPage})">Prev</button>
+    <span>Page ${currentPage} of ${totalPages}</span>
+    <button onclick="nextPage(${currentPage}, ${totalPages})">Next</button>
+  `;
 }
+
+function prevPage(currentPage) {
+  if (currentPage > 1) fetchActivities(currentPage - 1);
+}
+
+function nextPage(currentPage, totalPages) {
+  if (currentPage < totalPages) fetchActivities(currentPage + 1);
+}
+
+// Open Detail View
+function openDetailView(id) {
+  const activity = activities.find(a => a.id === id);
+
+  if (!activity) return;
+
+  detailSection.innerHTML = `
+    <h2>${activity.title} Details</h2>
+    <p><strong>Club:</strong> ${activity.club_name}</p>
+    <p><strong>Date & Time:</strong> ${activity.activity_date} at ${activity.activity_time}</p>
+    <p><strong>Location:</strong> ${activity.location}</p>
+    <p><strong>Description:</strong> ${activity.description}</p>
+
+    <div class="card-buttons">
+      <button onclick="openEditForm(${activity.id})">Edit</button>
+      <button onclick="deleteActivity(${activity.id})">Delete</button>
+    </div>
+
+    <a href="#" onclick="renderActivities(); renderPagination();">← Back to listing</a>
+  `;
+}
+
+// Load Activities on DOMContentLoaded
+document.addEventListener('DOMContentLoaded', () => {
+  fetchActivities();
+});
