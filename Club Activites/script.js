@@ -133,16 +133,7 @@ function showDetails(activity) {
       <button id="edit-btn">Edit</button>
       <button id="delete-btn" style="background-color: #e74c3c; color: white;">Delete</button>
     </div>
-
-    <hr>
-
-    <h3>Comments</h3>
-    <ul id="comment-list"></ul>
-
-    <form id="comment-form">
-      <input type="text" id="comment-input" placeholder="Write a comment..." required />
-      <button type="submit">Add Comment</button>
-    </form>
+  
   `;
 
   document.getElementById("detail").scrollIntoView({ behavior: "smooth" });
