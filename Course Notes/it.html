@@ -71,7 +71,7 @@
       <div id="notes-container" class="grid grid-cols-1 gap-6"></div>
     </section>
 
-    <div class="flex justify-center">
+    <div class="flex justify-center items-center mt-6">
       <nav aria-label="Page navigation" class="flex items-center space-x-2">
         <button id="prev-page" class="px-4 py-2 rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300 disabled:opacity-50">
           <i class="fas fa-chevron-left"></i> Previous
@@ -110,7 +110,7 @@
         <input id="path" name="path" type="text" placeholder="Path or URL to file" required class="w-full mb-3 px-4 py-2 border rounded-md">
         <div class="flex justify-end space-x-3">
           <button type="button" onclick="document.getElementById('noteModal').classList.add('hidden')" class="px-4 py-2 border rounded-md">Cancel</button>
-          <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md">Save</button>
+          <button type="submit" class="px-4 py-2 bg-orange-600 text-white rounded-md">Save</button>
         </div>
       </form>
     </div>
@@ -122,6 +122,8 @@
     let allNotes = [];
     let currentSort = 'recently-added';
     let currentSearchTerm = '';
+    const NOTES_PER_PAGE = 3;
+    let currentPage = 1;
 
     // Notification function
     function showNotification(message) {
@@ -169,6 +171,7 @@
 
     // Apply search and sort filters
     function applyFiltersAndDisplay() {
+        currentPage = 1; // Reset to first page when filters change
         let filteredNotes = [...allNotes];
         
         // Apply search filter
@@ -198,10 +201,12 @@
         displayNotes(filteredNotes);
     }
 
-    // Display notes in the UI
+    // Display notes in the UI with pagination
     function displayNotes(notes) {
         const notesContainer = document.getElementById('notes-container');
+        const pageNumbersContainer = document.getElementById('page-numbers');
         notesContainer.innerHTML = '';
+        pageNumbersContainer.innerHTML = '';
 
         if (notes.length === 0) {
             notesContainer.innerHTML = `
@@ -211,8 +216,16 @@
             return;
         }
 
-        // Create a single container for all notes (not grouped by course)
-        notesContainer.innerHTML = notes.map(note => `
+        // Calculate total pages
+        const totalPages = Math.ceil(notes.length / NOTES_PER_PAGE);
+        
+        // Get notes for current page
+        const startIndex = (currentPage - 1) * NOTES_PER_PAGE;
+        const endIndex = Math.min(startIndex + NOTES_PER_PAGE, notes.length);
+        const paginatedNotes = notes.slice(startIndex, endIndex);
+
+        // Display notes for current page
+        notesContainer.innerHTML = paginatedNotes.map(note => `
             <div class="bg-white rounded-xl shadow-md overflow-hidden mb-4">
                 <div class="bg-blue-950 p-4 flex justify-between items-center">
                     <h4 class="font-semibold text-white">${note.course_title}</h4>
@@ -234,6 +247,22 @@
                 </div>
             </div>
         `).join('');
+
+        // Generate page numbers
+        for (let i = 1; i <= totalPages; i++) {
+            const pageBtn = document.createElement('button');
+            pageBtn.className = `px-3 py-1 rounded-md ${currentPage === i ? 'bg-orange-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`;
+            pageBtn.textContent = i;
+            pageBtn.addEventListener('click', () => {
+                currentPage = i;
+                displayNotes(notes);
+            });
+            pageNumbersContainer.appendChild(pageBtn);
+        }
+
+        // Update prev/next buttons state
+        document.getElementById('prev-page').disabled = currentPage === 1;
+        document.getElementById('next-page').disabled = currentPage === totalPages;
     }
 
     // Format date for display
@@ -357,15 +386,24 @@
         document.getElementById('filter-dropdown').addEventListener('change', (e) => {
             currentSort = e.target.value;
             applyFiltersAndDisplay();
-            
-            // Update active state in UI
-            document.querySelectorAll('#filter-dropdown option').forEach(opt => {
-                opt.classList.toggle('sort-active', opt.value === currentSort);
-            });
+        });
+
+        // Setup pagination buttons
+        document.getElementById('prev-page').addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                displayNotes(allNotes);
+            }
+        });
+
+        document.getElementById('next-page').addEventListener('click', () => {
+            const totalPages = Math.ceil(allNotes.length / NOTES_PER_PAGE);
+            if (currentPage < totalPages) {
+                currentPage++;
+                displayNotes(allNotes);
+            }
         });
     });
   </script>
-    <script src="/Course Notes/CourseNotes.js"></script>
-
 </body>
 </html>
