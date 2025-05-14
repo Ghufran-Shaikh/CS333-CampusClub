@@ -152,19 +152,6 @@ function showDetails(activity) {
   loadComments(activity.id);
 }
 
-async function loadComments(activityId) {
-  const res = await fetch(`https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/comment.php?activity_id=${activityId}`);
-  const comments = await res.json();
-
-  const list = document.getElementById("comments-list");
-  list.innerHTML = "";
-
-  comments.forEach(comment => {
-    const p = document.createElement("p");
-    p.textContent = comment.content;
-    list.appendChild(p);
-  });
-}
 
 function setupCommentForm(activityId) {
   const form = document.getElementById("comment-form");
@@ -221,19 +208,6 @@ async function loadComments(activityId) {
   }
 }
 
-
-
-async function loadComments(activityId) {
-  const res = await fetch(`https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/comment.php?activity_id=${activityId}`);
-  const comments = await res.json();
-  const container = document.getElementById("comments-container");
-  container.innerHTML = comments.map(c => `
-    <div class="comment">
-      <strong>${c.name}</strong> <em>${new Date(c.created_at).toLocaleString()}</em>
-      <p>${c.comment}</p>
-    </div>
-  `).join('');
-}
 
 async function loadActivities() {
   try {
