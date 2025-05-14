@@ -1,5 +1,26 @@
 document.addEventListener("DOMContentLoaded", () => {
   loadActivities();
+  document.getElementById("comment-form")?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const textarea = e.target.elements.content;
+    const content = textarea.value;
+  
+    const activityId = window.currentActivity?.id;
+    if (!activityId) return alert("No activity selected");
+  
+    const res = await fetch("https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/api/comments.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ activity_id: activityId, content })
+    });
+  
+    if (res.ok) {
+      textarea.value = "";
+      loadComments(activityId);
+    } else {
+      alert("Error posting comment.");
+    }
+  });  
 
   document.querySelector("form").addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -128,7 +149,23 @@ function showDetails(activity) {
 
   loadComments(activity.id); // Load existing comments
   setupCommentForm(activity.id); // Set up new comment submission
+  loadComments(activity.id);
 }
+
+async function loadComments(activityId) {
+  const res = await fetch(`https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/comment.php?activity_id=${activityId}`);
+  const comments = await res.json();
+
+  const list = document.getElementById("comments-list");
+  list.innerHTML = "";
+
+  comments.forEach(comment => {
+    const p = document.createElement("p");
+    p.textContent = comment.content;
+    list.appendChild(p);
+  });
+}
+
 function setupCommentForm(activityId) {
   const form = document.getElementById("comment-form");
   const input = document.getElementById("comment-input");
