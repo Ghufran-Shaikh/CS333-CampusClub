@@ -133,6 +133,14 @@ function showDetails(activity) {
       <button id="edit-btn">Edit</button>
       <button id="delete-btn" style="background-color: #e74c3c; color: white;">Delete</button>
     </div>
+
+    <h3>Comments</h3>
+    <ul id="comment-list"></ul>
+
+    <form id="comment-form">
+      <input type="text" id="comment-input" placeholder="Write a comment..." required />
+      <button type="submit">Add Comment</button>
+    </form>
   
   `;
 
@@ -144,35 +152,6 @@ function showDetails(activity) {
 }
 
 
-function setupCommentForm(activityId) {
-  const form = document.getElementById("comment-form");
-  const input = document.getElementById("comment-input");
-
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const comment = input.value.trim();
-    if (!comment) return;
-
-    try {
-      const res = await fetch("https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/comment.php", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ activity_id: activityId, content: comment })
-      });
-
-      if (res.ok) {
-        input.value = "";
-        loadComments(activityId);
-      } else {
-        alert("Failed to post comment.");
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Error posting comment.");
-    }
-  });
-}
 
 async function loadComments(activityId) {
   const list = document.getElementById("comment-list");
