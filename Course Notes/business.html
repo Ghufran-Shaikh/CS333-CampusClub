@@ -1,97 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Campus Clubs - IT Courses Notes</title>
+  <title>Campus Clubs - Business Courses Notes</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    body {
-      font-family: 'Poppins', sans-serif;
-      background-color: #f8f9fa;
+    body { font-family: 'Poppins', sans-serif; background-color: #f8f9fa; }
+    .notification {
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #4caf50;
+      color: white;
+      padding: 15px;
+      border-radius: 5px;
+      z-index: 1000;
+    }
+    .sort-active {
+      background-color: #f0f0f0;
+      font-weight: bold;
     }
   </style>
 </head>
 
-<body class="bg-gray-100">
-
-  <!-- Header -->
+<body class="bg-gray-100" name="business">
+  <!-- Navigation Bar -->
   <nav class="bg-blue-950 shadow-lg">
     <div class="max-w-7xl mx-auto px-4">
-        <div class="flex justify-between h-16 items-center">
-            <div>
-                <img src="/university-of-bahrain-Logo-Vector.svg-.png" alt="Campus Club Logo" class="h-10">
-            </div>
-            <div class="flex space-x-4">
-                <a href="/index.html" class="text-white hover:text-blue-500 px-3 py-2 rounded-md text-sm font-medium">Home</a>
-                <a href="/Calnder-moduel/calander.html" class="text-white hover:text-blue-500 px-3 py-2 rounded-md text-sm font-medium">Event Calendar</a>
-                <a href="/study-group-finder/study-group-finder.html" class="text-white hover:text-blue-500 px-3 py-2 rounded-md text-sm font-medium">Study Group Finder</a>
-                <a href="/CourseReviews/CourseReviews.html" class="text-white hover:text-blue-500 px-3 py-2 rounded-md text-sm font-medium">Course Reviews</a>
-                <a href="/Course Notes/CourseNotes.html" class="text-white hover:text-blue-500 px-3 py-2 rounded-md text-sm font-medium">Course Note</a>
-                <a href="/Club Activites/clubActivites.html" class="text-white hover:text-blue-500 px-3 py-2 rounded-md text-sm font-medium">Clubs Activities</a>
-            </div>
-            <div>
-                <a href="/Course Notes/profile.html" class="text-white hover:text-blue-500 px-3 py-2 rounded-md text-sm font-medium">
-                    <i class="fas fa-user mr-1"></i> Profile
-                </a>
-            </div>
+      <div class="flex justify-center h-16 items-center">
+        <div class="flex space-x-4">
+          <a href="/index.html" class="text-white hover:text-blue-500 px-3 py-2 rounded-md text-sm font-medium">Home</a>
+          <a href="/Calnder-moduel/calander.html" class="text-white hover:text-blue-500 px-3 py-2 rounded-md text-sm font-medium">Event Calendar</a>
+          <a href="/study-group-finder/study-group-finder.html" class="text-white hover:text-blue-500 px-3 py-2 rounded-md text-sm font-medium">Study Group Finder</a>
+          <a href="/CourseReviews/CourseReviews.html" class="text-white hover:text-blue-500 px-3 py-2 rounded-md text-sm font-medium">Course Reviews</a>
+          <a href="/Course Notes/CourseNotes.html" class="text-blue-500 px-3 py-2 rounded-md text-sm font-medium">Course Note</a>
+          <a href="/Club Activites/clubActivites.html" class="text-white hover:text-blue-500 px-3 py-2 rounded-md text-sm font-medium">Clubs Activities</a>
         </div>
+      </div>
     </div>
-</nav>
+  </nav>
 
   <main class="max-w-7xl mx-auto px-4 py-8">
-     <!-- Search and Filter Section -->
-     <section class="mb-8">
-        <div class="bg-orange-400 rounded-3xl shadow p-6">
-            <div class="flex gap-4">
-                <!-- Search Bar -->
-                <div class="relative flex-1">
-                    <input type="text" id="search-bar" placeholder="Search courses..." 
-                        class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
-                </div>
-                
-                <!-- Filter notes -->
-                <div class="flex space-x-2">
-                    <select id="filter-dropdown" class="px-3 py-2 pr-4 border border-gray-300 rounded-2xl bg-white text-sm">
-                        <option value="">All</option>
-                        <option value="top-rated">Top Rated</option>
-                        <option value="recently-added">Recently Added</option>
-                        <option value="a-z">A-Z</option>
-                        <option value="z-a">Z-A</option>
-                    </select>
-                </div>
-
-                <!-- Add note button -->
-                <button class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 pr-4 rounded-2xl text-sm font-medium">
-                    <i class="fas fa-plus mr-1"></i> Add Note
-                </button>
-            </div>
+    <section class="mb-8">
+      <div class="bg-orange-400 rounded-3xl shadow p-6">
+        <div class="flex gap-4">
+          <div class="relative flex-1">
+            <input id="search-bar" type="text" placeholder="Search by course, title, or content..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+          </div>
+          <div class="flex space-x-2">
+            <select id="filter-dropdown" class="px-3 py-2 pr-4 border border-gray-300 rounded-2xl bg-white text-sm">
+              <option value="recently-added">Recently Added</option>
+              <option value="a-z">Course Title (A-Z)</option>
+              <option value="z-a">Course Title (Z-A)</option>
+            </select>
+          </div>
+          <button id="openFormButton" class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 pr-4 rounded-2xl text-sm font-medium">
+            <i class="fas fa-plus mr-1"></i> Add Note
+          </button>
+          <a href="/Course Notes/businessComments.html" class="btn bg-orange-600 hover:bg-orange-700 text-white px-3 py-2 rounded-2xl text-sm font-medium">Add/View Comments</a>
         </div>
-    </section>
-
-    <!-- Notes -->
-    <section class="mb-12">
-      <h2 class="text-2xl font-bold text-blue-950 mb-6 border-b pb-2">Business College Notes</h2>
-      
-      <div id="it-notes-container" class="grid grid-cols-1 gap-6">
-        <!-- Notes will be here -->
       </div>
     </section>
 
-    <!-- Pagination -->
-    <div class="flex justify-center">
+    <section class="mb-12">
+      <h2 class="text-2xl font-bold text-blue-950 mb-6 border-b pb-2">Business College Notes</h2>
+      <div id="notes-container" class="grid grid-cols-1 gap-6"></div>
+    </section>
+
+    <div class="flex justify-center items-center mt-6">
       <nav aria-label="Page navigation" class="flex items-center space-x-2">
         <button id="prev-page" class="px-4 py-2 rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300 disabled:opacity-50">
           <i class="fas fa-chevron-left"></i> Previous
         </button>
-        
-        <div id="page-numbers" class="flex space-x-1">
-          <!-- Page numbers will be here -->
-        </div>
-        
+        <div id="page-numbers" class="flex space-x-1"></div>
         <button id="next-page" class="px-4 py-2 rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300 disabled:opacity-50">
           Next <i class="fas fa-chevron-right"></i>
         </button>
@@ -99,23 +84,326 @@
     </div>
   </main>
 
-  <!-- Footer -->
-  <footer class="bg-blue-950 border-t mt-8 py-6">
-    <div class="container mx-auto px-4">
-      <div class="flex flex-col md:flex-row justify-between items-center">
-        <div class="text-white hover:text-blue-500 mb-4 md:mb-0">&copy; 2025 ITCS333 Project - Campus Club</div>
-        <div class="flex flex-wrap justify-center gap-4">
-          <a href="#" class="text-white hover:text-blue-500 transition duration-300">Club Policy</a>
-          <a href="#" class="text-white hover:text-blue-500 transition duration-300">Terms of Service</a>
-          <a href="#" class="text-white hover:text-blue-500 transition duration-300">Contact Us</a>
-          <a href="#" class="text-white hover:text-blue-500 transition duration-300">About</a>
-          <a href="#" class="text-white hover:text-blue-500 transition duration-300">Help Center</a>
-        </div>
+  <footer class="bg-blue-950 border-t mt-12 py-6">
+    <div class="container mx-auto flex justify-between items-center flex-wrap text-sm">
+      <div class="text-white hover:text-blue-500">&copy; 2025 ITCS333 Project</div>
+      <div class="flex gap-4">
+        <a href="#" class="text-white hover:text-blue-500 transition duration-300">Club Policy</a>
+        <a href="#" class="text-white hover:text-blue-500 transition duration-300">Terms</a>
+        <a href="#" class="text-white hover:text-blue-500 transition duration-300">Contact</a>
+        <a href="#" class="text-white hover:text-blue-500 transition duration-300">About</a>
+        <a href="#" class="text-white hover:text-blue-500 transition duration-300">Help</a>
       </div>
     </div>
   </footer>
 
-  <script src="/Course Notes/CourseNotes.js"></script>
-  
+  <div id="notification" class="notification">Note deleted successfully!</div>
+
+  <!-- Note Form Modal -->
+  <div id="noteModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white p-6 rounded-xl w-full max-w-lg">
+      <form id="noteForm">
+        <h3 class="text-xl font-bold mb-4">Add New Note</h3>
+        <input id="course_title" name="course_title" type="text" placeholder="Course Title" required class="w-full mb-3 px-4 py-2 border rounded-md">
+        <input id="title" name="title" type="text" placeholder="Note Title" required class="w-full mb-3 px-4 py-2 border rounded-md">
+        <textarea id="content" name="content" placeholder="Note Content" required class="w-full mb-3 px-4 py-2 border rounded-md"></textarea>
+        <input id="path" name="path" type="text" placeholder="Path or URL to file" required class="w-full mb-3 px-4 py-2 border rounded-md">
+        <div class="flex justify-end space-x-3">
+          <button type="button" onclick="document.getElementById('noteModal').classList.add('hidden')" class="px-4 py-2 border rounded-md">Cancel</button>
+          <button type="submit" class="px-4 py-2 bg-orange-600 text-white rounded-md">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const url = 'https://22dc9f8a-91aa-4bf0-8ae5-cda91c5728cf-00-1kektu7zbblns.sisko.replit.dev/api.php';
+    let currentEditingNoteId = null;
+    let allNotes = [];
+    let currentSort = 'recently-added';
+    let currentSearchTerm = '';
+    const NOTES_PER_PAGE = 3;
+    let currentPage = 1;
+
+    // Notification function
+    function showNotification(message) {
+        const notification = document.getElementById('notification');
+        notification.textContent = message;
+        notification.style.display = 'block';
+        setTimeout(() => notification.style.display = 'none', 3000);
+    }
+
+    // Fetch all notes from the API
+    async function fetchNotes() {
+        try {
+            showLoading(true);
+            const response = await fetch(`${url}/notes?college=3`);
+            if (!response.ok) throw new Error('Failed to fetch notes');
+            allNotes = await response.json();
+            
+            // Convert created_at strings to Date objects for proper sorting
+            allNotes.forEach(note => {
+                note.sortDate = note.created_at === '0000-00-00 00:00:00' 
+                    ? new Date() 
+                    : new Date(note.created_at);
+            });
+            
+            applyFiltersAndDisplay();
+            return allNotes;
+        } catch (error) {
+            console.error('Error fetching notes:', error);
+            showNotification('Error loading notes. Please try again.');
+        } finally {
+            showLoading(false);
+        }
+    }
+
+    // Show/hide loading state
+    function showLoading(show) {
+        const container = document.getElementById('notes-container');
+        if (show) {
+            container.innerHTML = `
+                <div class="flex justify-center items-center h-32">
+                    <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+                </div>`;
+        }
+    }
+
+    // Apply search and sort filters
+    function applyFiltersAndDisplay() {
+        currentPage = 1; // Reset to first page when filters change
+        let filteredNotes = [...allNotes];
+        
+        // Apply search filter
+        if (currentSearchTerm) {
+            const searchTerm = currentSearchTerm.toLowerCase();
+            filteredNotes = filteredNotes.filter(note => 
+                note.course_title.toLowerCase().includes(searchTerm) ||
+                note.title.toLowerCase().includes(searchTerm) ||
+                note.content.toLowerCase().includes(searchTerm)
+            );
+        }
+        
+        // Apply sorting
+        switch(currentSort) {
+            case 'a-z':
+                filteredNotes.sort((a, b) => a.course_title.localeCompare(b.course_title));
+                break;
+            case 'z-a':
+                filteredNotes.sort((a, b) => b.course_title.localeCompare(a.course_title));
+                break;
+            case 'recently-added':
+                // Sort by date (newest first)
+                filteredNotes.sort((a, b) => b.sortDate - a.sortDate);
+                break;
+        }
+        
+        displayNotes(filteredNotes);
+    }
+
+    // Display notes in the UI with pagination
+    function displayNotes(notes) {
+        const notesContainer = document.getElementById('notes-container');
+        const pageNumbersContainer = document.getElementById('page-numbers');
+        notesContainer.innerHTML = '';
+        pageNumbersContainer.innerHTML = '';
+
+        if (notes.length === 0) {
+            notesContainer.innerHTML = `
+                <div class="bg-white rounded-xl shadow-md p-6 text-center">
+                    <p class="text-gray-500">No notes found matching your criteria</p>
+                </div>`;
+            return;
+        }
+
+        // Calculate total pages
+        const totalPages = Math.ceil(notes.length / NOTES_PER_PAGE);
+        
+        // Get notes for current page
+        const startIndex = (currentPage - 1) * NOTES_PER_PAGE;
+        const endIndex = Math.min(startIndex + NOTES_PER_PAGE, notes.length);
+        const paginatedNotes = notes.slice(startIndex, endIndex);
+
+        // Display notes for current page
+        notesContainer.innerHTML = paginatedNotes.map(note => `
+            <div class="bg-white rounded-xl shadow-md overflow-hidden mb-4">
+                <div class="bg-blue-950 p-4 flex justify-between items-center">
+                    <h4 class="font-semibold text-white">${note.course_title}</h4>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-lg font-semibold text-blue-950 mb-2">${note.title}</h3>
+                    <p class="text-gray-600 text-sm mb-3">${note.content}</p>
+                    <div class="flex flex-wrap gap-2">
+                        <a href="${note.path}" class="bg-lime-600 hover:bg-lime-700 text-white px-3 py-1 rounded-md text-sm font-medium">
+                            <i class="fas fa-download mr-1"></i> Download
+                        </a>
+                        <button onclick="updateNote(${note.id})" class="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded-md text-sm font-medium">
+                            <i class="fas fa-edit mr-1"></i> Update
+                        </button>
+                        <button onclick="deleteNote(${note.id})" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md text-sm font-medium">
+                            <i class="fas fa-trash mr-1"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+
+        // Generate page numbers
+        for (let i = 1; i <= totalPages; i++) {
+            const pageBtn = document.createElement('button');
+            pageBtn.className = `px-3 py-1 rounded-md ${currentPage === i ? 'bg-lime-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`;
+            pageBtn.textContent = i;
+            pageBtn.addEventListener('click', () => {
+                currentPage = i;
+                displayNotes(notes);
+            });
+            pageNumbersContainer.appendChild(pageBtn);
+        }
+
+        // Update prev/next buttons state
+        document.getElementById('prev-page').disabled = currentPage === 1;
+        document.getElementById('next-page').disabled = currentPage === totalPages;
+    }
+
+    // Format date for display
+    function formatDate(date) {
+        if (!(date instanceof Date)) return '';
+        return date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
+
+    // Delete a note
+    async function deleteNote(noteId) {
+        if (!confirm('Are you sure you want to delete this note?')) return;
+        
+        try {
+            showLoading(true);
+            const response = await fetch(`${url}/notes/${noteId}`, { 
+                method: 'DELETE' 
+            });
+            
+            if (!response.ok) throw new Error('Network response was not ok');
+            
+            showNotification('Note deleted successfully!');
+            await fetchNotes(); // Refresh the notes list
+        } catch (error) {
+            console.error('Error deleting note:', error);
+            showNotification('Error deleting note. Please try again.');
+        } finally {
+            showLoading(false);
+        }
+    }
+
+    // Update a note
+    async function updateNote(noteId) {
+        const note = allNotes.find(n => n.id == noteId);
+        if (!note) return alert('Note not found');
+
+        currentEditingNoteId = noteId;
+        document.getElementById('course_title').value = note.course_title;
+        document.getElementById('title').value = note.title;
+        document.getElementById('content').value = note.content;
+        document.getElementById('path').value = note.path;
+
+        document.getElementById('noteModal').classList.remove('hidden');
+    }
+
+    // Submit note form (create or update)
+    async function submitNote() {
+        const form = document.getElementById('noteForm');
+        const formData = new FormData(form);
+      
+        const payload = {
+            course_title: formData.get('course_title'),
+            title: formData.get('title'),
+            content: formData.get('content'),
+            path: formData.get('path')
+        };
+
+        const urlToUse = currentEditingNoteId
+            ? `${url}/notes/${currentEditingNoteId}`
+            : `${url}/notes`;
+
+        const method = currentEditingNoteId ? 'PUT' : 'POST';
+
+        try {
+            showLoading(true);
+            const response = await fetch(urlToUse, {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const result = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(result.error || 'Failed to save note');
+            }
+            
+            showNotification(result.message || 'Note saved successfully');
+            document.getElementById('noteModal').classList.add('hidden');
+            form.reset();
+            currentEditingNoteId = null;
+            await fetchNotes(); // Refresh the notes list
+        } catch (error) {
+            console.error('Error saving note:', error);
+            showNotification(`Error: ${error.message}`);
+        } finally {
+            showLoading(false);
+        }
+    }
+
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', () => {
+        // Load notes
+        fetchNotes();
+        
+        // Setup form button
+        document.getElementById('openFormButton').addEventListener('click', () => {
+            currentEditingNoteId = null;
+            document.getElementById('noteForm').reset();
+            document.getElementById('noteModal').classList.remove('hidden');
+        });
+        
+        // Handle form submission
+        document.getElementById('noteForm').addEventListener('submit', e => {
+            e.preventDefault();
+            submitNote();
+        });
+        
+        // Setup search input
+        document.getElementById('search-bar').addEventListener('input', (e) => {
+            currentSearchTerm = e.target.value.trim();
+            applyFiltersAndDisplay();
+        });
+        
+        // Setup sort dropdown
+        document.getElementById('filter-dropdown').addEventListener('change', (e) => {
+            currentSort = e.target.value;
+            applyFiltersAndDisplay();
+        });
+
+        // Setup pagination buttons
+        document.getElementById('prev-page').addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                displayNotes(allNotes);
+            }
+        });
+
+        document.getElementById('next-page').addEventListener('click', () => {
+            const totalPages = Math.ceil(allNotes.length / NOTES_PER_PAGE);
+            if (currentPage < totalPages) {
+                currentPage++;
+                displayNotes(allNotes);
+            }
+        });
+    });
+  </script>
 </body>
 </html>
