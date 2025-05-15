@@ -96,39 +96,41 @@ async function loadActivities() {
 }
 
 function showDetails(activity) {
-    // Fill in the fields
-    document.getElementById("club-name").textContent = activity.club;
-    document.getElementById("event-title").textContent = activity.title;
-    document.getElementById("event-date-time").textContent = `${activity.date} at ${activity.time}`;
-    document.getElementById("event-location").textContent = activity.location;
-    document.getElementById("event-description").textContent = activity.description;
-  
-    // Attach edit/delete functionality here if needed
-    document.getElementById("edit-button").onclick = () => editActivity(activity);
-    document.getElementById("delete-button").onclick = () => deleteActivity(activity.id);
-  
-    // Load comments
-    loadComments(activity.id);
-  
-    // Add comment submission
-    const commentForm = document.getElementById("comment-form");
-    commentForm.onsubmit = async (e) => {
-      e.preventDefault();
-      const comment = document.getElementById("comment").value.trim();
-      if (!comment) return;
+  window.currentActivity = activity;
+
+  const detailDiv = document.getElementById("activity-detail");
+  detailDiv.innerHTML = `
+    <p><strong>Club:</strong> ${activity.club}</p>
+    <p><strong>Event:</strong> ${activity.title}</p>
+    <p><strong>Date & Time:</strong> ${activity.date} at ${activity.time}</p>
+    <p><strong>Location:</strong> ${activity.location}</p>
+    <p><strong>Description:</strong> ${activity.description}</p>
+
+    <h3>Comments</h3>
+    <div id="comments-container"></div>
+    <form id="comment-form">
+      <textarea id="comment" placeholder="Add a comment..."></textarea>
+      <button type="submit">Post Comment</button>
+    </form>
+  `;
+
+  document.getElementById("comment-form").addEventListener("submit", async e => {
+    e.preventDefault();
+    const comment = document.getElementById("comment").value.trim();
+    if (comment && activity.id) {
       await fetch(`/api/activities/${activity.id}/comments`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ comment }),
+        body: JSON.stringify({ comment })
       });
       document.getElementById("comment").value = "";
       loadComments(activity.id);
-    };
-  
+    }
+  });
 
   loadComments(activity.id);
   document.getElementById("detail").scrollIntoView({ behavior: "smooth" });
-  }
+}
 
 
 
