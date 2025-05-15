@@ -105,16 +105,6 @@ function showDetails(activity) {
     <p><strong>Date & Time:</strong> ${activity.date} at ${activity.time}</p>
     <p><strong>Location:</strong> ${activity.location}</p>
     <p><strong>Description:</strong> ${activity.description}</p>
-
-    <hr>
-    <h3>Comments</h3>
-    <div id="comments-container"></div>
-
-    <form id="comment-form">
-      <input type="text" name="name" placeholder="Your name" required />
-      <textarea name="comment" placeholder="Write a comment..." required></textarea>
-      <button type="submit">Add Comment</button>
-    </form>
   `;
 
   loadComments(activity.id);
