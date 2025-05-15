@@ -105,31 +105,34 @@ function showDetails(activity) {
     <p><strong>Date & Time:</strong> ${activity.date} at ${activity.time}</p>
     <p><strong>Location:</strong> ${activity.location}</p>
     <p><strong>Description:</strong> ${activity.description}</p>
+
+    <h3>Comments</h3>
+    <div id="comments-container"></div>
+    <form id="comment-form">
+      <textarea id="comment" placeholder="Add a comment..."></textarea>
+      <button type="submit">Post Comment</button>
+    </form>
   `;
 
-  loadComments(activity.id);
-
-  document.getElementById("comment-form").addEventListener("submit", async (e) => {
+  // ✅ Now that it's inserted, we can add the listener:
+  document.getElementById("comment-form").addEventListener("submit", async e => {
     e.preventDefault();
-    const formData = new FormData(e.target);
-    const data = Object.fromEntries(formData.entries());
-
-    await fetch('https://4399efd1-a97f-4e48-9229-329a9b6b5e93-00-1hm9s0f5r7gge.pike.replit.dev/comment.php', {
-      method: 'POST',
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        activity_id: activity.id,
-        name: data.name,
-        comment: data.comment
-      })
-    });
-
-    e.target.reset();
-    loadComments(activity.id);
+    const comment = document.getElementById("comment").value.trim();
+    if (comment && activity.id) {
+      await fetch(`/api/activities/${activity.id}/comments`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ comment })
+      });
+      document.getElementById("comment").value = "";
+      loadComments(activity.id);
+    }
   });
 
+  loadComments(activity.id);
   document.getElementById("detail").scrollIntoView({ behavior: "smooth" });
 }
+
 
 
 async function loadComments(activityId) {
