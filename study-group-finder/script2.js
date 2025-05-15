@@ -1,3 +1,5 @@
+import { fetchGroups, fetchSubjects, fetchLocations, fetchStudents, createGroup, createSubject, createLocation, createStudent, updateGroup, updateSubject, updateLocation, updateStudent, deleteGroup, deleteSubject, deleteLocation, deleteStudent} from './api.js';  // Adjust the path based on your project structure
+
 document.title = document;
 // --- Speed Dial Toggle ---
 document.addEventListener('DOMContentLoaded', function() {
@@ -15,6 +17,131 @@ document.addEventListener('DOMContentLoaded', function() {
         speedDialMenu.classList.add('hidden');
         speedDialButton.setAttribute('aria-expanded', 'false');
       }
+    });
+  }
+
+  // --- Speed Dial Tooltips Functionality ---
+  // Tooltip buttons
+  const tooltipShareBtn = document.querySelector('[data-tooltip-target="tooltip-share"]');
+  const tooltipPrintBtn = document.querySelector('[data-tooltip-target="tooltip-print"]');
+  const tooltipDownloadBtn = document.querySelector('[data-tooltip-target="tooltip-download"]');
+  const tooltipCopyBtn = document.querySelector('[data-tooltip-target="tooltip-copy"]');
+
+  // Helper to get groupId from URL
+  function getGroupId() {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('id');
+  }
+
+  // 1. Edit (Share) - Pop up group-form with current group data
+  if (tooltipShareBtn) {
+    tooltipShareBtn.addEventListener('click', async function(e) {
+      e.preventDefault();
+      // Show the group-form popup (clone from study-group-finder.html)
+      let formPopup = document.getElementById('myForm');
+      if (!formPopup) {
+        // If not present, create and append it from study-group-finder.html
+        // For simplicity, alert if not found
+        alert('Group form not found on this page.');
+        return;
+      }
+      // Fetch group data
+      const groupId = getGroupId();
+      const group = await fetchGroupById(groupId);
+      if (!group) {
+        alert('Group not found.');
+        return;
+      }
+      // Fill form fields with group data
+      document.getElementById('group-name').value = group.name || '';
+      document.getElementById('group-subject').value = group.subject_id || group.subject || '';
+      document.getElementById('group-coverage').value = group.coverage || '';
+      document.getElementById('group-location').value = group.location_code || group.location || '';
+      document.getElementById('datepicker-range-start').value = group.start_date || '';
+      document.getElementById('datepicker-range-end').value = group.end_date || '';
+      document.getElementById('start-time').value = group.start_time || '';
+      document.getElementById('end-time').value = group.end_time || '';
+      document.getElementById('group-session-repetition').value = group.session_repetition || group.repetition || '';
+      document.getElementById('agenda').value = group.agenda || '';
+      // Show the form
+      formPopup.style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      // On submit, call updateGroup()
+      const groupForm = document.getElementById('group-form');
+      if (groupForm) {
+        groupForm.onsubmit = async function(ev) {
+          ev.preventDefault();
+          // Gather form values
+          const updatedGroup = {
+            id: groupId,
+            name: document.getElementById('group-name').value.trim(),
+            subject: document.getElementById('group-subject').value,
+            coverage: document.getElementById('group-coverage').value.trim(),
+            location: document.getElementById('group-location').value,
+            start_date: document.getElementById('datepicker-range-start').value,
+            end_date: document.getElementById('datepicker-range-end').value,
+            start_time: document.getElementById('start-time').value,
+            end_time: document.getElementById('end-time').value,
+            session_repetition: document.getElementById('group-session-repetition').value,
+            agenda: document.getElementById('agenda').value,
+            // Add other fields as needed
+          };
+          try {
+            await updateGroup(updatedGroup);
+            alert('Group updated successfully!');
+            formPopup.style.display = 'none';
+            location.reload();
+          } catch (err) {
+            alert('Failed to update group.');
+          }
+        };
+      }
+    });
+  }
+
+  // 2. Delete (Print) - Delete the group
+  if (tooltipPrintBtn) {
+    tooltipPrintBtn.addEventListener('click', async function(e) {
+      e.preventDefault();
+      if (!confirm('Are you sure you want to delete this group?')) return;
+      const groupId = getGroupId();
+      try {
+        // Ensure deleteGroup is available (import if needed)
+        if (typeof deleteGroup !== 'function') {
+          if (window.deleteGroup) {
+            await window.deleteGroup(groupId);
+          } else if (window.api && typeof window.api.deleteGroup === 'function') {
+            await window.api.deleteGroup(groupId);
+          } else {
+            alert('deleteGroup() function not found.');
+            return;
+          }
+        } else {
+          await deleteGroup(groupId);
+        }
+        alert('Group deleted successfully!');
+        window.location.href = 'study-group-finder.html';
+      } catch (err) {
+        alert('Failed to delete group.');
+        console.error(err);
+      }
+    });
+  }
+
+  // 3. Download (Download) - Download page as PDF
+  if (tooltipDownloadBtn) {
+    tooltipDownloadBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      window.print();
+    });
+  }
+
+  // 4. Copy (optional, not requested)
+  if (tooltipCopyBtn) {
+    tooltipCopyBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      navigator.clipboard.writeText(window.location.href);
+      alert('Page URL copied to clipboard!');
     });
   }
 });
