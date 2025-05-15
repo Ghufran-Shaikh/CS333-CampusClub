@@ -37,65 +37,358 @@ document.addEventListener('DOMContentLoaded', function() {
   if (tooltipShareBtn) {
     tooltipShareBtn.addEventListener('click', async function(e) {
       e.preventDefault();
-      // Show the group-form popup (clone from study-group-finder.html)
+      // Try to find the modal overlay
+      let modalOverlay = document.getElementById('modal-overlay');
       let formPopup = document.getElementById('myForm');
+      if (!modalOverlay) {
+        // Create modal overlay
+        modalOverlay = document.createElement('div');
+        modalOverlay.id = 'modal-overlay';
+        modalOverlay.style.position = 'fixed';
+        modalOverlay.style.top = '0';
+        modalOverlay.style.left = '0';
+        modalOverlay.style.width = '100vw';
+        modalOverlay.style.height = '100vh';
+        modalOverlay.style.background = 'rgba(0,0,0,0.5)';
+        modalOverlay.style.display = 'flex';
+        modalOverlay.style.alignItems = 'center';
+        modalOverlay.style.justifyContent = 'center';
+        modalOverlay.style.zIndex = '9999';
+        document.body.appendChild(modalOverlay);
+      }
+      // Remove any existing form in the modal
+      if (formPopup && formPopup.parentElement !== modalOverlay) {
+        formPopup.remove();
+        formPopup = null;
+      }
       if (!formPopup) {
-        // If not present, create and append it from study-group-finder.html
-        // For simplicity, alert if not found
-        alert('Group form not found on this page.');
+        try {
+          const res = await fetch('study-group-finder.html');
+          const html = await res.text();
+          const tempDiv = document.createElement('div');
+          tempDiv.innerHTML = html;
+          // Try to find the actual <form> inside #myForm or as #myForm itself
+          let form = tempDiv.querySelector('#myForm');
+          if (form && form.tagName !== 'FORM') {
+            // If #myForm is a wrapper, get the inner <form>
+            const innerForm = form.querySelector('form');
+            if (innerForm) form = innerForm;
+          }
+          if (form && form.tagName === 'FORM') {
+            // Remove any parent wrapper if present (prevent double wrapping)
+            if (form.parentElement && form.parentElement !== tempDiv) {
+              form.parentElement.removeChild(form);
+            }
+            // Remove all children from modalOverlay before appending form
+            while (modalOverlay.firstChild) {
+              modalOverlay.removeChild(modalOverlay.firstChild);
+            }
+            // Remove all parent wrappers: extract only the <form> element if #myForm is a wrapper
+            modalOverlay.appendChild(form);
+            formPopup = form;
+            // Style the form directly
+            if (formPopup && formPopup.tagName === 'FORM') {
+              formPopup.id = 'myForm';
+              formPopup.style.display = 'block';
+              formPopup.style.background = '#fff';
+              formPopup.style.padding = '2rem';
+              formPopup.style.borderRadius = '1rem';
+              formPopup.style.boxShadow = '0 2px 16px rgba(0,0,0,0.2)';
+              formPopup.style.maxWidth = '600px';
+              formPopup.style.width = '100%';
+              formPopup.style.position = 'relative';
+              formPopup.style.maxHeight = '80vh';
+              formPopup.style.overflowY = 'auto';
+              // Add close button
+              let closeBtn = document.createElement('button');
+              closeBtn.textContent = '×';
+              closeBtn.setAttribute('aria-label', 'Close');
+              closeBtn.style.position = 'absolute';
+              closeBtn.style.top = '1rem';
+              closeBtn.style.right = '1rem';
+              closeBtn.style.fontSize = '2rem';
+              closeBtn.style.background = 'none';
+              closeBtn.style.border = 'none';
+              closeBtn.style.cursor = 'pointer';
+              closeBtn.addEventListener('click', function() {
+                modalOverlay.style.display = 'none';
+              });
+              formPopup.prepend(closeBtn);
+              modalOverlay.appendChild(formPopup);
+              modalOverlay.style.display = 'flex';
+              // Animate
+              formPopup.scrollTop = 0;
+              setTimeout(() => { formPopup.scrollTop = 0; }, 10);
+              formPopup.classList.add('animate__animated', 'animate__fadeInDown');
+              setTimeout(() => {
+                formPopup.classList.remove('animate__animated', 'animate__fadeInDown');
+              }, 800);
+            }
+          } else {
+            alert('Group form could not be loaded.');
+            return;
+          }
+        } catch (err) {
+          alert('Failed to load group form.');
+          return;
+        }
+      } else {
+        modalOverlay.style.display = 'flex';
+        formPopup.style.display = 'block';
+      }
+      // After appending, re-query the form elements
+      const groupForm = formPopup && formPopup.tagName === 'FORM' ? formPopup : document.getElementById('group-form');
+      if (!groupForm) {
+        alert('Group form not found after loading.');
         return;
       }
-      // Fetch group data
+      // Fetch group data and fill form fields with current page content
       const groupId = getGroupId();
-      const group = await fetchGroupById(groupId);
-      if (!group) {
-        alert('Group not found.');
-        return;
+      // Get the content from the current page (not from API)
+      const groupName = document.getElementById('group-title')?.textContent || '';
+      const groupSubject = document.getElementById('group-subject')?.textContent || '';
+      const groupCoverage = document.getElementById('group-coverage')?.textContent || '';
+      const groupLocation = document.getElementById('side-location')?.textContent || '';
+      const groupDate = document.getElementById('side-date')?.textContent || '';
+      const groupTime = document.getElementById('side-time')?.textContent || '';
+      const groupRepetition = document.getElementById('side-repetition')?.textContent || '';
+      const groupAgenda = (() => {
+        const detailsDiv = document.getElementById('group-details');
+        if (!detailsDiv) return '';
+        const agendaDiv = detailsDiv.querySelector('div.mb-4');
+        if (!agendaDiv) return '';
+        return agendaDiv.textContent.trim();
+      })();
+      // Fill form fields
+      if (groupForm.querySelector('#group-name')) groupForm.querySelector('#group-name').value = groupName;
+      if (groupForm.querySelector('#group-subject')) groupForm.querySelector('#group-subject').value = groupSubject;
+      if (groupForm.querySelector('#group-coverage')) groupForm.querySelector('#group-coverage').value = groupCoverage;
+      if (groupForm.querySelector('#group-location')) groupForm.querySelector('#group-location').value = groupLocation;
+      if (groupForm.querySelector('#datepicker-range-start')) groupForm.querySelector('#datepicker-range-start').value = '';
+      if (groupForm.querySelector('#datepicker-range-end')) groupForm.querySelector('#datepicker-range-end').value = '';
+      if (groupForm.querySelector('#start-time')) groupForm.querySelector('#start-time').value = '';
+      if (groupForm.querySelector('#end-time')) groupForm.querySelector('#end-time').value = '';
+      if (groupForm.querySelector('#group-session-repetition')) groupForm.querySelector('#group-session-repetition').value = groupRepetition;
+      if (groupForm.querySelector('#agenda')) groupForm.querySelector('#agenda').value = groupAgenda;
+      
+      
+      function initTomSelectFields() {
+  fetchSubjects().then(allSubjects => {
+    const mappedSubjects = allSubjects.map(subject => ({ id: subject.id, text: subject.code }));
+    const subjInput = groupForm.querySelector('#group-subject');
+    if (subjInput) {
+      if (subjInput.tomselect) subjInput.tomselect.destroy();
+      const ts = new TomSelect(subjInput, {
+        valueField: 'id',
+        labelField: 'text',
+        searchField: 'text',
+        maxItems: 1,
+        preload: true,
+        placeholder: 'Select a subject',
+        load: function(query, callback) {
+          if (!query.length) return callback(mappedSubjects.slice(0, 50));
+          const filtered = mappedSubjects.filter(subject => subject.text.toLowerCase().includes(query.toLowerCase()));
+          callback(filtered);
+        },
+        plugins: ['dropdown_input']
+      });
+
+      const updatePlaceholder = () => {
+        if (ts.getValue()) {
+          ts.control_input.setAttribute('placeholder', '');
+        } else {
+          ts.control_input.setAttribute('placeholder', 'Select a subject');
+        }
+      };
+
+      ts.on('change', updatePlaceholder);
+      ts.on('load', updatePlaceholder);
+      ts.on('initialize', updatePlaceholder);
+
+      if (groupSubject) ts.setValue(groupSubject, true);
+      subjInput.style.display = 'none';
+    }
+  });
+
+  fetchLocations().then(allLocations => {
+    const mappedLocations = allLocations.map(location => ({ id: location.id, text: location.code }));
+    const locInput = groupForm.querySelector('#group-location');
+    if (locInput) {
+      if (locInput.tomselect) locInput.tomselect.destroy();
+      const ts = new TomSelect(locInput, {
+        valueField: 'id',
+        labelField: 'text',
+        searchField: 'text',
+        maxItems: 1,
+        preload: true,
+        placeholder: 'Select a location',
+        load: function(query, callback) {
+          if (!query.length) return callback(mappedLocations.slice(0, 50));
+          const filtered = mappedLocations.filter(location => location.text.toLowerCase().includes(query.toLowerCase()));
+          callback(filtered);
+        },
+        plugins: ['dropdown_input']
+      });
+
+      const updatePlaceholder = () => {
+        if (ts.getValue()) {
+          ts.control_input.setAttribute('placeholder', '');
+        } else {
+          ts.control_input.setAttribute('placeholder', 'Select a location');
+        }
+      };
+
+      ts.on('change', updatePlaceholder);
+      ts.on('load', updatePlaceholder);
+      ts.on('initialize', updatePlaceholder);
+
+      if (groupLocation) ts.setValue(groupLocation, true);
+      locInput.style.display = 'none';
+    }
+  });
+}
+
+      // --- TomSelect for subject and location ---
+      // Ensure TomSelect library is loaded
+      if (typeof TomSelect === 'undefined') {
+        const tomSelectScript = document.createElement('script');
+        tomSelectScript.src = 'https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js';
+        tomSelectScript.onload = () => initTomSelectFields();
+        document.body.appendChild(tomSelectScript);
+      } else {
+        initTomSelectFields();
       }
-      // Fill form fields with group data
-      document.getElementById('group-name').value = group.name || '';
-      document.getElementById('group-subject').value = group.subject_id || group.subject || '';
-      document.getElementById('group-coverage').value = group.coverage || '';
-      document.getElementById('group-location').value = group.location_code || group.location || '';
-      document.getElementById('datepicker-range-start').value = group.start_date || '';
-      document.getElementById('datepicker-range-end').value = group.end_date || '';
-      document.getElementById('start-time').value = group.start_time || '';
-      document.getElementById('end-time').value = group.end_time || '';
-      document.getElementById('group-session-repetition').value = group.session_repetition || group.repetition || '';
-      document.getElementById('agenda').value = group.agenda || '';
-      // Show the form
-      formPopup.style.display = 'block';
+      function hideHelpTextIfPresent(input, helpTexts) {
+        // Remove placeholder from original select
+        input.removeAttribute('placeholder');
+        // Hide next sibling if it contains help text
+        let sibling = input.nextElementSibling;
+        if (sibling && sibling.textContent) {
+          for (const txt of helpTexts) {
+            if (sibling.textContent.trim().includes(txt)) {
+              sibling.style.display = 'none';
+            }
+          }
+        }
+      }
+      function initTomSelectFields() {
+        fetchSubjects().then(allSubjects => {
+          const mappedSubjects = allSubjects.map(subject => ({ id: subject.id, text: subject.code }));
+          const subjInput = groupForm.querySelector('#group-subject');
+          if (subjInput) {
+            if (subjInput.tomselect) subjInput.tomselect.destroy();
+            const ts = new TomSelect(subjInput, {
+              valueField: 'id',
+              labelField: 'text',
+              searchField: 'text',
+              maxItems: 1,
+              preload: true,
+              load: function(query, callback) {
+                if (!query.length) return callback(mappedSubjects.slice(0, 50));
+                const filtered = mappedSubjects.filter(subject => subject.text.toLowerCase().includes(query.toLowerCase()));
+                callback(filtered);
+              },
+              plugins: ['dropdown_input']
+            });
+            if (groupSubject) {
+              ts.setValue(groupSubject, true);
+              ts.input.removeAttribute('placeholder');
+              subjInput.removeAttribute('placeholder');
+              hideHelpTextIfPresent(subjInput, ['Select a group']);
+            }
+            subjInput.style.display = 'none';
+            ts.on('change', function() {
+              if (ts.getValue()) {
+                ts.input.removeAttribute('placeholder');
+                subjInput.removeAttribute('placeholder');
+                hideHelpTextIfPresent(subjInput, ['Select a group']);
+              }
+            });
+            ts.on('initialize', function() {
+              if (ts.getValue()) {
+                ts.input.removeAttribute('placeholder');
+                subjInput.removeAttribute('placeholder');
+                hideHelpTextIfPresent(subjInput, ['Select a group']);
+              }
+            });
+          }
+        });
+        fetchLocations().then(allLocations => {
+          const mappedLocations = allLocations.map(location => ({ id: location.id, text: location.code }));
+          const locInput = groupForm.querySelector('#group-location');
+          if (locInput) {
+            if (locInput.tomselect) locInput.tomselect.destroy();
+            const ts = new TomSelect(locInput, {
+              valueField: 'id',
+              labelField: 'text',
+              searchField: 'text',
+              maxItems: 1,
+              preload: true,
+              load: function(query, callback) {
+                if (!query.length) return callback(mappedLocations.slice(0, 50));
+                const filtered = mappedLocations.filter(location => location.text.toLowerCase().includes(query.toLowerCase()));
+                callback(filtered);
+              },
+              plugins: ['dropdown_input']
+            });
+            if (groupLocation) {
+              ts.setValue(groupLocation, true);
+              ts.input.removeAttribute('placeholder');
+              locInput.removeAttribute('placeholder');
+              hideHelpTextIfPresent(locInput, ['e.g S40-1016']);
+            }
+            locInput.style.display = 'none';
+            ts.on('change', function() {
+              if (ts.getValue()) {
+                ts.input.removeAttribute('placeholder');
+                locInput.removeAttribute('placeholder');
+                hideHelpTextIfPresent(locInput, ['e.g S40-1016']);
+              }
+            });
+            ts.on('initialize', function() {
+              if (ts.getValue()) {
+                ts.input.removeAttribute('placeholder');
+                locInput.removeAttribute('placeholder');
+                hideHelpTextIfPresent(locInput, ['e.g S40-1016']);
+              }
+            });
+          }
+        });
+      }
+      // Show modal
+      modalOverlay.style.display = 'flex';
       window.scrollTo({ top: 0, behavior: 'smooth' });
       // On submit, call updateGroup()
-      const groupForm = document.getElementById('group-form');
-      if (groupForm) {
-        groupForm.onsubmit = async function(ev) {
-          ev.preventDefault();
-          // Gather form values
-          const updatedGroup = {
-            id: groupId,
-            name: document.getElementById('group-name').value.trim(),
-            subject: document.getElementById('group-subject').value,
-            coverage: document.getElementById('group-coverage').value.trim(),
-            location: document.getElementById('group-location').value,
-            start_date: document.getElementById('datepicker-range-start').value,
-            end_date: document.getElementById('datepicker-range-end').value,
-            start_time: document.getElementById('start-time').value,
-            end_time: document.getElementById('end-time').value,
-            session_repetition: document.getElementById('group-session-repetition').value,
-            agenda: document.getElementById('agenda').value,
-            // Add other fields as needed
-          };
-          try {
-            await updateGroup(updatedGroup);
-            alert('Group updated successfully!');
-            formPopup.style.display = 'none';
-            location.reload();
-          } catch (err) {
-            alert('Failed to update group.');
-          }
+      groupForm.onsubmit = async function(ev) {
+        ev.preventDefault();
+        const updatedGroup = {
+          id: groupId,
+          name: groupForm.querySelector('#group-name').value.trim(),
+          subject: groupForm.querySelector('#group-subject').value,
+          coverage: groupForm.querySelector('#group-coverage').value.trim(),
+          location: groupForm.querySelector('#group-location').value,
+          start_date: groupForm.querySelector('#datepicker-range-start').value,
+          end_date: groupForm.querySelector('#datepicker-range-end').value,
+          start_time: groupForm.querySelector('#start-time').value,
+          end_time: groupForm.querySelector('#end-time').value,
+          session_repetition: groupForm.querySelector('#group-session-repetition').value,
+          agenda: groupForm.querySelector('#agenda').value,
         };
-      }
+        try {
+          await updateGroup(updatedGroup);
+          alert('Group updated successfully!');
+          modalOverlay.style.display = 'none';
+          location.reload();
+        } catch (err) {
+          alert('Failed to update group.');
+        }
+      };
+      // Optional: close modal when clicking outside the form
+      modalOverlay.addEventListener('click', function(ev) {
+        if (ev.target === modalOverlay) {
+          modalOverlay.style.display = 'none';
+        }
+      });
     });
   }
 
@@ -105,6 +398,11 @@ document.addEventListener('DOMContentLoaded', function() {
       e.preventDefault();
       if (!confirm('Are you sure you want to delete this group?')) return;
       const groupId = getGroupId();
+      console.log('Attempting to delete group with ID:', groupId);
+      if (!groupId) {
+        alert('Error: No group ID found. Cannot delete.');
+        return;
+      }
       try {
         // Ensure deleteGroup is available (import if needed)
         if (typeof deleteGroup !== 'function') {
