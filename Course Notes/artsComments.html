@@ -1,129 +1,168 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Course Comments</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    body { font-family: 'Poppins', sans-serif; background-color: #f8f9fa; }
-    .notification {
-      display: none;
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background-color: #4caf50;
-      color: white;
-      padding: 15px;
-      border-radius: 5px;
-      z-index: 1000;
-    }
-  </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Course Comments</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Poppins', sans-serif; background-color: #f8f9fa; }
+        .notification {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #4caf50;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            z-index: 1000;
+        }
+    </style>
 </head>
 <body class="bg-gray-100">
-    <!-- Navigation Bar -->
-      <nav class="bg-blue-950 shadow-lg">
+    <nav class="bg-blue-950 shadow-lg">
         <div class="max-w-7xl mx-auto px-4">
-          <div class="flex justify-center h-16 items-center">
-            <div class="flex space-x-4">
-              <a href="/index.html" class="text-white hover:text-blue-500 px-3 py-2 rounded-md text-sm font-medium">Home</a>
-              <a href="/Calnder-moduel/calander.html" class="text-white hover:text-blue-500 px-3 py-2 rounded-md text-sm font-medium">Event Calendar</a>
-              <a href="/study-group-finder/study-group-finder.html" class="text-white hover:text-blue-500 px-3 py-2 rounded-md text-sm font-medium">Study Group Finder</a>
-              <a href="/CourseReviews/CourseReviews.html" class="text-white hover:text-blue-500 px-3 py-2 rounded-md text-sm font-medium">Course Reviews</a>
-              <a href="/Course Notes/CourseNotes.html" class="text-blue-500 px-3 py-2 rounded-md text-sm font-medium">Course Note</a>
-              <a href="/Club Activites/clubActivites.html" class="text-white hover:text-blue-500 px-3 py-2 rounded-md text-sm font-medium">Clubs Activities</a>
+            <div class="flex justify-center h-16 items-center">
+                <div class="flex space-x-4">
+                    <a href="/index.html" class="text-white hover:text-blue-500 px-3 py-2 rounded-md text-sm font-medium">Home</a>
+                    <a href="/Calnder-moduel/calander.html" class="text-white hover:text-blue-500 px-3 py-2 rounded-md text-sm font-medium">Event Calendar</a>
+                    <a href="/study-group-finder/study-group-finder.html" class="text-white hover:text-blue-500 px-3 py-2 rounded-md text-sm font-medium">Study Group Finder</a>
+                    <a href="/CourseReviews/CourseReviews.html" class="text-white hover:text-blue-500 px-3 py-2 rounded-md text-sm font-medium">Course Reviews</a>
+                    <a href="/Course Notes/CourseNotes.html" class="text-blue-500 px-3 py-2 rounded-md text-sm font-medium">Course Note</a>
+                    <a href="/Club Activites/clubActivites.html" class="text-white hover:text-blue-500 px-3 py-2 rounded-md text-sm font-medium">Clubs Activities</a>
+                </div>
             </div>
-          </div>
         </div>
-      </nav>
+    </nav>
     <main class="max-w-7xl mx-auto px-4 py-8">
         <section class="mb-8">
-          <div class="bg-orange-400 rounded-3xl shadow p-6">
-            <div class="flex gap-4">
-              <div class="relative flex-1">
-                <input id="search-bar" type="text" placeholder="Search by course title..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
-              </div>
-              <div class="flex space-x-2">
-                <select id="filter-dropdown" class="px-3 py-2 pr-4 border border-gray-300 rounded-2xl bg-white text-sm">
-                  <option value="recently-added">Recently Added</option>
-                  <option value="a-z">Course Title (A-Z)</option>
-                  <option value="z-a">Course Title (Z-A)</option>
-                </select>
-              </div>
-              
+            <div class="bg-orange-400 rounded-3xl shadow p-6">
+                <div class="flex gap-4">
+                    <div class="relative flex-1">
+                        <input id="search-bar" type="text" placeholder="Search by course title..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500" disabled>
+                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                    </div>
+                    <div class="flex space-x-2">
+                        <select id="filter-dropdown" class="px-3 py-2 pr-4 border border-gray-300 rounded-2xl bg-white text-sm" disabled>
+                            <option value="recently-added">Recently Added</option>
+                            <option value="a-z">Course Title (A-Z)</option>
+                            <option value="z-a">Course Title (Z-A)</option>
+                        </select>
+                    </div>
+                </div>
             </div>
-          </div>
         </section>
-
 
         <div class="max-w-4xl mx-auto px-4 py-8">
             <h1 class="text-2xl font-bold text-blue-950 mb-6">Course Comments</h1>
 
-            <!-- Comment Form (Initially Hidden) -->
             <div id="commentFormContainer" class="hidden bg-white rounded-lg shadow-md p-6 mb-6">
-              <h2 class="text-xl font-semibold mb-4">Add New Comment</h2>
-              <form id="commentForm" class="space-y-4">
-                <div>
-                  <label for="commentName" class="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
-                  <input type="text" id="commentName" required 
-                         class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
+                <h2 class="text-xl font-semibold mb-4" id="formTitle">Add New Comment</h2>
+                <form id="commentForm" class="space-y-4">
+                    <input type="hidden" id="commentId">
+                    <div>
+                        <label for="commentName" class="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
+                        <input type="text" id="commentName" required
+                               class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
 
-                <div>
-                  <label for="commentCourse" class="block text-sm font-medium text-gray-700 mb-1">Course</label>
-                  <select id="commentCourse" required 
-                          class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option value="1">Mathematics</option>
-                    <option value="2">Physics</option>
-                    <option value="3">Chemistry</option>
-                    <option value="4">Biology</option>
-                    <option value="5">Computer Science</option>
-                  </select>
-                </div>
+                    <div>
+                        <label for="commentCourse" class="block text-sm font-medium text-gray-700 mb-1">Course</label>
+                        <select id="commentCourse" required
+                                class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">Select a course</option>
+                        </select>
+                    </div>
 
-                <div>
-                  <label for="commentText" class="block text-sm font-medium text-gray-700 mb-1">Comment</label>
-                  <textarea id="commentText" rows="4" required
-                            class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
-                </div>
+                    <div>
+                        <label for="commentText" class="block text-sm font-medium text-gray-700 mb-1">Comment</label>
+                        <textarea id="commentText" rows="4" required
+                                  class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                    </div>
 
-                <div class="flex justify-end space-x-3">
-                  <button type="button" id="cancelCommentBtn" 
-                          class="px-4 py-2 border rounded-md hover:bg-gray-100">Cancel</button>
-                  <button type="submit" 
-                          class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Submit</button>
-                </div>
-              </form>
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" id="cancelCommentBtn"
+                                class="px-4 py-2 border rounded-md hover:bg-gray-100">Cancel</button>
+                        <button type="submit" id="submitCommentBtn"
+                                class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Submit</button>
+                    </div>
+                </form>
             </div>
 
-            <!-- Button to Show Comment Form -->
-            <button id="showCommentFormBtn" 
+            <button id="showCommentFormBtn"
                     class="mb-6 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-              <i class="fas fa-plus mr-2"></i>Add New Comment
+                <i class="fas fa-plus mr-2"></i>Add New Comment
             </button>
 
-            <!-- Comments Container -->
             <div id="commentsContainer" class="space-y-4"></div>
-          </div>
+        </div>
 
-          <div id="notification" class="notification"></div>
+        <div id="notification" class="notification"></div>
 
-          <script>
+        <script>
             const url = "https://22dc9f8a-91aa-4bf0-8ae5-cda91c5728cf-00-1kektu7zbblns.sisko.replit.dev/apiComments.php"; // API URL
             const commentsContainer = document.getElementById('commentsContainer');
             const courseSelect = document.getElementById('commentCourse');
+            const filterDropdown = document.getElementById('filter-dropdown');
+            const searchBar = document.getElementById('search-bar');
+            const formTitle = document.getElementById('formTitle');
+            const submitCommentBtn = document.getElementById('submitCommentBtn');
+            const commentIdInput = document.getElementById('commentId');
+
+            let allComments = []; // Store all fetched comments for sorting and filtering
+            let isEditing = false;
 
             // Show the comment form when the button is clicked
             document.getElementById('showCommentFormBtn').addEventListener('click', () => {
+                resetForm();
                 document.getElementById('commentFormContainer').classList.remove('hidden');
             });
+
+            // Reset form to add new comment state
+            function resetForm() {
+                isEditing = false;
+                formTitle.textContent = 'Add New Comment';
+                submitCommentBtn.textContent = 'Submit';
+                commentIdInput.value = '';
+                document.getElementById('commentForm').reset();
+            }
 
             // Cancel button functionality
             document.getElementById('cancelCommentBtn').addEventListener('click', () => {
                 document.getElementById('commentFormContainer').classList.add('hidden');
+                resetForm();
             });
+
+            // Fetch courses to populate the dropdown
+            async function loadCourses() {
+                try {
+                    const response = await fetch(`${url}?action=get_courses&college_id=4`);
+                    if (!response.ok) {
+                        throw new Error(`Failed to fetch courses: ${response.status}`);
+                    }
+                    const courses = await response.json();
+                    populateCourseSelect(courses);
+                } catch (error) {
+                    console.error('Error loading courses:', error);
+                    showNotification('Error loading courses. Please try again.');
+                }
+            }
+
+            function populateCourseSelect(courses) {
+                courseSelect.innerHTML = '<option value="">Select a course</option>';
+                if (courses && courses.length > 0) {
+                    courses.forEach(course => {
+                        const option = document.createElement('option');
+                        option.value = course.id;
+                        option.textContent = course.title;
+                        courseSelect.appendChild(option);
+                    });
+                } else {
+                    courseSelect.innerHTML += '<option value="" disabled>No courses available</option>';
+                }
+            }
 
             // Fetch comments for the selected course
             async function fetchComments(courseId) {
@@ -131,11 +170,31 @@
                     const response = await fetch(`${url}?course_id=${encodeURIComponent(courseId)}`);
                     if (!response.ok) throw new Error('Failed to fetch comments');
                     const comments = await response.json();
-                    displayComments(comments);
+                    allComments = comments; // Store fetched comments
+                    sortAndDisplayComments(filterDropdown.value); // Initial sort and display
                 } catch (error) {
                     console.error('Error fetching comments:', error);
                     showNotification('Error loading comments. Please try again.');
                 }
+            }
+
+            function sortAndDisplayComments(sortBy) {
+                let sortedComments = [...allComments]; // Create a copy
+
+                switch (sortBy) {
+                    case 'recently-added':
+                        sortedComments.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                        break;
+                    case 'a-z':
+                        sortedComments.sort((a, b) => a.course_title.localeCompare(b.course_title));
+                        break;
+                    case 'z-a':
+                        sortedComments.sort((a, b) => b.course_title.localeCompare(a.course_title));
+                        break;
+                    default: // Default to recently added
+                        sortedComments.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                }
+                displayComments(sortedComments);
             }
 
             // Display comments
@@ -155,17 +214,35 @@
                     commentDiv.classList.add('bg-white', 'rounded-lg', 'p-6', 'shadow-md');
                     commentDiv.innerHTML = `
                         <div class="flex justify-between items-start mb-2">
-                            <h3 class="font-semibold text-blue-950">${comment.user_name}</h3>
+                            <h3 class="font-semibold text-blue-950">${escapeHtml(comment.user_name)}</h3>
                             <span class="text-xs text-gray-500">${formatDate(comment.created_at)}</span>
                         </div>
-                        <p class="text-gray-700 mb-3">${comment.comment}</p>
-                        <button onclick="deleteComment(${comment.id})" 
-                                class="text-red-600 hover:text-red-800 text-sm">
-                            <i class="fas fa-trash mr-1"></i>Delete
-                        </button>
+                        <p class="text-gray-700 mb-3">${escapeHtml(comment.comment)}</p>
+                        <span class="text-sm text-blue-600">${escapeHtml(comment.course_title)}</span>
+                        <div class="flex justify-end space-x-2 mt-2">
+                            <button onclick="editComment(${comment.id}, '${escapeHtml(comment.user_name)}', ${comment.course_id}, '${escapeHtml(comment.comment)}')"
+                                    class="px-3 py-1 bg-blue-100 text-blue-600 rounded-md hover:bg-blue-200 text-sm">
+                                <i class="fas fa-edit mr-1"></i>Edit
+                            </button>
+                            <button onclick="deleteComment(${comment.id})"
+                                    class="px-3 py-1 bg-red-100 text-red-600 rounded-md hover:bg-red-200 text-sm">
+                                <i class="fas fa-trash mr-1"></i>Delete
+                            </button>
+                        </div>
                     `;
                     commentsContainer.appendChild(commentDiv);
                 });
+            }
+
+            // Helper function to escape HTML for safe insertion
+            function escapeHtml(unsafe) {
+                if (!unsafe) return '';
+                return unsafe
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
             }
 
             // Format date for display
@@ -181,35 +258,53 @@
                 });
             }
 
-            // Add a new comment
+            // Add or update a comment
             document.getElementById('commentForm').addEventListener('submit', async (e) => {
                 e.preventDefault(); // Prevent default form submission
 
                 const user_name = document.getElementById('commentName').value;
                 const courseId = document.getElementById('commentCourse').value;
                 const comment = document.getElementById('commentText').value;
+                const commentId = commentIdInput.value;
 
                 try {
-                    const response = await fetch(url, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ user_name, course_id: courseId, comment })
-                    });
+                    let response;
+                    if (isEditing) {
+                        // Update existing comment
+                        response = await fetch(`${url}?id=${commentId}`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ 
+                                user_name, 
+                                course_id: courseId, 
+                                comment 
+                            })
+                        });
+                    } else {
+                        // Add new comment
+                        response = await fetch(url, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ user_name, course_id: courseId, comment })
+                        });
+                    }
 
                     const result = await response.json();
                     if (result.message) {
-                        showNotification('Comment added successfully!');
+                        showNotification(isEditing ? 'Comment updated successfully!' : 'Comment added successfully!');
                         fetchComments(courseId); // Refresh comments
                         document.getElementById('commentFormContainer').classList.add('hidden');
-                        document.getElementById('commentForm').reset();
+                        resetForm();
                     } else {
-                        throw new Error(result.error || 'Failed to add comment');
+                        throw new Error(result.error || (isEditing ? 'Failed to update comment' : 'Failed to add comment'));
                     }
                 } catch (error) {
-                    console.error('Error adding comment:', error);
-                    showNotification('Error adding comment. Please try again.');
+                    console.error('Error:', error);
+                    showNotification(`Error ${isEditing ? 'updating' : 'adding'} comment. Please try again.`);
                 }
             });
 
@@ -218,7 +313,7 @@
                 if (!confirm('Are you sure you want to delete this comment?')) return;
 
                 try {
-                    const response = await fetch(`${url}/${commentId}`, {
+                    const response = await fetch(`${url}?id=${commentId}`, {
                         method: 'DELETE'
                     });
                     const result = await response.json();
@@ -234,6 +329,21 @@
                 }
             }
 
+            // Edit comment functionality
+            function editComment(id, name, courseId, text) {
+                isEditing = true;
+                commentIdInput.value = id;
+                formTitle.textContent = 'Edit Comment';
+                submitCommentBtn.textContent = 'Update Comment';
+                
+                document.getElementById('commentName').value = name;
+                document.getElementById('commentCourse').value = courseId;
+                document.getElementById('commentText').value = text;
+                
+                document.getElementById('commentFormContainer').classList.remove('hidden');
+                document.getElementById('commentFormContainer').scrollIntoView({ behavior: 'smooth' });
+            }
+
             // Notification function
             function showNotification(message) {
                 const notification = document.getElementById('notification');
@@ -242,45 +352,53 @@
                 setTimeout(() => notification.style.display = 'none', 3000);
             }
 
-            // Load comments for the selected course when the course changes
+            // Load comments when the course selection changes
             courseSelect.addEventListener('change', () => {
                 fetchComments(courseSelect.value);
             });
 
-            // Load initial comments for the default selected course on page load
+            // Sort comments when the filter dropdown changes
+            filterDropdown.addEventListener('change', () => {
+                sortAndDisplayComments(filterDropdown.value);
+            });
+
+            // Load initial data on page load
             document.addEventListener('DOMContentLoaded', () => {
-                const selectedCourseId = courseSelect.value;
-                if (selectedCourseId) {
-                    fetchComments(selectedCourseId);
+                loadCourses(); // Populate the course dropdown
+                // Initially, fetch comments for the first available course or an empty selection
+                const initialCourseId = courseSelect.value;
+                if (initialCourseId) {
+                    fetchComments(initialCourseId);
+                } else {
+                    displayComments([]); // Display no comments initially if no course is selected
                 }
             });
-          </script>
+        </script>
 
         <div class="flex justify-center">
-          <nav aria-label="Page navigation" class="flex items-center space-x-2">
-            <button id="prev-page" class="px-4 py-2 rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300 disabled:opacity-50">
-              <i class="fas fa-chevron-left"></i> Previous
-            </button>
-            <div id="page-numbers" class="flex space-x-1"></div>
-            <button id="next-page" class="px-4 py-2 rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300 disabled:opacity-50">
-              Next <i class="fas fa-chevron-right"></i>
-            </button>
-          </nav>
+            <nav aria-label="Page navigation" class="flex items-center space-x-2">
+                <button id="prev-page" class="px-4 py-2 rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300 disabled:opacity-50">
+                    <i class="fas fa-chevron-left"></i> Previous
+                </button>
+                <div id="page-numbers" class="flex space-x-1"></div>
+                <button id="next-page" class="px-4 py-2 rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300 disabled:opacity-50">
+                    Next <i class="fas fa-chevron-right"></i>
+                </button>
+            </nav>
         </div>
-      </main>
+    </main>
 
-      <footer class="bg-blue-950 border-t mt-12 py-6">
+    <footer class="bg-blue-950 border-t mt-12 py-6">
         <div class="container mx-auto flex justify-between items-center flex-wrap text-sm">
-          <div class="text-white hover:text-blue-500">&copy; 2025 ITCS333 Project</div>
-          <div class="flex gap-4">
-            <a href="#" class="text-white hover:text-blue-500 transition duration-300">Club Policy</a>
-            <a href="#" class="text-white hover:text-blue-500 transition duration-300">Terms</a>
-            <a href="#" class="text-white hover:text-blue-500 transition duration-300">Contact</a>
-            <a href="#" class="text-white hover:text-blue-500 transition duration-300">About</a>
-            <a href="#" class="text-white hover:text-blue-500 transition duration-300">Help</a>
-          </div>
+            <div class="text-white hover:text-blue-500">&copy; 2025 ITCS333 Project</div>
+            <div class="flex gap-4">
+                <a href="#" class="text-white hover:text-blue-500 transition duration-300">Club Policy</a>
+                <a href="#" class="text-white hover:text-blue-500 transition duration-300">Terms</a>
+                <a href="#" class="text-white hover:text-blue-500 transition duration-300">Contact</a>
+                <a href="#" class="text-white hover:text-blue-500 transition duration-300">About</a>
+                <a href="#" class="text-white hover:text-blue-500 transition duration-300">Help</a>
+            </div>
         </div>
-      </footer>
-
+    </footer>
 </body>
 </html>

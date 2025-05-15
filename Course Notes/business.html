@@ -104,7 +104,15 @@
     <div class="bg-white p-6 rounded-xl w-full max-w-lg">
       <form id="noteForm">
         <h3 class="text-xl font-bold mb-4">Add New Note</h3>
-        <input id="course_title" name="course_title" type="text" placeholder="Course Title" required class="w-full mb-3 px-4 py-2 border rounded-md">
+        
+        <div class="mb-3">
+          <label for="courseSelect" class="block text-sm font-medium text-gray-700 mb-1">Course</label>
+          <select id="courseSelect" required class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="">Select a course</option>
+            <!-- Courses will be populated here -->
+          </select>
+        </div>
+        
         <input id="title" name="title" type="text" placeholder="Note Title" required class="w-full mb-3 px-4 py-2 border rounded-md">
         <textarea id="content" name="content" placeholder="Note Content" required class="w-full mb-3 px-4 py-2 border rounded-md"></textarea>
         <input id="path" name="path" type="text" placeholder="Path or URL to file" required class="w-full mb-3 px-4 py-2 border rounded-md">
@@ -118,12 +126,14 @@
 
   <script>
     const url = 'https://22dc9f8a-91aa-4bf0-8ae5-cda91c5728cf-00-1kektu7zbblns.sisko.replit.dev/api.php';
+    const coursesUrl = 'https://22dc9f8a-91aa-4bf0-8ae5-cda91c5728cf-00-1kektu7zbblns.sisko.replit.dev/apiComments.php?action=get_courses&college_id=3';
     let currentEditingNoteId = null;
     let allNotes = [];
     let currentSort = 'recently-added';
     let currentSearchTerm = '';
     const NOTES_PER_PAGE = 3;
     let currentPage = 1;
+    let artsCourses = []; // To store the list of arts courses
 
     // Notification function
     function showNotification(message) {
@@ -131,6 +141,36 @@
         notification.textContent = message;
         notification.style.display = 'block';
         setTimeout(() => notification.style.display = 'none', 3000);
+    }
+
+    // Fetch arts courses for the dropdown
+    async function fetchArtsCourses() {
+        try {
+            const response = await fetch(coursesUrl);
+            if (!response.ok) throw new Error('Failed to fetch courses');
+            artsCourses = await response.json();
+            populateCourseDropdown();
+        } catch (error) {
+            console.error('Error fetching courses:', error);
+            showNotification('Error loading courses. Please try again.');
+        }
+    }
+
+    // Populate the course dropdown with arts courses
+    function populateCourseDropdown() {
+        const courseSelect = document.getElementById('courseSelect');
+        courseSelect.innerHTML = '<option value="">Select a course</option>';
+        
+        if (artsCourses && artsCourses.length > 0) {
+            artsCourses.forEach(course => {
+                const option = document.createElement('option');
+                option.value = course.title; // Using title as value
+                option.textContent = course.title;
+                courseSelect.appendChild(option);
+            });
+        } else {
+            courseSelect.innerHTML += '<option value="" disabled>No courses available</option>';
+        }
     }
 
     // Fetch all notes from the API
@@ -305,7 +345,16 @@
         if (!note) return alert('Note not found');
 
         currentEditingNoteId = noteId;
-        document.getElementById('course_title').value = note.course_title;
+        
+        // Set the course selection
+        const courseSelect = document.getElementById('courseSelect');
+        for (let i = 0; i < courseSelect.options.length; i++) {
+            if (courseSelect.options[i].value === note.course_title) {
+                courseSelect.selectedIndex = i;
+                break;
+            }
+        }
+        
         document.getElementById('title').value = note.title;
         document.getElementById('content').value = note.content;
         document.getElementById('path').value = note.path;
@@ -315,14 +364,21 @@
 
     // Submit note form (create or update)
     async function submitNote() {
-        const form = document.getElementById('noteForm');
-        const formData = new FormData(form);
-      
+        const courseSelect = document.getElementById('courseSelect');
+        const title = document.getElementById('title').value;
+        const content = document.getElementById('content').value;
+        const path = document.getElementById('path').value;
+        
+        if (!courseSelect.value) {
+            showNotification('Please select a course');
+            return;
+        }
+
         const payload = {
-            course_title: formData.get('course_title'),
-            title: formData.get('title'),
-            content: formData.get('content'),
-            path: formData.get('path')
+            course_title: courseSelect.value,
+            title: title,
+            content: content,
+            path: path
         };
 
         const urlToUse = currentEditingNoteId
@@ -347,7 +403,7 @@
             
             showNotification(result.message || 'Note saved successfully');
             document.getElementById('noteModal').classList.add('hidden');
-            form.reset();
+            document.getElementById('noteForm').reset();
             currentEditingNoteId = null;
             await fetchNotes(); // Refresh the notes list
         } catch (error) {
@@ -360,7 +416,10 @@
 
     // Initialize the page
     document.addEventListener('DOMContentLoaded', () => {
-        // Load notes
+        // Load arts courses first
+        fetchArtsCourses();
+        
+        // Then load notes
         fetchNotes();
         
         // Setup form button
