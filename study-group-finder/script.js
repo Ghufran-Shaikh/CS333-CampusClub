@@ -389,25 +389,11 @@ function renderGroups(groups) {
             dateDisplay = `${startDate} - ${endDate}`; // Display both start and end dates
         }
 
-        // Determine time display
-        let timeDisplay;
-        if (!group.start_time && !group.end_time) {
-            timeDisplay = 'No times specified';
-        } else if (group.start_time && !group.end_time) {
-            timeDisplay = `From: ${formatTime(group.start_time)}`;
-        } else if (!group.start_time && group.end_time) {
-            timeDisplay = `Until: ${formatTime(group.end_time)}`;
-        } else {
-            timeDisplay = `${formatTime(group.start_time)} - ${formatTime(group.end_time)}`;
-        }
-        
-
         return {
             id: group.id,
             name: group.name,
             subject: group.subject_id || 'No subject specified',
             dateDisplay: dateDisplay,
-            timeDisplay: timeDisplay,
             seats: group.members_quantity_limit ?? 0
         };
     });
@@ -427,7 +413,6 @@ function renderGroups(groups) {
                 <div class="m-0.5 flex relative flex-col items-start justify-start space-y-1">
                     <span class="text-xs font-normal text-gray-700 dark:text-gray-400 group-hover:text-white">${group.subject}</span>
                     <span class="text-xs font-normal text-gray-700 dark:text-gray-400 group-hover:text-white">${group.dateDisplay}</span>
-                    <span class="text-xs font-normal text-gray-700 dark:text-gray-400 group-hover:text-white">${group.timeDisplay}</span>
                     <span class="text-xs font-normal text-gray-700 dark:text-gray-400 group-hover:text-white">${group.seats} Seats Available</span>
                 </div>
             </div>
@@ -446,12 +431,6 @@ function formatDate(dateString) {
     const options = { year: 'numeric', month: 'short', day: 'numeric' };
     return new Date(dateString).toLocaleDateString(undefined, options);
 }
-
-function formatTime(timeString) {
-    if (!timeString) return null;
-    return timeString.substring(0, 5);
-}
-
 
 function updatePagination(totalPages) {
     const paginationList = document.querySelector('nav[aria-label="Page navigation example"] ul');
