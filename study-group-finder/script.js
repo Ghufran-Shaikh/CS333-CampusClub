@@ -87,27 +87,34 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   
-fetch('courses.json')
-  .then(res => res.json())
-  .then(allCourses => {
-    new TomSelect("#group-subject", {
-      valueField: "id",
-      labelField: "text",
-      searchField: "text",
-      maxItems: 1, //Allow only one selection
-      preload: true,
-      load: function(query, callback) {
-        if (!query.length) return callback(allCourses.slice(0, 50));
+fetchSubjects().then(allSubjects => {
+  // Map the subjects to fit TomSelect's structure
+  const mappedSubjects = allSubjects.map(subject => ({
+    id: subject.id,           // ID of the subject
+    text: subject.code        // Code of the subject to display
+  }));
 
-        const filtered = allCourses.filter(course =>
-          course.text.toLowerCase().includes(query.toLowerCase())
-        );
+  new TomSelect("#group-subject", {
+    valueField: "id",        // 'id' will be used as the value
+    labelField: "text",      // 'text' is what will be shown in the dropdown
+    searchField: "text",     // Search will be based on the 'text' field (subject code)
+    maxItems: 1,             // Only allow one selection
+    preload: true,
+    load: function(query, callback) {
+      if (!query.length) return callback(mappedSubjects.slice(0, 50));  // Return first 50 if no query
 
-        callback(filtered);
-      },
-      plugins: ['dropdown_input']
-    });
+      // Filter subjects based on the search query
+      const filtered = mappedSubjects.filter(subject =>
+        subject.text.toLowerCase().includes(query.toLowerCase())
+      );
+
+      callback(filtered);
+    },
+    plugins: ['dropdown_input']
   });
+});
+
+
 
 fetchLocations().then(allLocations => {
   // Map the locations to fit TomSelect's structure
@@ -317,6 +324,34 @@ dropzone.addEventListener('drop', (e) => {
 
         renderGroups(sortedGroups);
     }
+
+    
+
+document.getElementById("group-form").addEventListener("submit", async function (e) {
+    e.preventDefault(); // Prevent default HTML form submission
+
+    // Gather form values
+    const group = {
+      name: document.getElementById("group-name").value.trim(),
+      subject: document.getElementById("group-subject").value,
+      coverage: document.getElementById("group-coverage").value.trim(),
+      location: document.getElementById("group-location").value,
+      start_date: document.getElementById("datepicker-range-start").value,
+      end_date: document.getElementById("datepicker-range-end").value,
+      // Add other fields (gender, member limit, agenda, etc.) as needed
+    };
+
+    try {
+      const result = await createGroup(group);
+      alert("Group created successfully!");
+      console.log(result);
+      // Optionally, reset the form or close the popup
+      this.reset();
+      document.getElementById("myForm").style.display = "none";
+    } catch (error) {
+      alert("Failed to create group. Check console for details.");
+    }
+  });
 
 function renderGroups(groups) {
     const groupList = document.querySelector('.study-group-list');
