@@ -86,17 +86,71 @@ async function deleteStudent(id) {
 }
 
 async function createGroup(group) {
-  return await fetch('https://f7e43c04-432e-44fd-b80d-8887899dbe29-00-3nco8oqvnjjy.worf.replit.dev0/group/create.php', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(group)
-  }).then(res => res.json());
+  // Fix keys and convert dates
+   const payload = {
+  name: group.name.toString().trim(),
+  subject_id: Number(group.subject),
+location_id: Number(group.location),
+  coverage: group.coverage ? group.coverage.toString().trim() : null,
+  start_date: convertDateToSQLFormat(group.start_date),
+  end_date: convertDateToSQLFormat(group.end_date),
+  start_time: group.start_time ? group.start_time.toString().trim() : null,
+  end_time: group.end_time ? group.end_time.toString().trim() : null,
+  repetition: group.repetition ? group.repetition.toString().trim() : null,
+  gender_set: group.gender_set ? group.gender_set.toString().trim() : 'both',
+  members_quantity_limit: group.members_quantity_limit ? Number(group.members_quantity_limit) : 0,
+  agenda: group.agenda ? group.agenda.toString().trim() : null,
+  attachment_path: group.attachment_path ? group.attachment_path.toString().trim() : null
+};
+
+
+  delete payload.subject;
+  delete payload.location;
+
+  console.log("Sending to server (after fix):", payload);
+
+  try {
+    const response = await fetch('https://f7e43c04-432e-44fd-b80d-8887899dbe29-00-3nco8oqvnjjy.worf.replit.dev/group/create.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    console.log("Received response status:", response.status);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Server responded with error:", errorText);
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    console.log("Parsed JSON response:", result);
+    return result;
+
+  } catch (error) {
+    console.error("Network/parsing error:", {
+      error: error,
+      message: error.message,
+      stack: error.stack
+    });
+    throw error;
+  }
+}
+function convertDateToSQLFormat(dateStr) {
+  // Assumes dateStr is "MM/DD/YYYY"
+  const [month, day, year] = dateStr.split('/');
+  return `${year}-${month.padStart(2,'0')}-${day.padStart(2,'0')}`;
 }
 
 async function fetchGroups() {
   const res = await fetch("https://f7e43c04-432e-44fd-b80d-8887899dbe29-00-3nco8oqvnjjy.worf.replit.dev/group/read.php");
   return await res.json();
 }
+
+
 
 
 async function updateGroup(group) {

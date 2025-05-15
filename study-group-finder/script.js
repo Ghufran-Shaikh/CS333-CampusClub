@@ -86,6 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('dropdownTimepicker').classList.add('hidden');
   });
 
+  
 fetchSubjects().then(allSubjects => {
   // Map the subjects to fit TomSelect's structure
   const mappedSubjects = allSubjects.map(subject => ({
@@ -113,13 +114,34 @@ fetchSubjects().then(allSubjects => {
   });
 });
 
+fetchSubjects().then(allSubjects => {
+  const mappedSubjects = allSubjects.map(subject => ({
+    id: subject.id,
+    text: subject.code
+  }));
+  new TomSelect("#filter-subject", {
+    valueField: "id",
+    labelField: "text",
+    searchField: "text",
+    maxItems: 1,
+    preload: true,
+    load: function(query, callback) {
+      if (!query.length) return callback(mappedSubjects.slice(0, 50));
+      const filtered = mappedSubjects.filter(subject =>
+        subject.text.toLowerCase().includes(query.toLowerCase())
+      );
+      callback(filtered);
+    },
+    plugins: ['dropdown_input']
+  });
+});
+
 fetchLocations().then(allLocations => {
   // Map the locations to fit TomSelect's structure
   const mappedLocations = allLocations.map(location => ({
-    id: location.id,
-    text: location.name      // Assuming locations have a 'name' property
-  }));
-
+  id: location.id,
+  text: location.code   // or location.college, depending on what you want shown
+}));
   new TomSelect("#group-location", {  // Make sure you have an input with id="group-location"
     valueField: "id",
     labelField: "text",
@@ -139,6 +161,27 @@ fetchLocations().then(allLocations => {
   });
 });
 
+fetchLocations().then(allLocations => {
+  const mappedLocations = allLocations.map(location => ({
+    id: location.id,
+    text: location.code
+  }));
+  new TomSelect("#filter-location", {
+    valueField: "id",
+    labelField: "text",
+    searchField: "text",
+    maxItems: 1,
+    preload: true,
+    load: function(query, callback) {
+      if (!query.length) return callback(mappedLocations.slice(0, 50));
+      const filtered = mappedLocations.filter(location =>
+        location.text.toLowerCase().includes(query.toLowerCase())
+      );
+      callback(filtered);
+    },
+    plugins: ['dropdown_input']
+  });
+});
 
 const input = document.getElementById('dropzone-file');
 const dropzone = document.getElementById('dropzone');
@@ -218,8 +261,6 @@ dropzone.addEventListener('drop', (e) => {
   addFiles(e.dataTransfer.files);
 });
 
-
-
     let allGroups = []; // Store all groups for filtering/sorting
     let filteredGroups = []; // Store filtered groups
 
@@ -236,40 +277,69 @@ dropzone.addEventListener('drop', (e) => {
     }
 
     function applyFiltersAndSearch(searchTerm = '') {
-        const subject = document.getElementById('filter-subject')?.value.toLowerCase() || '';
+        const subject = document.getElementById('filter-subject')?.value || '';
+        const location = document.getElementById('filter-location')?.value || '';
+        const coverage = document.getElementById('filter-coverage')?.value.trim().toLowerCase() || '';
         const dateStart = document.getElementById('filter-date-start')?.value || '';
         const dateEnd = document.getElementById('filter-date-end')?.value || '';
-        const seats = document.getElementById('filter-seats')?.value || '';
+        const timeStart = document.getElementById('filter-time-start')?.value || '';
+        const timeEnd = document.getElementById('filter-time-end')?.value || '';
+        const repetition = document.getElementById('filter-repetition')?.value.trim().toLowerCase() || '';
+        const genderFemale = document.getElementById('filter-gender-female')?.checked;
+        const genderMale = document.getElementById('filter-gender-male')?.checked;
+        const membersLimit = document.getElementById('filter-members-limit')?.value || '';
 
         filteredGroups = allGroups.filter(group => {
-            let matchesSearch = true;
-            let matchesSubject = true;
-            let matchesDate = true;
-            let matchesSeats = true;
-
-            // Search term matching
+            let matches = true;
+            // Search by group name
             if (searchTerm) {
-                matchesSearch = group.name.toLowerCase().includes(searchTerm) ||
-                              group.subject.toLowerCase().includes(searchTerm) ||
-                              group.coverage?.toLowerCase().includes(searchTerm);
+                const groupName = (group.name || '').toLowerCase();
+                matches = matches && groupName.includes(searchTerm);
             }
-
+            // Subject filter
             if (subject) {
-                matchesSubject = group.subject.toLowerCase().includes(subject);
+                matches = matches && (String(group.subject_id) === subject || String(group.subject) === subject);
             }
-
+            // Location filter
+            if (location) {
+                matches = matches && (String(group.location_id) === location || String(group.location) === location);
+            }
+            // Coverage filter
+            if (coverage) {
+                matches = matches && (group.coverage || '').toLowerCase().includes(coverage);
+            }
+            // Date range filter
             if (dateStart && dateEnd) {
-                const groupDate = new Date(group.date);
+                const groupDate = group.start_date ? new Date(group.start_date) : null;
                 const start = new Date(dateStart);
                 const end = new Date(dateEnd);
-                matchesDate = groupDate >= start && groupDate <= end;
+                matches = matches && groupDate && groupDate >= start && groupDate <= end;
             }
-
-            if (seats) {
-                matchesSeats = group.seats >= parseInt(seats);
+            // Time range filter
+            if (timeStart && timeEnd && group.start_time) {
+                const groupTime = group.start_time;
+                matches = matches && (groupTime >= timeStart && groupTime <= timeEnd);
             }
-
-            return matchesSearch && matchesSubject && matchesDate && matchesSeats;
+            // Repetition filter
+            if (repetition) {
+                matches = matches && (group.repetition || '').toLowerCase().includes(repetition);
+            }
+            // Gender filter
+            if (genderFemale || genderMale) {
+                if (genderFemale && genderMale) {
+                    // Both checked, show all
+                } else if (genderFemale) {
+                    matches = matches && (group.gender === 'female');
+                } else if (genderMale) {
+                    matches = matches && (group.gender === 'male');
+                }
+            }
+            // Members quantity limit filter
+            if (membersLimit) {
+                const groupLimit = group.members_quantity_limit ?? group.seats ?? 0;
+                matches = matches && groupLimit >= parseInt(membersLimit);
+            }
+            return matches;
         });
 
         applySort();
@@ -306,21 +376,65 @@ dropzone.addEventListener('drop', (e) => {
         const sortedGroups = [...filteredGroups].sort((a, b) => {
             let comparison = 0;
             switch (sortField) {
-                case 'date':
-                    comparison = new Date(a.date) - new Date(b.date);
+                case 'date': {
+                    // Use start_date for sorting
+                    const aDate = a.start_date ? new Date(a.start_date) : new Date(0);
+                    const bDate = b.start_date ? new Date(b.start_date) : new Date(0);
+                    comparison = aDate - bDate;
                     break;
-                case 'subject':
-                    comparison = a.subject.localeCompare(b.subject);
+                }
+                case 'subject': {
+                    // Use subject_id as string for sorting
+                    const aSub = a.subject_id ? String(a.subject_id) : '';
+                    const bSub = b.subject_id ? String(b.subject_id) : '';
+                    comparison = aSub.localeCompare(bSub);
                     break;
-                case 'seats':
-                    comparison = a.seats - b.seats;
+                }
+                case 'location': {
+                    const aLoc = a.location_id ? String(a.location_id) : '';
+                    const bLoc = b.location_id ? String(b.location_id) : '';
+                    comparison = aLoc.localeCompare(bLoc);
                     break;
+                }
+                case 'membersLimit': {
+                    // Use members_quantity_limit for sorting
+                    const aSeats = a.members_quantity_limit ?? 0;
+                    const bSeats = b.members_quantity_limit ?? 0;
+                    comparison = aSeats - bSeats;
+                    break;
+                }
             }
             return sortOrder === 'desc' ? -comparison : comparison;
         });
 
         renderGroups(sortedGroups);
     }
+
+document.getElementById("group-form").addEventListener("submit", async function (e) {
+    e.preventDefault(); // Prevent default HTML form submission
+
+    // Gather form values
+    const group = {
+      name: document.getElementById("group-name").value.trim(),
+      subject: document.getElementById("group-subject").value,
+      coverage: document.getElementById("group-coverage").value.trim(),
+      location: document.getElementById("group-location").value,
+      start_date: document.getElementById("datepicker-range-start").value,
+      end_date: document.getElementById("datepicker-range-end").value,
+      // Add other fields (gender, member limit, agenda, etc.) as needed
+    };
+
+    try {
+      const result = await createGroup(group);
+      alert("Group created successfully!");
+      console.log(result);
+      // Optionally, reset the form or close the popup
+      this.reset();
+      document.getElementById("myForm").style.display = "none";
+    } catch (error) {
+      alert("Failed to create group. Check console for details.");
+    }
+  });
 
 function renderGroups(groups) {
     const groupList = document.querySelector('.study-group-list');
@@ -353,25 +467,16 @@ function renderGroups(groups) {
         } else if (!startDate && endDate) {
             dateDisplay = `Ends: ${endDate}`;
         } else if (startDate === endDate) {
-            dateDisplay = startDate;
+            dateDisplay = startDate; // Only show the start date if it's the same as the end date
         } else {
-            dateDisplay = `${startDate} - ${endDate}`;
-        }
-
-        // Determine time display - FIXED THIS SECTION
-        let timeDisplay = 'No times specified';
-        if (group.start_time || group.end_time) {
-            const startTime = group.start_time ? formatTime(group.start_time) : '--:--';
-            const endTime = group.end_time ? formatTime(group.end_time) : '--:--';
-            timeDisplay = `${startTime} - ${endTime}`;
+            dateDisplay = `${startDate} - ${endDate}`; // Display both start and end dates
         }
 
         return {
             id: group.id,
             name: group.name,
-            subject: group.subject_id ? getSubjectName(group.subject_id) : 'No subject specified',
+            subject: group.subject_id || 'No subject specified',
             dateDisplay: dateDisplay,
-            timeDisplay: timeDisplay,
             seats: group.members_quantity_limit ?? 0
         };
     });
@@ -391,7 +496,6 @@ function renderGroups(groups) {
                 <div class="m-0.5 flex relative flex-col items-start justify-start space-y-1">
                     <span class="text-xs font-normal text-gray-700 dark:text-gray-400 group-hover:text-white">${group.subject}</span>
                     <span class="text-xs font-normal text-gray-700 dark:text-gray-400 group-hover:text-white">${group.dateDisplay}</span>
-                    <span class="text-xs font-normal text-gray-700 dark:text-gray-400 group-hover:text-white">${group.timeDisplay}</span>
                     <span class="text-xs font-normal text-gray-700 dark:text-gray-400 group-hover:text-white">${group.seats} Seats Available</span>
                 </div>
             </div>
@@ -405,27 +509,10 @@ function renderGroups(groups) {
     updatePagination(totalPages);
 }
 
-// Helper function to get subject name from ID (you'll need to implement this)
-function getSubjectName(subjectId) {
-    // You'll need to implement this based on how you store subject data
-    // This could be a lookup in an array or an API call
-    return `Subject ${subjectId}`; // Placeholder implementation
-}
-
 function formatDate(dateString) {
     if (!dateString) return null;
     const options = { year: 'numeric', month: 'short', day: 'numeric' };
     return new Date(dateString).toLocaleDateString(undefined, options);
-}
-
-function formatTime(timeString) {
-    if (!timeString) return null;
-    // Ensure the time is in HH:MM format
-    if (typeof timeString === 'string') {
-        return timeString.length >= 5 ? timeString.substring(0, 5) : timeString;
-    }
-    // If it's a time object, you might need to format it differently
-    return timeString;
 }
 
 function updatePagination(totalPages) {
