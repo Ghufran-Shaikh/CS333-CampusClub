@@ -78,11 +78,27 @@ window.addEventListener('DOMContentLoaded', async () => {
     const detailsDiv = document.getElementById('group-details');
     if (detailsDiv) {
       detailsDiv.innerHTML = '';
-      if (group.agenda) {
-        detailsDiv.innerHTML += `<div><span class='font-semibold'>Agenda:</span> ${group.agenda}</div>`;
-      }
+      // Agenda heading
+      detailsDiv.innerHTML += `<h2 class='text-2xl font-bold mb-2 mt-2'>Agenda</h2>`;
+      detailsDiv.innerHTML += `<div class='mb-4'>${group.agenda ? group.agenda : '<span class="text-gray-400">No agenda provided.</span>'}</div>`;
+      // Description
       if (group.description) {
-        detailsDiv.innerHTML += `<div><span class='font-semibold'>Description:</span> ${group.description}</div>`;
+        detailsDiv.innerHTML += `<div class='mb-2'><span class='font-semibold'>Description:</span> ${group.description}</div>`;
+      }
+      // Attachments heading
+      detailsDiv.innerHTML += `<h2 class='text-2xl font-bold mb-2 mt-4'>Attachments</h2>`;
+      if (Array.isArray(group.attachments) && group.attachments.length > 0) {
+        detailsDiv.innerHTML += `<ul class='list-disc ml-6 mb-2'>`;
+        group.attachments.forEach(att => {
+          if (att.url) {
+            detailsDiv.innerHTML += `<li><a href='${att.url}' target='_blank' class='text-blue-600 underline'>${att.name || att.url}</a></li>`;
+          } else {
+            detailsDiv.innerHTML += `<li>${att.name || att}</li>`;
+          }
+        });
+        detailsDiv.innerHTML += '</ul>';
+      } else {
+        detailsDiv.innerHTML += `<div class='text-gray-400 mb-2'>No attachments provided.</div>`;
       }
     }
     // Side Info
