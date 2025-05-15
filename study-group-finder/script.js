@@ -114,7 +114,27 @@ fetchSubjects().then(allSubjects => {
   });
 });
 
-
+fetchSubjects().then(allSubjects => {
+  const mappedSubjects = allSubjects.map(subject => ({
+    id: subject.id,
+    text: subject.code
+  }));
+  new TomSelect("#filter-subject", {
+    valueField: "id",
+    labelField: "text",
+    searchField: "text",
+    maxItems: 1,
+    preload: true,
+    load: function(query, callback) {
+      if (!query.length) return callback(mappedSubjects.slice(0, 50));
+      const filtered = mappedSubjects.filter(subject =>
+        subject.text.toLowerCase().includes(query.toLowerCase())
+      );
+      callback(filtered);
+    },
+    plugins: ['dropdown_input']
+  });
+});
 
 fetchLocations().then(allLocations => {
   // Map the locations to fit TomSelect's structure
@@ -141,7 +161,27 @@ fetchLocations().then(allLocations => {
   });
 });
 
-
+fetchLocations().then(allLocations => {
+  const mappedLocations = allLocations.map(location => ({
+    id: location.id,
+    text: location.code
+  }));
+  new TomSelect("#filter-location", {
+    valueField: "id",
+    labelField: "text",
+    searchField: "text",
+    maxItems: 1,
+    preload: true,
+    load: function(query, callback) {
+      if (!query.length) return callback(mappedLocations.slice(0, 50));
+      const filtered = mappedLocations.filter(location =>
+        location.text.toLowerCase().includes(query.toLowerCase())
+      );
+      callback(filtered);
+    },
+    plugins: ['dropdown_input']
+  });
+});
 
 const input = document.getElementById('dropzone-file');
 const dropzone = document.getElementById('dropzone');
@@ -221,8 +261,6 @@ dropzone.addEventListener('drop', (e) => {
   addFiles(e.dataTransfer.files);
 });
 
-
-
     let allGroups = []; // Store all groups for filtering/sorting
     let filteredGroups = []; // Store filtered groups
 
@@ -239,44 +277,69 @@ dropzone.addEventListener('drop', (e) => {
     }
 
     function applyFiltersAndSearch(searchTerm = '') {
-        const subject = document.getElementById('filter-subject')?.value.toLowerCase() || '';
+        const subject = document.getElementById('filter-subject')?.value || '';
+        const location = document.getElementById('filter-location')?.value || '';
+        const coverage = document.getElementById('filter-coverage')?.value.trim().toLowerCase() || '';
         const dateStart = document.getElementById('filter-date-start')?.value || '';
         const dateEnd = document.getElementById('filter-date-end')?.value || '';
-        const seats = document.getElementById('filter-seats')?.value || '';
+        const timeStart = document.getElementById('filter-time-start')?.value || '';
+        const timeEnd = document.getElementById('filter-time-end')?.value || '';
+        const repetition = document.getElementById('filter-repetition')?.value.trim().toLowerCase() || '';
+        const genderFemale = document.getElementById('filter-gender-female')?.checked;
+        const genderMale = document.getElementById('filter-gender-male')?.checked;
+        const membersLimit = document.getElementById('filter-members-limit')?.value || '';
 
         filteredGroups = allGroups.filter(group => {
-            let matchesSearch = true;
-            let matchesSubject = true;
-            let matchesDate = true;
-            let matchesSeats = true;
-
-            // Only search by group name
-            const groupName = (group.name || '').toLowerCase();
+            let matches = true;
+            // Search by group name
             if (searchTerm) {
-                matchesSearch = groupName.includes(searchTerm);
+                const groupName = (group.name || '').toLowerCase();
+                matches = matches && groupName.includes(searchTerm);
             }
-
-            // Subject filter (by subject_id)
-            const groupSubject = (group.subject_id ? String(group.subject_id) : (group.subject || '')).toLowerCase();
+            // Subject filter
             if (subject) {
-                matchesSubject = groupSubject.includes(subject);
+                matches = matches && (String(group.subject_id) === subject || String(group.subject) === subject);
             }
-
-            // Date filter (by start_date)
+            // Location filter
+            if (location) {
+                matches = matches && (String(group.location_id) === location || String(group.location) === location);
+            }
+            // Coverage filter
+            if (coverage) {
+                matches = matches && (group.coverage || '').toLowerCase().includes(coverage);
+            }
+            // Date range filter
             if (dateStart && dateEnd) {
                 const groupDate = group.start_date ? new Date(group.start_date) : null;
                 const start = new Date(dateStart);
                 const end = new Date(dateEnd);
-                matchesDate = groupDate && groupDate >= start && groupDate <= end;
+                matches = matches && groupDate && groupDate >= start && groupDate <= end;
             }
-
-            // Seats filter (by members_quantity_limit)
-            if (seats) {
-                const groupSeats = group.members_quantity_limit ?? group.seats ?? 0;
-                matchesSeats = groupSeats >= parseInt(seats);
+            // Time range filter
+            if (timeStart && timeEnd && group.start_time) {
+                const groupTime = group.start_time;
+                matches = matches && (groupTime >= timeStart && groupTime <= timeEnd);
             }
-
-            return matchesSearch && matchesSubject && matchesDate && matchesSeats;
+            // Repetition filter
+            if (repetition) {
+                matches = matches && (group.repetition || '').toLowerCase().includes(repetition);
+            }
+            // Gender filter
+            if (genderFemale || genderMale) {
+                if (genderFemale && genderMale) {
+                    // Both checked, show all
+                } else if (genderFemale) {
+                    matches = matches && (group.gender === 'female');
+                } else if (genderMale) {
+                    matches = matches && (group.gender === 'male');
+                }
+            }
+            // Members quantity limit filter
+            if (membersLimit) {
+                const groupLimit = group.members_quantity_limit ?? group.seats ?? 0;
+                matches = matches && groupLimit >= parseInt(membersLimit);
+            }
+            return matches;
         });
 
         applySort();
@@ -313,23 +376,39 @@ dropzone.addEventListener('drop', (e) => {
         const sortedGroups = [...filteredGroups].sort((a, b) => {
             let comparison = 0;
             switch (sortField) {
-                case 'date':
-                    comparison = new Date(a.date) - new Date(b.date);
+                case 'date': {
+                    // Use start_date for sorting
+                    const aDate = a.start_date ? new Date(a.start_date) : new Date(0);
+                    const bDate = b.start_date ? new Date(b.start_date) : new Date(0);
+                    comparison = aDate - bDate;
                     break;
-                case 'subject':
-                    comparison = a.subject.localeCompare(b.subject);
+                }
+                case 'subject': {
+                    // Use subject_id as string for sorting
+                    const aSub = a.subject_id ? String(a.subject_id) : '';
+                    const bSub = b.subject_id ? String(b.subject_id) : '';
+                    comparison = aSub.localeCompare(bSub);
                     break;
-                case 'seats':
-                    comparison = a.seats - b.seats;
+                }
+                case 'location': {
+                    const aLoc = a.location_id ? String(a.location_id) : '';
+                    const bLoc = b.location_id ? String(b.location_id) : '';
+                    comparison = aLoc.localeCompare(bLoc);
                     break;
+                }
+                case 'membersLimit': {
+                    // Use members_quantity_limit for sorting
+                    const aSeats = a.members_quantity_limit ?? 0;
+                    const bSeats = b.members_quantity_limit ?? 0;
+                    comparison = aSeats - bSeats;
+                    break;
+                }
             }
             return sortOrder === 'desc' ? -comparison : comparison;
         });
 
         renderGroups(sortedGroups);
     }
-
-    
 
 document.getElementById("group-form").addEventListener("submit", async function (e) {
     e.preventDefault(); // Prevent default HTML form submission
