@@ -110,7 +110,7 @@ function showDetails(activity) {
     <div id="comments-container"></div>
     <form id="comment-form">
       <textarea id="comment" placeholder="Add a comment..."></textarea>
-      <button type="submit">Post Comment</button>
+      <button type="submit">sumbit comment</button>
     </form>
   `;
 
