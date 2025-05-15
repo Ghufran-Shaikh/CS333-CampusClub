@@ -250,26 +250,30 @@ dropzone.addEventListener('drop', (e) => {
             let matchesDate = true;
             let matchesSeats = true;
 
-            // Search term matching
+            // Only search by group name
+            const groupName = (group.name || '').toLowerCase();
             if (searchTerm) {
-                matchesSearch = group.name.toLowerCase().includes(searchTerm) ||
-                              group.subject.toLowerCase().includes(searchTerm) ||
-                              group.coverage?.toLowerCase().includes(searchTerm);
+                matchesSearch = groupName.includes(searchTerm);
             }
 
+            // Subject filter (by subject_id)
+            const groupSubject = (group.subject_id ? String(group.subject_id) : (group.subject || '')).toLowerCase();
             if (subject) {
-                matchesSubject = group.subject.toLowerCase().includes(subject);
+                matchesSubject = groupSubject.includes(subject);
             }
 
+            // Date filter (by start_date)
             if (dateStart && dateEnd) {
-                const groupDate = new Date(group.date);
+                const groupDate = group.start_date ? new Date(group.start_date) : null;
                 const start = new Date(dateStart);
                 const end = new Date(dateEnd);
-                matchesDate = groupDate >= start && groupDate <= end;
+                matchesDate = groupDate && groupDate >= start && groupDate <= end;
             }
 
+            // Seats filter (by members_quantity_limit)
             if (seats) {
-                matchesSeats = group.seats >= parseInt(seats);
+                const groupSeats = group.members_quantity_limit ?? group.seats ?? 0;
+                matchesSeats = groupSeats >= parseInt(seats);
             }
 
             return matchesSearch && matchesSubject && matchesDate && matchesSeats;
