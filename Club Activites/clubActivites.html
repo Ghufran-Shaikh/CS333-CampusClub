@@ -144,6 +144,16 @@
       color: #888;
       font-size: 0.9rem;
     }
+    #comments-container .comment {
+  border: 1px solid #ddd;
+  padding: 8px;
+  margin-bottom: 8px;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+
+  
+}
+
   </style>
 </head>
 <body>
@@ -153,84 +163,68 @@
   </header>
 
   <main>
+    
+    <!-- Section for Filters -->
+    <input type="text" id="searchInput" placeholder="Search by title..." />
 
-   
-    <section class="filters">
-      <input type="text" placeholder="Search club activities..." />
-      <button>Filter</button>
-      <button>Sort</button>
-    </section>
+    <select id="filterClub">
+      <option value="">All Clubs</option>
+      <!-- Clubs will be dynamically populated by JS -->
+    </select>
+
+    <select id="sortSelect">
+      <option value="">Sort</option>
+      <option value="title">Title</option>
+      <option value="date">Date</option>
+    </select>
 
     
-    <section>
+    <!-- Section to Add New Activity -->
+    <section style="margin-top: 20px;">
+
       <a href="#create" class="button">+ Add New Activity</a>
+
     </section>
 
-   
+    <!-- Placeholder for Activities List -->
     <section class="activity-list">
-      <div class="activity-card">
-        <h2>Art Club Meetup</h2>
-        <p class="subdued-text">April 15, 2025 • Room B101</p>
-        <p>Join us for sketching and creativity!</p>
-        <a href="#detail">View Details</a>
-      </div>
-
-      <div class="activity-card">
-        <h2>Robotics Club Workshop</h2>
-        <p class="subdued-text">April 18, 2025 • Lab 204</p>
-        <p>Build your first Arduino robot!</p>
-        <a href="#detail">View Details</a>
-      </div>
-
-      <div class="activity-card">
-        <h2>Drama Club Rehearsal</h2>
-        <p class="subdued-text">April 19, 2025 • Theater Hall</p>
-        <p>Full cast rehearsal for the play.</p>
-        <a href="#detail">View Details</a>
-      </div>
-
-      <div class="activity-card">
-        <h2>Photography Club Walk</h2>
-        <p class="subdued-text">April 21, 2025 • Campus Gardens</p>
-        <p>Natural light and candid photo tour.</p>
-        <a href="#detail">View Details</a>
-      </div>
+      <!-- Example Activity Cards -->
     </section>
 
-    
+    <!-- Pagination Section -->
     <section class="pagination">
       <button>Prev</button>
       <span>Page 1 of 3</span>
       <button>Next</button>
     </section>
 
-    
+    <!-- Add New Activity Form -->
     <section id="create">
       <h2>Add New Club Activity</h2>
       <form>
         <div class="form-group">
           <label>Club Name *</label>
-          <input type="text" required />
+          <input type="text" name="club" required />
         </div>
         <div class="form-group">
           <label>Event Title *</label>
-          <input type="text" required />
+          <input type="text" name="title" required />
         </div>
         <div class="form-group">
           <label>Date *</label>
-          <input type="date" required />
+          <input type="date" name="date" required />
         </div>
         <div class="form-group">
           <label>Time *</label>
-          <input type="time" required />
+          <input type="time" name="time" required />
         </div>
         <div class="form-group">
           <label>Location *</label>
-          <input type="text" required />
+          <input type="text" name="location" required />
         </div>
         <div class="form-group">
           <label>Description</label>
-          <textarea rows="4"></textarea>
+          <textarea name="description" rows="4"></textarea>
         </div>
         <div class="form-buttons">
           <button type="submit">Submit</button>
@@ -239,24 +233,18 @@
       </form>
     </section>
 
-  
+    <!-- Activity Detail View -->
     <section id="detail" class="detail-section">
       <h2>Club Activity Details</h2>
-      <p><strong>Club:</strong> Art Club</p>
-      <p><strong>Event:</strong> Sketch Night</p>
-      <p><strong>Date & Time:</strong> April 15, 2025 at 6:00 PM</p>
-      <p><strong>Location:</strong> Room B101</p>
-      <p><strong>Description:</strong> Join fellow artists for a relaxing night of sketching and snacks.</p>
-
-      <div class="card-buttons">
-        <button>Edit</button>
-        <button style="background-color: #dc3545;">Delete</button>
+      
+      <div id="activity-detail">
       </div>
 
-      <div class="comment-box">
-        <label>Comments</label>
-        <textarea placeholder="Write a comment..." rows="3"></textarea>
-      </div>
+       <div class="card-buttons">
+          <button>Edit</button>
+          <button style="background-color: #dc3545;">Delete</button>
+        </div>      
+
 
       <p style="margin-top: 15px;">
         <a href="#">← Back to listing</a>
@@ -264,5 +252,9 @@
     </section>
 
   </main>
+  
+  <script src="script.js"></script>
+
+
 </body>
 </html>
