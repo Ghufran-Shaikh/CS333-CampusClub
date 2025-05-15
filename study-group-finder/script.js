@@ -116,8 +116,8 @@ fetchSubjects().then(allSubjects => {
 fetchLocations().then(allLocations => {
   // Map the locations to fit TomSelect's structure
   const mappedLocations = allLocations.map(location => ({
-    id: location.id,
-    text: location.name      // Assuming locations have a 'name' property
+  id: location.id,
+  text: location.code,   // or location.college, depending on what you want shown
   }));
 
   new TomSelect("#group-location", {  // Make sure you have an input with id="group-location"
@@ -137,6 +137,14 @@ fetchLocations().then(allLocations => {
     },
     plugins: ['dropdown_input']
   });
+});
+
+document.querySelector("form").addEventListener("submit", function (e) {
+  const startTime = document.getElementById("start-time").value;
+  if (!startTime || startTime < "09:00" || startTime > "18:00") {
+    e.preventDefault();
+    alert("Please select a valid start time between 09:00 and 18:00.");
+  }
 });
 
 
@@ -217,6 +225,7 @@ dropzone.addEventListener('drop', (e) => {
   dropzone.classList.remove('ring-2', 'ring-blue-500');
   addFiles(e.dataTransfer.files);
 });
+
 
 
 
