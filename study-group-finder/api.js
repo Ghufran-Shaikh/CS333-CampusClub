@@ -86,17 +86,47 @@ async function deleteStudent(id) {
 }
 
 async function createGroup(group) {
-  return await fetch('https://f7e43c04-432e-44fd-b80d-8887899dbe29-00-3nco8oqvnjjy.worf.replit.dev0/group/create.php', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(group)
-  }).then(res => res.json());
+  console.log("Sending to server:", group); // Verify outgoing data
+  
+  try {
+    const response = await fetch('https://f7e43c04-432e-44fd-b80d-8887899dbe29-00-3nco8oqvnjjy.worf.replit.dev/group/create.php', {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(group)
+    });
+
+    console.log("Received response status:", response.status);
+    
+    if (!response.ok) {
+      // Get error details even if response isn't JSON
+      const errorText = await response.text();
+      console.error("Server responded with error:", errorText);
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    console.log("Parsed JSON response:", result);
+    return result;
+    
+  } catch (error) {
+    console.error("Network/parsing error:", {
+      error: error,
+      message: error.message,
+      stack: error.stack
+    });
+    throw error; // Re-throw for handling in calling function
+  }
 }
 
 async function fetchGroups() {
   const res = await fetch("https://f7e43c04-432e-44fd-b80d-8887899dbe29-00-3nco8oqvnjjy.worf.replit.dev/group/read.php");
   return await res.json();
 }
+
+
 
 
 async function updateGroup(group) {

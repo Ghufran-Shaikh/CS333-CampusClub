@@ -86,40 +86,35 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('dropdownTimepicker').classList.add('hidden');
   });
 
-fetchSubjects().then(allSubjects => {
-  // Map the subjects to fit TomSelect's structure
-  const mappedSubjects = allSubjects.map(subject => ({
-    id: subject.id,           // ID of the subject
-    text: subject.code        // Code of the subject to display
-  }));
+  
+fetch('courses.json')
+  .then(res => res.json())
+  .then(allCourses => {
+    new TomSelect("#group-subject", {
+      valueField: "id",
+      labelField: "text",
+      searchField: "text",
+      maxItems: 1, //Allow only one selection
+      preload: true,
+      load: function(query, callback) {
+        if (!query.length) return callback(allCourses.slice(0, 50));
 
-  new TomSelect("#group-subject", {
-    valueField: "id",        // 'id' will be used as the value
-    labelField: "text",      // 'text' is what will be shown in the dropdown
-    searchField: "text",     // Search will be based on the 'text' field (subject code)
-    maxItems: 1,             // Only allow one selection
-    preload: true,
-    load: function(query, callback) {
-      if (!query.length) return callback(mappedSubjects.slice(0, 50));  // Return first 50 if no query
+        const filtered = allCourses.filter(course =>
+          course.text.toLowerCase().includes(query.toLowerCase())
+        );
 
-      // Filter subjects based on the search query
-      const filtered = mappedSubjects.filter(subject =>
-        subject.text.toLowerCase().includes(query.toLowerCase())
-      );
-
-      callback(filtered);
-    },
-    plugins: ['dropdown_input']
+        callback(filtered);
+      },
+      plugins: ['dropdown_input']
+    });
   });
-});
 
 fetchLocations().then(allLocations => {
   // Map the locations to fit TomSelect's structure
   const mappedLocations = allLocations.map(location => ({
   id: location.id,
-  text: location.code,   // or location.college, depending on what you want shown
-  }));
-
+  text: location.code   // or location.college, depending on what you want shown
+}));
   new TomSelect("#group-location", {  // Make sure you have an input with id="group-location"
     valueField: "id",
     labelField: "text",
@@ -139,13 +134,6 @@ fetchLocations().then(allLocations => {
   });
 });
 
-document.querySelector("form").addEventListener("submit", function (e) {
-  const startTime = document.getElementById("start-time").value;
-  if (!startTime || startTime < "09:00" || startTime > "18:00") {
-    e.preventDefault();
-    alert("Please select a valid start time between 09:00 and 18:00.");
-  }
-});
 
 
 const input = document.getElementById('dropzone-file');
@@ -225,7 +213,6 @@ dropzone.addEventListener('drop', (e) => {
   dropzone.classList.remove('ring-2', 'ring-blue-500');
   addFiles(e.dataTransfer.files);
 });
-
 
 
 
@@ -362,23 +349,28 @@ function renderGroups(groups) {
         } else if (!startDate && endDate) {
             dateDisplay = `Ends: ${endDate}`;
         } else if (startDate === endDate) {
-            dateDisplay = startDate;
+            dateDisplay = startDate; // Only show the start date if it's the same as the end date
         } else {
-            dateDisplay = `${startDate} - ${endDate}`;
+            dateDisplay = `${startDate} - ${endDate}`; // Display both start and end dates
         }
 
-        // Determine time display - FIXED THIS SECTION
-        let timeDisplay = 'No times specified';
-        if (group.start_time || group.end_time) {
-            const startTime = group.start_time ? formatTime(group.start_time) : '--:--';
-            const endTime = group.end_time ? formatTime(group.end_time) : '--:--';
-            timeDisplay = `${startTime} - ${endTime}`;
+        // Determine time display
+        let timeDisplay;
+        if (!group.start_time && !group.end_time) {
+            timeDisplay = 'No times specified';
+        } else if (group.start_time && !group.end_time) {
+            timeDisplay = `From: ${formatTime(group.start_time)}`;
+        } else if (!group.start_time && group.end_time) {
+            timeDisplay = `Until: ${formatTime(group.end_time)}`;
+        } else {
+            timeDisplay = `${formatTime(group.start_time)} - ${formatTime(group.end_time)}`;
         }
+        
 
         return {
             id: group.id,
             name: group.name,
-            subject: group.subject_id ? getSubjectName(group.subject_id) : 'No subject specified',
+            subject: group.subject_id || 'No subject specified',
             dateDisplay: dateDisplay,
             timeDisplay: timeDisplay,
             seats: group.members_quantity_limit ?? 0
@@ -414,13 +406,6 @@ function renderGroups(groups) {
     updatePagination(totalPages);
 }
 
-// Helper function to get subject name from ID (you'll need to implement this)
-function getSubjectName(subjectId) {
-    // You'll need to implement this based on how you store subject data
-    // This could be a lookup in an array or an API call
-    return `Subject ${subjectId}`; // Placeholder implementation
-}
-
 function formatDate(dateString) {
     if (!dateString) return null;
     const options = { year: 'numeric', month: 'short', day: 'numeric' };
@@ -429,13 +414,9 @@ function formatDate(dateString) {
 
 function formatTime(timeString) {
     if (!timeString) return null;
-    // Ensure the time is in HH:MM format
-    if (typeof timeString === 'string') {
-        return timeString.length >= 5 ? timeString.substring(0, 5) : timeString;
-    }
-    // If it's a time object, you might need to format it differently
-    return timeString;
+    return timeString.substring(0, 5);
 }
+
 
 function updatePagination(totalPages) {
     const paginationList = document.querySelector('nav[aria-label="Page navigation example"] ul');
