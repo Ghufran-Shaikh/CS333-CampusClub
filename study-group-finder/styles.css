@@ -1,100 +1,216 @@
-/* Import Tailwind CSS */
-@import "tailwindcss";
-@source "../node_modules/flowbite-datepicker";
-
-/* Form popup styles */
+/* ── Form popup overlay ─────────────────────────────────────────────────────── */
 .form-popup {
   display: none;
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+  inset: 0;
   z-index: 9999;
-  background: rgba(0, 0, 0, 0.5);
-  padding: 24px;
-  overflow: auto;
+  background: rgba(0, 0, 0, 0.55);
+  padding: 1.5rem;
+  overflow-y: auto;
   scroll-behavior: smooth;
+  backdrop-filter: blur(2px);
 }
 
-/* Main layout styles */
+/* Centered form card */
+.form-card {
+  background: #ffffff;
+  border-radius: 1rem;
+  padding: 1.75rem;
+  max-width: 640px;
+  width: 100%;
+  margin: 0 auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.dark .form-card {
+  background: #1f2937; /* gray-800 */
+  color: #f9fafb;
+}
+
+/* ── Study group grid ───────────────────────────────────────────────────────── */
 main {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
-/* Study group grid layout */
 .study-group-list {
   flex: 1;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-  gap: 1.5rem;
-  padding: 1.5rem;
-  margin: 0 auto;
-  max-width: 1200px;
+  grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
+  gap: 1.25rem;
+  padding: 1.25rem 1.5rem 6rem;
+  max-width: 1280px;
   width: 100%;
-  margin-bottom: 80px; /* Space for pagination */
-}
-
-/* Study group card width consistency */
-.study-group-list > div {
-  width: 215px !important;
   margin: 0 auto;
 }
 
-/* Fixed pagination container */
+.study-group-list > div {
+  display: flex;
+  justify-content: center;
+}
+
+/* ── Fixed pagination bar ───────────────────────────────────────────────────── */
 .pagination-container {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  background: rgb(17, 24, 39);
-  padding: 1rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background: #111827; /* gray-900 */
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0.75rem 1rem;
   z-index: 10;
-  width: 100%;
 }
 
-/* Pagination list styles */
-.pagination-container ul {
+.pagination-container nav ul {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.375rem;
+  flex-wrap: wrap;
 }
 
-
-
-/* Speed dial menu transition */
-#speed-dial-menu-horizontal {
-  transition: all 0.3s ease-in-out;
-  opacity: 0;
-  transform: translateY(-10px);
+/* ── Datepicker z-index fix ─────────────────────────────────────────────────── */
+.datepicker-dropdown,
+[data-popper-placement] {
+  z-index: 99999 !important;
 }
 
-#speed-dial-menu-horizontal:not(.hidden) {
-  opacity: 1;
-  transform: translateY(0);
+/* ── TomSelect styling to match other inputs ────────────────────────────────── */
+.ts-wrapper .ts-control {
+  background-color: rgb(249 250 251);
+  border: 1px solid rgb(209 213 219);
+  border-radius: 0.5rem;
+  padding: 0.625rem;
+  font-size: 0.875rem;
+  color: rgb(17 24 39);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* Ensure Flowbite datepicker is not clipped and is above modals/forms */
-  .datepicker-dropdown {
-    z-index: 9999 !important;
-  }
+.dark .ts-wrapper .ts-control {
+  background-color: rgb(55 65 81);
+  border-color: rgb(75 85 99);
+  color: rgb(255 255 255);
+}
 
-  /* If inside overflow-hidden parent */
-  .overflow-fix {
-    overflow: visible !important;
-  }
+.ts-wrapper .ts-control input {
+  color: inherit;
+}
 
-  .flowbite-datepicker-container {
-  position: absolute !important;
-  top: 100% !important;
-  left: 0 !important;
-  z-index: 9999 !important;
-  margin-top: 0.25rem;
-  }
-  .ts-dropdown {
-  z-index: 9999 !important;
+.ts-wrapper .ts-control input::placeholder {
+  color: rgb(156 163 175);
+}
+
+.dark .ts-wrapper .ts-control input::placeholder {
+  color: rgb(156 163 175);
+}
+
+.ts-wrapper.focus .ts-control {
+  border-color: rgb(59 130 246);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+}
+
+.dark .ts-wrapper.focus .ts-control {
+  background-color: rgb(55 65 81);
+  border-color: rgb(59 130 246);
+}
+
+.ts-wrapper .ts-control .item {
+  background-color: transparent;
+  border: none;
+  color: inherit;
+  padding: 0;
+  border-radius: 0;
+}
+
+.dark .ts-wrapper .ts-control .item {
+  background-color: transparent;
+  border: none;
+  color: inherit;
+}
+
+.ts-dropdown {
+  z-index: 99999 !important;
+  background-color: rgb(255 255 255);
+  border: 1px solid rgb(209 213 219);
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.dark .ts-dropdown {
+  background-color: rgb(55 65 81);
+  border-color: rgb(75 85 99);
+}
+
+.ts-dropdown .ts-dropdown-content {
+  color: rgb(17 24 39);
+}
+
+.dark .ts-dropdown .ts-dropdown-content {
+  color: rgb(255 255 255);
+}
+
+.ts-dropdown .option {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+.ts-dropdown .option:hover,
+.ts-dropdown .option.active {
+  background-color: rgb(239 246 255);
+  color: rgb(59 130 246);
+}
+
+.dark .ts-dropdown .option:hover,
+.dark .ts-dropdown .option.active {
+  background-color: rgb(30 58 138);
+  color: rgb(147 197 253);
+}
+
+/* ── Overflow fix for date picker inside form ───────────────────────────────── */
+.overflow-fix {
+  overflow: visible !important;
+}
+
+/* ── Empty state ────────────────────────────────────────────────────────────── */
+#empty-state {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 5rem 1rem;
+  grid-column: 1 / -1;
+}
+
+/* ── Card hover elevation ───────────────────────────────────────────────────── */
+.study-group-list .group:hover {
+  transform: translateY(-2px);
+}
+
+.study-group-list .group {
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+/* ── Speed dial show fix ────────────────────────────────────────────────────── */
+#speed-dial-menu-horizontal:not([style*="none"]) {
+  display: flex !important;
+  align-items: center;
+}
+
+/* ── Group card styling ───────────────────────────────────────────────────────── */
+.study-group-list .group {
+  border-color: rgba(59, 130, 246, 0.2);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.study-group-list .group:hover {
+  box-shadow: 0 8px 16px rgba(59, 130, 246, 0.3);
+  border-color: rgba(59, 130, 246, 0.5);
+}
+
+.dark .study-group-list .group:hover {
+  box-shadow: 0 8px 16px rgba(59, 130, 246, 0.25);
 }

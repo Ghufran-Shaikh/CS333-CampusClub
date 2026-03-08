@@ -1,594 +1,475 @@
-import { fetchGroups, fetchSubjects, fetchLocations, fetchStudents, createGroup, createSubject, createLocation, createStudent, updateGroup, updateSubject, updateLocation, updateStudent, deleteGroup, deleteSubject, deleteLocation, deleteStudent} from './api.js';  // Adjust the path based on your project structure
-document.addEventListener('DOMContentLoaded', () => {
-    // Speed dial toggle functionality (cleaned up)
-    const speedDialButton = document.querySelector('[data-dial-toggle]');
-    const speedDialMenu = document.getElementById('speed-dial-menu-horizontal');
-    if (speedDialButton && speedDialMenu) {
-        speedDialMenu.classList.add('hidden');
-        speedDialButton.setAttribute('aria-expanded', 'false');
-        speedDialButton.addEventListener('click', (event) => {
-            event.stopPropagation();
-            const isExpanded = speedDialButton.getAttribute('aria-expanded') === 'true';
-            speedDialButton.setAttribute('aria-expanded', String(!isExpanded));
-            speedDialMenu.classList.toggle('hidden');
-        });
-        document.addEventListener('click', (event) => {
-            if (!speedDialButton.contains(event.target) &&
-                !speedDialMenu.contains(event.target) &&
-                !speedDialMenu.classList.contains('hidden')) {
-                speedDialMenu.classList.add('hidden');
-                speedDialButton.setAttribute('aria-expanded', 'false');
-            }
-        });
-    }
+import {
+  fetchGroups, fetchSubjects, fetchLocations,
+  createGroup, deleteGroup
+} from './api.js';
 
-    const openFormBtn = document.getElementById('openFormBtn');
-    const addGroupForm = document.getElementById('myForm');
-    const closeBtn = addGroupForm ? addGroupForm.querySelector('.close-form') : null;
-    const resetBtn = addGroupForm ? addGroupForm.querySelector('.resetBtn') : null;
-    if (addGroupForm) {
-        addGroupForm.style.display = 'none';
-    }
-    if (openFormBtn && addGroupForm) {
-        openFormBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            addGroupForm.style.display = 'block';
-            addGroupForm.scrollTop = 0; // Scroll to top of form
-            window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll window to top
-            // Hide pagination and its bar when form is open
-            const paginationContainer = document.querySelector('.pagination-container');
-            if (paginationContainer) paginationContainer.style.display = 'none';
-        });
-    }
-    if (closeBtn) {
-        closeBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            addGroupForm.style.display = 'none';
-            // Show pagination and its bar when form is closed
-            const paginationContainer = document.querySelector('.pagination-container');
-            if (paginationContainer) paginationContainer.style.display = '';
-        });
-    }
-    if (resetBtn) {
-         resetBtn.addEventListener('click', (e) => {
-    // Wait for the reset to happen
+// ─── State for mappings ───────────────────────────────────────────────────────
+let subjectMap = {};   // id => subject code
+let locationMap = {};  // id => location code
+
+// ─── Theme toggle ─────────────────────────────────────────────────────────────
+function initThemeToggle() {
+  const themeToggle = document.getElementById('theme-toggle');
+  if (!themeToggle) return;
+
+  themeToggle.addEventListener('click', () => {
+    const html = document.documentElement;
+    const isDark = html.classList.toggle('dark');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  });
+}
+
+// ─── Toast ────────────────────────────────────────────────────────────────────
+function showToast(message, type = 'success') {
+  const container = document.getElementById('toast-container');
+  if (!container) return;
+  const colors = {
+    success: 'bg-green-500',
+    error:   'bg-red-500',
+    info:    'bg-blue-500',
+  };
+  const toast = document.createElement('div');
+  toast.className = `pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-lg text-white text-sm shadow-lg ${colors[type] ?? colors.info} transition-all duration-300 opacity-0 translate-y-2`;
+  toast.textContent = message;
+  container.appendChild(toast);
+  requestAnimationFrame(() => {
+    toast.classList.remove('opacity-0', 'translate-y-2');
+  });
+  setTimeout(() => {
+    toast.classList.add('opacity-0', 'translate-y-2');
+    toast.addEventListener('transitionend', () => toast.remove());
+  }, 3500);
+}
+
+// ─── DOM ready ────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+
+  // --- Initialize theme toggle ---
+  initThemeToggle();
+  const openFormBtn  = document.getElementById('openFormBtn');
+  const formOverlay  = document.getElementById('myForm');
+  const groupForm    = document.getElementById('group-form');
+  const paginationEl = document.querySelector('.pagination-container');
+
+  function openForm() {
+    formOverlay.style.display = 'block';
+    formOverlay.scrollTop = 0;
+    if (paginationEl) paginationEl.style.display = 'none';
+  }
+
+  function closeForm() {
+    formOverlay.style.display = 'none';
+    if (paginationEl) paginationEl.style.display = '';
+  }
+
+  if (openFormBtn) openFormBtn.addEventListener('click', openForm);
+
+  formOverlay?.querySelectorAll('.close-form').forEach(btn =>
+    btn.addEventListener('click', closeForm)
+  );
+
+  // Close on overlay click (outside the form card)
+  formOverlay?.addEventListener('click', (e) => {
+    if (e.target === formOverlay) closeForm();
+  });
+
+  // Reset button – keep form open
+  groupForm?.querySelector('.resetBtn')?.addEventListener('click', () => {
     setTimeout(() => {
-        selectedFiles = []; // Clear the selected files array
-  input.value = ''; // Reset the file input
-  renderPreview(); // Clear the preview
-      // Remove focus from any element
-      document.activeElement.blur();
-            e.preventDefault();
-            addGroupForm.style.display = 'block';
-            addGroupForm.scrollTop = 0; // Scroll to top of form
-            window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll window to top
+      selectedFiles = [];
+      if (input) input.value = '';
+      renderPreview();
     }, 0);
   });
-    }
+
+  // --- Save time button ---
+  document.getElementById('saveTimeButton')?.addEventListener('click', () => {
+    const start = document.getElementById('start-time')?.value;
+    const end   = document.getElementById('end-time')?.value;
+    if (!start || !end) { showToast('Please select both start and end times.', 'error'); return; }
+    if (start >= end)   { showToast('End time must be after start time.', 'error'); return; }
+    document.getElementById('time-display').textContent = `${start} – ${end}`;
+    document.getElementById('dropdownTimepicker')?.classList.add('hidden');
+    showToast(`Time set: ${start} – ${end}`, 'success');
+  });
+
+  // --- TomSelect: subjects ---
+  fetchSubjects().then(allSubjects => {
+    // Build subject map
+    subjectMap = {};
+    allSubjects.forEach(s => { subjectMap[s.id] = s.code; });
     
-     document.getElementById('saveTimeButton').addEventListener('click', function () {
-    const startTime = document.getElementById('start-time').value;
-    const endTime = document.getElementById('end-time').value;
-
-    if (!startTime || !endTime) {
-      alert("Please select both start and end times.");
-      return;
+    const mapped = allSubjects.map(s => ({ id: s.id, text: s.code }));
+    [['#group-subject', 'Search subjects…'], ['#filter-subject', 'All subjects']].forEach(([sel, ph]) => {
+      const el = document.querySelector(sel);
+      if (!el) return;
+      new TomSelect(el, {
+        valueField: 'id', labelField: 'text', searchField: 'text',
+        maxItems: 1, preload: true, placeholder: ph,
+        load: (q, cb) => cb(q ? mapped.filter(s => s.text.toLowerCase().includes(q.toLowerCase())) : mapped.slice(0, 50)),
+        plugins: ['dropdown_input'],
+      });
+    });
+    // Re-render groups after mappings are loaded
+    if (allGroups.length > 0) {
+      renderGroups(filteredGroups);
     }
+  }).catch(() => showToast('Could not load subjects.', 'error'));
 
-    if (startTime >= endTime) {
-      alert("End time must be after start time.");
-      return;
+  // --- TomSelect: locations ---
+  fetchLocations().then(allLocations => {
+    // Build location map
+    locationMap = {};
+    allLocations.forEach(l => { locationMap[l.id] = l.code; });
+    
+    const mapped = allLocations.map(l => ({ id: l.id, text: l.code }));
+    [['#group-location', 'Search locations…'], ['#filter-location', 'All locations']].forEach(([sel, ph]) => {
+      const el = document.querySelector(sel);
+      if (!el) return;
+      new TomSelect(el, {
+        valueField: 'id', labelField: 'text', searchField: 'text',
+        maxItems: 1, preload: true, placeholder: ph,
+        load: (q, cb) => cb(q ? mapped.filter(l => l.text.toLowerCase().includes(q.toLowerCase())) : mapped.slice(0, 50)),
+        plugins: ['dropdown_input'],
+      });
+    });
+    // Re-render groups after mappings are loaded
+    if (allGroups.length > 0) {
+      renderGroups(filteredGroups);
     }
+  }).catch(() => showToast('Could not load locations.', 'error'));
 
-    console.log("Time saved:", startTime, "to", endTime);
+  // --- File dropzone ---
+  const input    = document.getElementById('dropzone-file');
+  const dropzone = document.getElementById('dropzone');
+  const preview  = document.getElementById('file-preview');
+  let selectedFiles = [];
 
-    // Optional: hide dropdown after saving
-    document.getElementById('dropdownTimepicker').classList.add('hidden');
-  });
+  function renderPreview() {
+    if (!preview) return;
+    preview.innerHTML = '';
+    selectedFiles.forEach((file, index) => {
+      const wrap = document.createElement('div');
+      wrap.className = 'relative group flex flex-col items-center text-center pointer-events-auto';
 
-  
-fetchSubjects().then(allSubjects => {
-  // Map the subjects to fit TomSelect's structure
-  const mappedSubjects = allSubjects.map(subject => ({
-    id: subject.id,           // ID of the subject
-    text: subject.code        // Code of the subject to display
-  }));
+      const removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'absolute -top-1 -right-1 bg-red-500 hover:bg-red-600 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs z-10 hidden group-hover:flex';
+      removeBtn.textContent = '×';
+      removeBtn.onclick = () => { selectedFiles.splice(index, 1); renderPreview(); };
+      wrap.appendChild(removeBtn);
 
-  new TomSelect("#group-subject", {
-    valueField: "id",        // 'id' will be used as the value
-    labelField: "text",      // 'text' is what will be shown in the dropdown
-    searchField: "text",     // Search will be based on the 'text' field (subject code)
-    maxItems: 1,             // Only allow one selection
-    preload: true,
-    load: function(query, callback) {
-      if (!query.length) return callback(mappedSubjects.slice(0, 50));  // Return first 50 if no query
+      if (file.type.startsWith('image/')) {
+        const img = document.createElement('img');
+        img.src = URL.createObjectURL(file);
+        img.className = 'w-12 h-12 object-cover rounded shadow border';
+        wrap.appendChild(img);
+      } else {
+        const icon = document.createElement('div');
+        icon.className = 'w-12 h-12 flex items-center justify-center bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300 rounded shadow border text-xs font-bold';
+        icon.textContent = file.name.split('.').pop().toUpperCase();
+        wrap.appendChild(icon);
+      }
 
-      // Filter subjects based on the search query
-      const filtered = mappedSubjects.filter(subject =>
-        subject.text.toLowerCase().includes(query.toLowerCase())
-      );
+      const label = document.createElement('p');
+      label.textContent = file.name.length > 16 ? file.name.slice(0, 13) + '…' : file.name;
+      label.className = 'text-[9px] text-gray-600 dark:text-gray-400 mt-0.5 w-12 truncate';
+      wrap.appendChild(label);
 
-      callback(filtered);
-    },
-    plugins: ['dropdown_input']
-  });
-});
-
-fetchSubjects().then(allSubjects => {
-  const mappedSubjects = allSubjects.map(subject => ({
-    id: subject.id,
-    text: subject.code
-  }));
-  new TomSelect("#filter-subject", {
-    valueField: "id",
-    labelField: "text",
-    searchField: "text",
-    maxItems: 1,
-    preload: true,
-    load: function(query, callback) {
-      if (!query.length) return callback(mappedSubjects.slice(0, 50));
-      const filtered = mappedSubjects.filter(subject =>
-        subject.text.toLowerCase().includes(query.toLowerCase())
-      );
-      callback(filtered);
-    },
-    plugins: ['dropdown_input']
-  });
-});
-
-fetchLocations().then(allLocations => {
-  // Map the locations to fit TomSelect's structure
-  const mappedLocations = allLocations.map(location => ({
-  id: location.id,
-  text: location.code   // or location.college, depending on what you want shown
-}));
-  new TomSelect("#group-location", {  // Make sure you have an input with id="group-location"
-    valueField: "id",
-    labelField: "text",
-    searchField: "text",
-    maxItems: 1,
-    preload: true,
-    load: function(query, callback) {
-      if (!query.length) return callback(mappedLocations.slice(0, 50));
-
-      const filtered = mappedLocations.filter(location =>
-        location.text.toLowerCase().includes(query.toLowerCase())
-      );
-
-      callback(filtered);
-    },
-    plugins: ['dropdown_input']
-  });
-});
-
-fetchLocations().then(allLocations => {
-  const mappedLocations = allLocations.map(location => ({
-    id: location.id,
-    text: location.code
-  }));
-  new TomSelect("#filter-location", {
-    valueField: "id",
-    labelField: "text",
-    searchField: "text",
-    maxItems: 1,
-    preload: true,
-    load: function(query, callback) {
-      if (!query.length) return callback(mappedLocations.slice(0, 50));
-      const filtered = mappedLocations.filter(location =>
-        location.text.toLowerCase().includes(query.toLowerCase())
-      );
-      callback(filtered);
-    },
-    plugins: ['dropdown_input']
-  });
-});
-
-const input = document.getElementById('dropzone-file');
-const dropzone = document.getElementById('dropzone');
-const preview = document.getElementById('file-preview');
-let selectedFiles = [];
-
-function renderPreview() {
-  preview.innerHTML = '';
-
-  selectedFiles.forEach((file, index) => {
-    const fileDiv = document.createElement('div');
-    fileDiv.className = 'relative group flex flex-col items-center text-center';
-
-    // Remove button
-    const removeBtn = document.createElement('button');
-    removeBtn.className = 'absolute top-0 right-0 text-white bg-red-500 hover:bg-red-600 rounded-full text-xs p-1 z-10 hidden group-hover:block';
-    removeBtn.innerText = '×';
-    removeBtn.onclick = () => {
-      selectedFiles.splice(index, 1);
-      renderPreview();
-    };
-    fileDiv.appendChild(removeBtn);
-
-    if (file.type.startsWith('image/')) {
-      // Show image thumbnail
-      const img = document.createElement('img');
-      img.src = URL.createObjectURL(file);
-      img.className = 'w-14 h-14 object-cover rounded shadow border';
-      fileDiv.appendChild(img);
-    } else {
-      // Use icon for non-image files
-      const icon = document.createElement('div');
-      icon.className = 'w-14 h-14 flex items-center justify-center bg-gray-200 text-gray-600 rounded shadow border text-sm font-bold';
-      icon.innerText = getFileExtension(file.name).toUpperCase();
-      fileDiv.appendChild(icon);
-    }
-
-    // Filename (below preview)
-    const label = document.createElement('p');
-    label.textContent = file.name.length > 20 ? file.name.slice(0, 17) + '...' : file.name;
-    label.className = 'text-[10px] text-gray-700 dark:text-gray-300 mt-1 break-words w-14';
-    fileDiv.appendChild(label);
-
-    preview.appendChild(fileDiv);
-  });
-}
-
-function getFileExtension(filename) {
-  return filename.split('.').pop();
-}
-
-
-function addFiles(fileList) {
-  for (const file of fileList) {
-    const exists = selectedFiles.some(f => f.name === file.name && f.size === file.size);
-    if (!exists) {
-      selectedFiles.push(file);
-    }
+      preview.appendChild(wrap);
+    });
   }
-  renderPreview();
-}
 
-input.addEventListener('change', (e) => addFiles(e.target.files));
-
-dropzone.addEventListener('dragover', (e) => {
-  e.preventDefault();
-  dropzone.classList.add('ring-2', 'ring-blue-500');
-});
-
-dropzone.addEventListener('dragleave', () => {
-  dropzone.classList.remove('ring-2', 'ring-blue-500');
-});
-
-dropzone.addEventListener('drop', (e) => {
-  e.preventDefault();
-  dropzone.classList.remove('ring-2', 'ring-blue-500');
-  addFiles(e.dataTransfer.files);
-});
-
-    let allGroups = []; // Store all groups for filtering/sorting
-    let filteredGroups = []; // Store filtered groups
-
-    let currentPage = 1;
-    const itemsPerPage = 8; // Number of groups to show per page
-
-    // Search functionality
-    const searchInput = document.getElementById('default-search');
-    if (searchInput) {
-        searchInput.addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase();
-            applyFiltersAndSearch(searchTerm);
-        });
+  function addFiles(fileList) {
+    for (const file of fileList) {
+      if (!selectedFiles.some(f => f.name === file.name && f.size === file.size)) {
+        selectedFiles.push(file);
+      }
     }
+    renderPreview();
+  }
 
-    function applyFiltersAndSearch(searchTerm = '') {
-        const subject = document.getElementById('filter-subject')?.value || '';
-        const location = document.getElementById('filter-location')?.value || '';
-        const coverage = document.getElementById('filter-coverage')?.value.trim().toLowerCase() || '';
-        const dateStart = document.getElementById('filter-date-start')?.value || '';
-        const dateEnd = document.getElementById('filter-date-end')?.value || '';
-        const timeStart = document.getElementById('filter-time-start')?.value || '';
-        const timeEnd = document.getElementById('filter-time-end')?.value || '';
-        const repetition = document.getElementById('filter-repetition')?.value.trim().toLowerCase() || '';
-        const genderFemale = document.getElementById('filter-gender-female')?.checked;
-        const genderMale = document.getElementById('filter-gender-male')?.checked;
-        const membersLimit = document.getElementById('filter-members-limit')?.value || '';
+  input?.addEventListener('change', e => addFiles(e.target.files));
+  dropzone?.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('border-blue-400', 'bg-blue-50', 'dark:bg-blue-900/20'); });
+  dropzone?.addEventListener('dragleave', () => dropzone.classList.remove('border-blue-400', 'bg-blue-50', 'dark:bg-blue-900/20'));
+  dropzone?.addEventListener('drop', e => { e.preventDefault(); dropzone.classList.remove('border-blue-400', 'bg-blue-50', 'dark:bg-blue-900/20'); addFiles(e.dataTransfer.files); });
 
-        filteredGroups = allGroups.filter(group => {
-            let matches = true;
-            // Search by group name
-            if (searchTerm) {
-                const groupName = (group.name || '').toLowerCase();
-                matches = matches && groupName.includes(searchTerm);
-            }
-            // Subject filter
-            if (subject) {
-                matches = matches && (String(group.subject_id) === subject || String(group.subject) === subject);
-            }
-            // Location filter
-            if (location) {
-                matches = matches && (String(group.location_id) === location || String(group.location) === location);
-            }
-            // Coverage filter
-            if (coverage) {
-                matches = matches && (group.coverage || '').toLowerCase().includes(coverage);
-            }
-            // Date range filter
-            if (dateStart && dateEnd) {
-                const groupDate = group.start_date ? new Date(group.start_date) : null;
-                const start = new Date(dateStart);
-                const end = new Date(dateEnd);
-                matches = matches && groupDate && groupDate >= start && groupDate <= end;
-            }
-            // Time range filter
-            if (timeStart && timeEnd && group.start_time) {
-                const groupTime = group.start_time;
-                matches = matches && (groupTime >= timeStart && groupTime <= timeEnd);
-            }
-            // Repetition filter
-            if (repetition) {
-                matches = matches && (group.repetition || '').toLowerCase().includes(repetition);
-            }
-            // Gender filter
-            if (genderFemale || genderMale) {
-                if (genderFemale && genderMale) {
-                    // Both checked, show all
-                } else if (genderFemale) {
-                    matches = matches && (group.gender === 'female');
-                } else if (genderMale) {
-                    matches = matches && (group.gender === 'male');
-                }
-            }
-            // Members quantity limit filter
-            if (membersLimit) {
-                const groupLimit = group.members_quantity_limit ?? group.seats ?? 0;
-                matches = matches && groupLimit >= parseInt(membersLimit);
-            }
-            return matches;
-        });
+  // --- Group form submit ---
+  groupForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-        applySort();
-    }
+    const name     = document.getElementById('group-name')?.value.trim();
+    const subject  = document.getElementById('group-subject')?.value;
+    const location = document.getElementById('group-location')?.value;
 
-    // Filter form handling
-    const filterForm = document.getElementById('filter-form');
-    if (filterForm) {
-        filterForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            applyFiltersAndSearch(searchInput?.value.toLowerCase() || '');
-        });
+    if (!name)     { showToast('Please enter a group name.', 'error'); return; }
+    if (!subject)  { showToast('Please select a subject.', 'error'); return; }
+    if (!location) { showToast('Please select a location.', 'error'); return; }
 
-        filterForm.addEventListener('reset', (e) => {
-            setTimeout(() => {
-                applyFiltersAndSearch(searchInput?.value.toLowerCase() || '');
-            }, 0);
-        });
-    }
+    const startDate = document.getElementById('datepicker-range-start')?.value;
+    const endDate   = document.getElementById('datepicker-range-end')?.value;
+    const startTime = document.getElementById('start-time')?.value;
+    const endTime   = document.getElementById('end-time')?.value;
 
-    // Sort form handling
-    const sortForm = document.getElementById('sort-form');
-    if (sortForm) {
-        sortForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            applySort();
-        });
-    }
+    // Gender constraint
+    const femaleChecked = document.getElementById('inline-checkbox')?.checked;
+    const maleChecked   = document.getElementById('inline-2-checkbox')?.checked;
+    let genderSet = 'both';
+    if (femaleChecked && !maleChecked) genderSet = 'female';
+    else if (maleChecked && !femaleChecked) genderSet = 'male';
 
-    function applySort() {
-        const sortField = document.getElementById('sort-field')?.value || 'date';
-        const sortOrder = document.getElementById('sort-order')?.value || 'asc';
-
-        const sortedGroups = [...filteredGroups].sort((a, b) => {
-            let comparison = 0;
-            switch (sortField) {
-                case 'date': {
-                    // Use start_date for sorting
-                    const aDate = a.start_date ? new Date(a.start_date) : new Date(0);
-                    const bDate = b.start_date ? new Date(b.start_date) : new Date(0);
-                    comparison = aDate - bDate;
-                    break;
-                }
-                case 'subject': {
-                    // Use subject_id as string for sorting
-                    const aSub = a.subject_id ? String(a.subject_id) : '';
-                    const bSub = b.subject_id ? String(b.subject_id) : '';
-                    comparison = aSub.localeCompare(bSub);
-                    break;
-                }
-                case 'location': {
-                    const aLoc = a.location_id ? String(a.location_id) : '';
-                    const bLoc = b.location_id ? String(b.location_id) : '';
-                    comparison = aLoc.localeCompare(bLoc);
-                    break;
-                }
-                case 'membersLimit': {
-                    // Use members_quantity_limit for sorting
-                    const aSeats = a.members_quantity_limit ?? 0;
-                    const bSeats = b.members_quantity_limit ?? 0;
-                    comparison = aSeats - bSeats;
-                    break;
-                }
-            }
-            return sortOrder === 'desc' ? -comparison : comparison;
-        });
-
-        renderGroups(sortedGroups);
-    }
-
-document.getElementById("group-form").addEventListener("submit", async function (e) {
-    e.preventDefault(); // Prevent default HTML form submission
-
-    // Gather form values
     const group = {
-      name: document.getElementById("group-name").value.trim(),
-      subject: document.getElementById("group-subject").value,
-      coverage: document.getElementById("group-coverage").value.trim(),
-      location: document.getElementById("group-location").value,
-      start_date: document.getElementById("datepicker-range-start").value,
-      end_date: document.getElementById("datepicker-range-end").value,
-      // Add other fields (gender, member limit, agenda, etc.) as needed
+      name,
+      subject,
+      location,
+      coverage:               document.getElementById('group-coverage')?.value.trim() || null,
+      start_date:             startDate || null,
+      end_date:               endDate   || null,
+      start_time:             startTime || null,
+      end_time:               endTime   || null,
+      repetition:             document.getElementById('group-session-repetition')?.value.trim() || null,
+      gender_set:             genderSet,
+      members_quantity_limit: parseInt(document.getElementById('quantity-limit')?.value) || 5,
+      agenda:                 document.getElementById('agenda')?.value.trim() || null,
     };
+
+    const submitBtn     = document.getElementById('submit-btn');
+    const submitSpinner = document.getElementById('submit-spinner');
+    if (submitBtn)     submitBtn.disabled = true;
+    if (submitSpinner) submitSpinner.classList.remove('hidden');
 
     try {
-      const result = await createGroup(group);
-      alert("Group created successfully!");
-      console.log(result);
-      // Optionally, reset the form or close the popup
-      this.reset();
-      document.getElementById("myForm").style.display = "none";
-    } catch (error) {
-      alert("Failed to create group. Check console for details.");
+      await createGroup(group);
+      showToast('Study group created successfully!', 'success');
+      groupForm.reset();
+      selectedFiles = [];
+      renderPreview();
+      closeForm();
+      // Reload groups list
+      const groups = await fetchGroups();
+      allGroups = groups;
+      filteredGroups = [...groups];
+      currentPage = 1;
+      applyFiltersAndSearch();
+    } catch (err) {
+      showToast('Failed to create group. Please try again.', 'error');
+      console.error(err);
+    } finally {
+      if (submitBtn)     submitBtn.disabled = false;
+      if (submitSpinner) submitSpinner.classList.add('hidden');
     }
   });
 
-function renderGroups(groups) {
-    const groupList = document.querySelector('.study-group-list');
-    if (!groupList) return;
+  // --- Search ---
+  const searchInput = document.getElementById('default-search');
+  searchInput?.addEventListener('input', e => applyFiltersAndSearch(e.target.value.toLowerCase()));
 
-    // Keep the "Add Group" button
-    const addButton = groupList.querySelector('#openFormBtn')?.parentElement;
-    groupList.innerHTML = '';
-    if (addButton) groupList.appendChild(addButton);
+  // --- Filter form ---
+  const filterForm = document.getElementById('filter-form');
+  filterForm?.addEventListener('submit', e => {
+    e.preventDefault();
+    applyFiltersAndSearch(searchInput?.value.toLowerCase() || '');
+  });
+  filterForm?.addEventListener('reset', () => {
+    setTimeout(() => applyFiltersAndSearch(''), 0);
+  });
 
-    if (groups.length === 0) {
-        const emptyDiv = document.createElement('div');
-        emptyDiv.textContent = 'No groups found.';
-        emptyDiv.className = 'text-gray-600 w-full text-center';
-        groupList.appendChild(emptyDiv);
-        return;
-    }
+  // ─── State ──────────────────────────────────────────────────────────────────
+  let allGroups      = [];
+  let filteredGroups = [];
+  let currentPage    = 1;
+  const itemsPerPage = 8;
 
-    const transformedGroups = groups.map(group => {
-        // Format dates
-        const startDate = group.start_date ? formatDate(group.start_date) : null;
-        const endDate = group.end_date ? formatDate(group.end_date) : null;
-        
-        // Determine date display
-        let dateDisplay;
-        if (!startDate && !endDate) {
-            dateDisplay = 'No dates specified';
-        } else if (startDate && !endDate) {
-            dateDisplay = `Starts: ${startDate}`;
-        } else if (!startDate && endDate) {
-            dateDisplay = `Ends: ${endDate}`;
-        } else if (startDate === endDate) {
-            dateDisplay = startDate; // Only show the start date if it's the same as the end date
-        } else {
-            dateDisplay = `${startDate} - ${endDate}`; // Display both start and end dates
-        }
+  function applyFiltersAndSearch(searchTerm = searchInput?.value.toLowerCase() || '') {
+    const subject     = document.getElementById('filter-subject')?.value || '';
+    const location    = document.getElementById('filter-location')?.value || '';
+    const coverage    = document.getElementById('filter-coverage')?.value.trim().toLowerCase() || '';
+    const dateStart   = document.getElementById('filter-date-start')?.value || '';
+    const dateEnd     = document.getElementById('filter-date-end')?.value || '';
+    const timeStart   = document.getElementById('filter-time-start')?.value || '';
+    const timeEnd     = document.getElementById('filter-time-end')?.value || '';
+    const repetition  = document.getElementById('filter-repetition')?.value.trim().toLowerCase() || '';
+    const genderF     = document.getElementById('filter-gender-female')?.checked;
+    const genderM     = document.getElementById('filter-gender-male')?.checked;
+    const membersLim  = document.getElementById('filter-members-limit')?.value || '';
 
-        return {
-            id: group.id,
-            name: group.name,
-            subject: group.subject_id || 'No subject specified',
-            dateDisplay: dateDisplay,
-            seats: group.members_quantity_limit ?? 0
-        };
+    filteredGroups = allGroups.filter(g => {
+      if (searchTerm && !(g.name || '').toLowerCase().includes(searchTerm)) return false;
+      if (subject  && String(g.subject_id) !== subject)  return false;
+      if (location && String(g.location_id) !== location) return false;
+      if (coverage && !(g.coverage || '').toLowerCase().includes(coverage)) return false;
+      if (dateStart && dateEnd) {
+        const d = g.start_date ? new Date(g.start_date) : null;
+        if (!d || d < new Date(dateStart) || d > new Date(dateEnd)) return false;
+      }
+      if (timeStart && timeEnd && g.start_time) {
+        if (g.start_time < timeStart || g.start_time > timeEnd) return false;
+      }
+      if (repetition && !(g.repetition || '').toLowerCase().includes(repetition)) return false;
+      if (genderF && !genderM && g.gender !== 'female') return false;
+      if (genderM && !genderF && g.gender !== 'male')   return false;
+      if (membersLim) {
+        const seats = g.members_quantity_limit ?? g.seats ?? 0;
+        if (seats < parseInt(membersLim)) return false;
+      }
+      return true;
     });
 
-    const totalPages = Math.ceil(transformedGroups.length / itemsPerPage);
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const currentGroups = transformedGroups.slice(startIndex, endIndex);
+    currentPage = 1;
+    applySort();
+  }
 
-    currentGroups.forEach(group => {
-        const groupDiv = document.createElement('div');
-        groupDiv.className = 'group w-[215px] max-w-sm h-[204px] bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700 cursor-pointer hover:bg-blue-700 dark:hover:bg-gray-700 hover:text-white dark:hover:text-white transition duration-300';
-        groupDiv.innerHTML = `
-            <img class="rounded-t-lg w-full h-[100px] object-cover" src="https://cdn.vectorstock.com/i/500p/33/40/study-concept-for-banner-design-vector-42473340.jpg" alt="study banner" />
-            <div class="p-2">
-                <h6 class="line-clamp-1 mb-0.5 text-sm font-bold tracking-tight text-gray-900 dark:text-white group-hover:text-white">${group.name}</h6>
-                <div class="m-0.5 flex relative flex-col items-start justify-start space-y-1">
-                    <span class="text-xs font-normal text-gray-700 dark:text-gray-400 group-hover:text-white">${group.subject}</span>
-                    <span class="text-xs font-normal text-gray-700 dark:text-gray-400 group-hover:text-white">${group.dateDisplay}</span>
-                    <span class="text-xs font-normal text-gray-700 dark:text-gray-400 group-hover:text-white">${group.seats} Seats Available</span>
-                </div>
-            </div>
-        `;
-        groupDiv.addEventListener('click', () => {
-            window.location.href = `study-group-001.html?id=${group.id}`;
-        });
-        groupList.appendChild(groupDiv);
+  function applySort() {
+    const field = document.getElementById('sort-field')?.value || 'date';
+    const order = document.getElementById('sort-order')?.value || 'asc';
+
+    const sorted = [...filteredGroups].sort((a, b) => {
+      let cmp = 0;
+      if (field === 'date') {
+        cmp = new Date(a.start_date || 0) - new Date(b.start_date || 0);
+      } else if (field === 'subject') {
+        cmp = String(a.subject_id || '').localeCompare(String(b.subject_id || ''));
+      } else if (field === 'location') {
+        cmp = String(a.location_id || '').localeCompare(String(b.location_id || ''));
+      } else if (field === 'membersLimit') {
+        cmp = (a.members_quantity_limit ?? 0) - (b.members_quantity_limit ?? 0);
+      }
+      return order === 'desc' ? -cmp : cmp;
+    });
+
+    renderGroups(sorted);
+  }
+
+  // ─── Render ─────────────────────────────────────────────────────────────────
+  function formatDate(str) {
+    if (!str) return null;
+    const d = new Date(str);
+    if (isNaN(d)) return null;
+    return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+  }
+
+  function renderGroups(groups) {
+    const list = document.querySelector('.study-group-list');
+    if (!list) return;
+
+    const addBtn = list.querySelector('#openFormBtn')?.parentElement;
+    list.innerHTML = '';
+    if (addBtn) list.appendChild(addBtn);
+
+    const emptyState = document.getElementById('empty-state');
+
+    if (groups.length === 0) {
+      if (emptyState) emptyState.style.display = 'flex';
+      updatePagination(0);
+      return;
+    }
+    if (emptyState) emptyState.style.display = 'none';
+
+    const totalPages = Math.ceil(groups.length / itemsPerPage);
+    const pageGroups = groups.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+    pageGroups.forEach(group => {
+      const startDate = formatDate(group.start_date);
+      const endDate   = formatDate(group.end_date);
+      let dateDisplay = 'No date set';
+      if (startDate && endDate && startDate !== endDate) dateDisplay = `${startDate} – ${endDate}`;
+      else if (startDate) dateDisplay = startDate;
+      else if (endDate)   dateDisplay = endDate;
+
+      const seats = group.members_quantity_limit ?? group.seats ?? 0;
+
+      const card = document.createElement('div');
+      card.className = 'group w-[215px] h-[204px] bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700 cursor-pointer hover:shadow-md hover:border-blue-400 dark:hover:border-blue-500 transition-all duration-200 overflow-hidden flex flex-col';
+      card.setAttribute('role', 'button');
+      card.setAttribute('tabindex', '0');
+      card.setAttribute('aria-label', `Open group: ${group.name}`);
+      card.innerHTML = `
+        <img class="w-full h-[90px] object-cover" src="https://cdn.vectorstock.com/i/500p/33/40/study-concept-for-banner-design-vector-42473340.jpg" alt="" loading="lazy">
+        <div class="p-2.5 flex flex-col flex-1 justify-between">
+          <h6 class="line-clamp-1 text-sm font-bold text-gray-900 dark:text-white mb-1">${escapeHtml(group.name)}</h6>
+          <div class="space-y-0.5">
+            <p class="text-xs text-gray-600 dark:text-gray-300 font-medium line-clamp-1 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded">${escapeHtml(subjectMap[group.subject_id] || String(group.subject_id || '—'))}</p>
+            <p class="text-xs text-gray-600 dark:text-gray-300 font-medium line-clamp-1 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">${escapeHtml(locationMap[group.location_id] || String(group.location_id || '—'))}</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-1">${escapeHtml(dateDisplay)}</p>
+            <p class="text-xs font-medium ${seats > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400'}">${seats} seat${seats !== 1 ? 's' : ''} available</p>
+          </div>
+        </div>
+      `;
+      const navigate = () => window.location.href = `study-group-001.html?id=${group.id}`;
+      card.addEventListener('click', navigate);
+      card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') navigate(); });
+      list.appendChild(card);
     });
 
     updatePagination(totalPages);
-}
+  }
 
-function formatDate(dateString) {
-    if (!dateString) return null;
-    const options = { year: 'numeric', month: 'short', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString(undefined, options);
-}
+  function escapeHtml(str) {
+    const d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+  }
 
-function updatePagination(totalPages) {
-    const paginationList = document.querySelector('nav[aria-label="Page navigation example"] ul');
-    if (!paginationList) return;
+  function updatePagination(totalPages) {
+    const ul = document.querySelector('.pagination-container nav ul');
+    if (!ul) return;
+    ul.innerHTML = '';
 
-    paginationList.innerHTML = '';
+    if (totalPages <= 1) return;
 
-    const prevDisabled = currentPage === 1;
-    paginationList.innerHTML += `
-        <li>
-            <button onclick="changePage(${currentPage - 1}, ${totalPages})" 
-                class="flex items-center justify-center px-3 h-8 ms-0 leading-tight ${prevDisabled ? 'text-gray-500 cursor-not-allowed' : 'text-gray-500 hover:text-white'} bg-transparent border border-gray-300 rounded-s-lg ${prevDisabled ? '' : 'dark:hover:bg-gray-700 hover:bg-blue-600'} dark:border-gray-700 dark:text-gray-400" 
-                ${prevDisabled ? 'disabled' : ''}>
-                <span class="sr-only">Previous</span>
-                <svg class="w-2.5 h-2.5 rtl:rotate-180" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 1 1 5l4 4"/></svg>
-            </button>
-        </li>
-    `;
+    const prevBtn = makePageBtn('‹', currentPage - 1, totalPages, currentPage === 1);
+    prevBtn.setAttribute('aria-label', 'Previous page');
+    ul.appendChild(prevBtn);
 
     for (let i = 1; i <= totalPages; i++) {
-        const isActive = currentPage === i;
-        paginationList.innerHTML += `
-            <li>
-                <button onclick="changePage(${i}, ${totalPages})" 
-                    class="flex items-center justify-center px-3 h-8 leading-tight ${isActive ? 'text-blue-600 bg-blue-100 dark:bg-gray-700 dark:text-white' : 'text-gray-500 hover:text-white'} bg-transparent border border-gray-300 ${isActive ? '' : 'dark:hover:bg-gray-700 hover:bg-blue-600'} dark:border-gray-700 dark:text-gray-400">${i}</button>
-            </li>
-        `;
+      ul.appendChild(makePageBtn(String(i), i, totalPages, false, i === currentPage));
     }
 
-    const nextDisabled = currentPage === totalPages;
-    paginationList.innerHTML += `
-        <li>
-            <button onclick="changePage(${currentPage + 1}, ${totalPages})" 
-                class="flex items-center justify-center px-3 h-8 ms-0 leading-tight ${nextDisabled ? 'text-gray-500 cursor-not-allowed' : 'text-gray-500 hover:text-white'} bg-transparent border border-gray-300 rounded-e-lg ${nextDisabled ? '' : 'dark:hover:bg-gray-700 hover:bg-blue-600'} dark:border-gray-700 dark:text-gray-400"
-                ${nextDisabled ? 'disabled' : ''}>
-                <span class="sr-only">Next</span>
-                <svg class="w-2.5 h-2.5 rtl:rotate-180" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/></svg>
-            </button>
-        </li>
-    `;
-}
+    const nextBtn = makePageBtn('›', currentPage + 1, totalPages, currentPage === totalPages);
+    nextBtn.setAttribute('aria-label', 'Next page');
+    ul.appendChild(nextBtn);
+  }
 
-window.changePage = function(newPage, totalPages) {
-    if (newPage >= 1 && newPage <= totalPages) {
-        currentPage = newPage;
-        renderGroups(filteredGroups);
-    }
-};
-
-// Initial fetch logic
-const groupList = document.querySelector('.study-group-list');
-if (groupList) {
-    Array.from(groupList.children).forEach(child => {
-        if (!child.querySelector('#openFormBtn')) {
-            child.remove();
-        }
+  function makePageBtn(label, page, total, disabled, active = false) {
+    const li = document.createElement('li');
+    const btn = document.createElement('button');
+    btn.textContent = label;
+    btn.className = [
+      'flex items-center justify-center w-8 h-8 rounded-lg text-sm font-medium transition-colors',
+      active   ? 'bg-blue-600 text-white'                                                  : '',
+      disabled ? 'text-gray-300 dark:text-gray-600 cursor-not-allowed'                    : '',
+      !active && !disabled ? 'text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700' : '',
+    ].join(' ');
+    btn.disabled = disabled;
+    btn.addEventListener('click', () => {
+      if (page >= 1 && page <= total) {
+        currentPage = page;
+        applySort();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     });
+    li.appendChild(btn);
+    return li;
+  }
 
+  // ─── Initial load ───────────────────────────────────────────────────────────
+  const groupList = document.querySelector('.study-group-list');
+  if (groupList) {
     const loadingDiv = document.createElement('div');
-    loadingDiv.textContent = 'Loading...';
-    loadingDiv.className = 'text-center w-full';
+    loadingDiv.className = 'col-span-full flex items-center justify-center gap-2 text-gray-500 dark:text-gray-400 py-12';
+    loadingDiv.innerHTML = `<svg class="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg> Loading groups…`;
     groupList.appendChild(loadingDiv);
 
     fetchGroups()
-        .then(groups => {
-            loadingDiv.remove();
-            allGroups = groups;
-            filteredGroups = [...groups];
-            renderGroups(groups);
-        })
-        .catch(error => {
-            loadingDiv.textContent = `Failed to load groups: ${error.message}`;
-            loadingDiv.className = 'text-red-600 w-full text-center';
-        });
-}
+      .then(groups => {
+        loadingDiv.remove();
+        allGroups = groups;
+        filteredGroups = [...groups];
+        renderGroups(groups);
+      })
+      .catch(err => {
+        loadingDiv.innerHTML = `<span class="text-red-500">Failed to load groups: ${err.message}</span>`;
+      });
+  }
 
-
-});
+}); // end DOMContentLoaded

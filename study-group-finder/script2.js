@@ -1,567 +1,410 @@
-import { fetchGroups, fetchSubjects, fetchLocations, fetchStudents, createGroup, createSubject, createLocation, createStudent, updateGroup, updateSubject, updateLocation, updateStudent, deleteGroup, deleteSubject, deleteLocation, deleteStudent} from './api.js';  // Adjust the path based on your project structure
+import {
+  fetchGroups, fetchSubjects, fetchLocations,
+  updateGroup, deleteGroup
+} from './api.js';
 
-document.title = document;
-// --- Speed Dial Toggle ---
-document.addEventListener('DOMContentLoaded', function() {
-  const speedDialButton = document.querySelector('[data-dial-toggle]');
-  const speedDialMenu = document.getElementById('speed-dial-menu-horizontal');
-  if (speedDialButton && speedDialMenu) {
-    speedDialButton.addEventListener('click', function(e) {
-      e.stopPropagation();
-      const isExpanded = speedDialButton.getAttribute('aria-expanded') === 'true';
-      speedDialButton.setAttribute('aria-expanded', !isExpanded);
-      speedDialMenu.classList.toggle('hidden');
-    });
-    document.addEventListener('click', function(e) {
-      if (!speedDialButton.contains(e.target) && !speedDialMenu.contains(e.target)) {
-        speedDialMenu.classList.add('hidden');
-        speedDialButton.setAttribute('aria-expanded', 'false');
-      }
-    });
-  }
+// ─── State for mappings ───────────────────────────────────────────────────────
+let subjectMap = {};
+let locationMap = {};
 
-  // --- Speed Dial Tooltips Functionality ---
-  // Tooltip buttons
-  const tooltipShareBtn = document.querySelector('[data-tooltip-target="tooltip-share"]');
-  const tooltipPrintBtn = document.querySelector('[data-tooltip-target="tooltip-print"]');
-  const tooltipDownloadBtn = document.querySelector('[data-tooltip-target="tooltip-download"]');
-  const tooltipCopyBtn = document.querySelector('[data-tooltip-target="tooltip-copy"]');
+// ─── Theme toggle ─────────────────────────────────────────────────────────────
+function initThemeToggle() {
+  const themeToggle = document.getElementById('theme-toggle');
+  if (!themeToggle) return;
 
-  // Helper to get groupId from URL
-  function getGroupId() {
-    const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get('id');
-  }
-
-  // 1. Edit (Share) - Pop up group-form with current group data
-  if (tooltipShareBtn) {
-    tooltipShareBtn.addEventListener('click', async function(e) {
-      e.preventDefault();
-      // Try to find the modal overlay
-      let modalOverlay = document.getElementById('modal-overlay');
-      let formPopup = document.getElementById('myForm');
-      if (!modalOverlay) {
-        // Create modal overlay
-        modalOverlay = document.createElement('div');
-        modalOverlay.id = 'modal-overlay';
-        modalOverlay.style.position = 'fixed';
-        modalOverlay.style.top = '0';
-        modalOverlay.style.left = '0';
-        modalOverlay.style.width = '100vw';
-        modalOverlay.style.height = '100vh';
-        modalOverlay.style.background = 'rgba(0,0,0,0.5)';
-        modalOverlay.style.display = 'flex';
-        modalOverlay.style.alignItems = 'center';
-        modalOverlay.style.justifyContent = 'center';
-        modalOverlay.style.zIndex = '9999';
-        document.body.appendChild(modalOverlay);
-      }
-      // Remove any existing form in the modal
-      if (formPopup && formPopup.parentElement !== modalOverlay) {
-        formPopup.remove();
-        formPopup = null;
-      }
-      if (!formPopup) {
-        try {
-          const res = await fetch('study-group-finder.html');
-          const html = await res.text();
-          const tempDiv = document.createElement('div');
-          tempDiv.innerHTML = html;
-          // Try to find the actual <form> inside #myForm or as #myForm itself
-          let form = tempDiv.querySelector('#myForm');
-          if (form && form.tagName !== 'FORM') {
-            // If #myForm is a wrapper, get the inner <form>
-            const innerForm = form.querySelector('form');
-            if (innerForm) form = innerForm;
-          }
-          if (form && form.tagName === 'FORM') {
-            // Remove any parent wrapper if present (prevent double wrapping)
-            if (form.parentElement && form.parentElement !== tempDiv) {
-              form.parentElement.removeChild(form);
-            }
-            // Remove all children from modalOverlay before appending form
-            while (modalOverlay.firstChild) {
-              modalOverlay.removeChild(modalOverlay.firstChild);
-            }
-            // Remove all parent wrappers: extract only the <form> element if #myForm is a wrapper
-            modalOverlay.appendChild(form);
-            formPopup = form;
-            // Style the form directly
-            if (formPopup && formPopup.tagName === 'FORM') {
-              formPopup.id = 'myForm';
-              formPopup.style.display = 'block';
-              formPopup.style.background = '#fff';
-              formPopup.style.padding = '2rem';
-              formPopup.style.borderRadius = '1rem';
-              formPopup.style.boxShadow = '0 2px 16px rgba(0,0,0,0.2)';
-              formPopup.style.maxWidth = '600px';
-              formPopup.style.width = '100%';
-              formPopup.style.position = 'relative';
-              formPopup.style.maxHeight = '80vh';
-              formPopup.style.overflowY = 'auto';
-              // Add close button
-              let closeBtn = document.createElement('button');
-              closeBtn.textContent = '×';
-              closeBtn.setAttribute('aria-label', 'Close');
-              closeBtn.style.position = 'absolute';
-              closeBtn.style.top = '1rem';
-              closeBtn.style.right = '1rem';
-              closeBtn.style.fontSize = '2rem';
-              closeBtn.style.background = 'none';
-              closeBtn.style.border = 'none';
-              closeBtn.style.cursor = 'pointer';
-              closeBtn.addEventListener('click', function() {
-                modalOverlay.style.display = 'none';
-              });
-              formPopup.prepend(closeBtn);
-              modalOverlay.appendChild(formPopup);
-              modalOverlay.style.display = 'flex';
-              // Animate
-              formPopup.scrollTop = 0;
-              setTimeout(() => { formPopup.scrollTop = 0; }, 10);
-              formPopup.classList.add('animate__animated', 'animate__fadeInDown');
-              setTimeout(() => {
-                formPopup.classList.remove('animate__animated', 'animate__fadeInDown');
-              }, 800);
-            }
-          } else {
-            alert('Group form could not be loaded.');
-            return;
-          }
-        } catch (err) {
-          alert('Failed to load group form.');
-          return;
-        }
-      } else {
-        modalOverlay.style.display = 'flex';
-        formPopup.style.display = 'block';
-      }
-      // After appending, re-query the form elements
-      const groupForm = formPopup && formPopup.tagName === 'FORM' ? formPopup : document.getElementById('group-form');
-      if (!groupForm) {
-        alert('Group form not found after loading.');
-        return;
-      }
-      // Fetch group data and fill form fields with current page content
-      const groupId = getGroupId();
-      // Get the content from the current page (not from API)
-      const groupName = document.getElementById('group-title')?.textContent || '';
-      const groupSubject = document.getElementById('group-subject')?.textContent || '';
-      const groupCoverage = document.getElementById('group-coverage')?.textContent || '';
-      const groupLocation = document.getElementById('side-location')?.textContent || '';
-      const groupDate = document.getElementById('side-date')?.textContent || '';
-      const groupTime = document.getElementById('side-time')?.textContent || '';
-      const groupRepetition = document.getElementById('side-repetition')?.textContent || '';
-      const groupAgenda = (() => {
-        const detailsDiv = document.getElementById('group-details');
-        if (!detailsDiv) return '';
-        const agendaDiv = detailsDiv.querySelector('div.mb-4');
-        if (!agendaDiv) return '';
-        return agendaDiv.textContent.trim();
-      })();
-      // Fill form fields
-      if (groupForm.querySelector('#group-name')) groupForm.querySelector('#group-name').value = groupName;
-      if (groupForm.querySelector('#group-subject')) groupForm.querySelector('#group-subject').value = groupSubject;
-      if (groupForm.querySelector('#group-coverage')) groupForm.querySelector('#group-coverage').value = groupCoverage;
-      if (groupForm.querySelector('#group-location')) groupForm.querySelector('#group-location').value = groupLocation;
-      if (groupForm.querySelector('#datepicker-range-start')) groupForm.querySelector('#datepicker-range-start').value = '';
-      if (groupForm.querySelector('#datepicker-range-end')) groupForm.querySelector('#datepicker-range-end').value = '';
-      if (groupForm.querySelector('#start-time')) groupForm.querySelector('#start-time').value = '';
-      if (groupForm.querySelector('#end-time')) groupForm.querySelector('#end-time').value = '';
-      if (groupForm.querySelector('#group-session-repetition')) groupForm.querySelector('#group-session-repetition').value = groupRepetition;
-      if (groupForm.querySelector('#agenda')) groupForm.querySelector('#agenda').value = groupAgenda;
-      
-      
-      function initTomSelectFields() {
-  fetchSubjects().then(allSubjects => {
-    const mappedSubjects = allSubjects.map(subject => ({ id: subject.id, text: subject.code }));
-    const subjInput = groupForm.querySelector('#group-subject');
-    if (subjInput) {
-      if (subjInput.tomselect) subjInput.tomselect.destroy();
-      const ts = new TomSelect(subjInput, {
-        valueField: 'id',
-        labelField: 'text',
-        searchField: 'text',
-        maxItems: 1,
-        preload: true,
-        placeholder: 'Select a subject',
-        load: function(query, callback) {
-          if (!query.length) return callback(mappedSubjects.slice(0, 50));
-          const filtered = mappedSubjects.filter(subject => subject.text.toLowerCase().includes(query.toLowerCase()));
-          callback(filtered);
-        },
-        plugins: ['dropdown_input']
-      });
-
-      const updatePlaceholder = () => {
-        if (ts.getValue()) {
-          ts.control_input.setAttribute('placeholder', '');
-        } else {
-          ts.control_input.setAttribute('placeholder', 'Select a subject');
-        }
-      };
-
-      ts.on('change', updatePlaceholder);
-      ts.on('load', updatePlaceholder);
-      ts.on('initialize', updatePlaceholder);
-
-      if (groupSubject) ts.setValue(groupSubject, true);
-      subjInput.style.display = 'none';
-    }
-  });
-
-  fetchLocations().then(allLocations => {
-    const mappedLocations = allLocations.map(location => ({ id: location.id, text: location.code }));
-    const locInput = groupForm.querySelector('#group-location');
-    if (locInput) {
-      if (locInput.tomselect) locInput.tomselect.destroy();
-      const ts = new TomSelect(locInput, {
-        valueField: 'id',
-        labelField: 'text',
-        searchField: 'text',
-        maxItems: 1,
-        preload: true,
-        placeholder: 'Select a location',
-        load: function(query, callback) {
-          if (!query.length) return callback(mappedLocations.slice(0, 50));
-          const filtered = mappedLocations.filter(location => location.text.toLowerCase().includes(query.toLowerCase()));
-          callback(filtered);
-        },
-        plugins: ['dropdown_input']
-      });
-
-      const updatePlaceholder = () => {
-        if (ts.getValue()) {
-          ts.control_input.setAttribute('placeholder', '');
-        } else {
-          ts.control_input.setAttribute('placeholder', 'Select a location');
-        }
-      };
-
-      ts.on('change', updatePlaceholder);
-      ts.on('load', updatePlaceholder);
-      ts.on('initialize', updatePlaceholder);
-
-      if (groupLocation) ts.setValue(groupLocation, true);
-      locInput.style.display = 'none';
-    }
+  themeToggle.addEventListener('click', () => {
+    const html = document.documentElement;
+    const isDark = html.classList.toggle('dark');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
   });
 }
 
-      // --- TomSelect for subject and location ---
-      // Ensure TomSelect library is loaded
-      if (typeof TomSelect === 'undefined') {
-        const tomSelectScript = document.createElement('script');
-        tomSelectScript.src = 'https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js';
-        tomSelectScript.onload = () => initTomSelectFields();
-        document.body.appendChild(tomSelectScript);
-      } else {
-        initTomSelectFields();
+// ─── Toast ────────────────────────────────────────────────────────────────────
+function showToast(message, type = 'success') {
+  const container = document.getElementById('toast-container');
+  if (!container) return;
+  const colors = { success: 'bg-green-500', error: 'bg-red-500', info: 'bg-blue-500' };
+  const toast = document.createElement('div');
+  toast.className = `pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-lg text-white text-sm shadow-lg ${colors[type] ?? colors.info} transition-all duration-300 opacity-0 translate-y-2`;
+  toast.textContent = message;
+  container.appendChild(toast);
+  requestAnimationFrame(() => toast.classList.remove('opacity-0', 'translate-y-2'));
+  setTimeout(() => {
+    toast.classList.add('opacity-0', 'translate-y-2');
+    toast.addEventListener('transitionend', () => toast.remove());
+  }, 3500);
+}
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+function getQueryParam(name) {
+  return new URLSearchParams(window.location.search).get(name);
+}
+
+function formatDate(str) {
+  if (!str) return '';
+  const d = new Date(str);
+  if (isNaN(d)) return str;
+  return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+}
+
+function formatTime(str) {
+  if (!str) return '';
+  // Handle "HH:MM:SS" or ISO string
+  const parts = str.split(':');
+  if (parts.length >= 2) {
+    const h = parseInt(parts[0]);
+    const m = parts[1];
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    const h12 = h % 12 || 12;
+    return `${h12}:${m} ${ampm}`;
+  }
+  const d = new Date(str);
+  if (!isNaN(d)) return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  return '';
+}
+
+function escapeHtml(str) {
+  const d = document.createElement('div');
+  d.textContent = String(str ?? '');
+  return d.innerHTML;
+}
+
+async function fetchGroupById(id) {
+  const groups = await fetchGroups();
+  const arr = Array.isArray(groups) ? groups : groups.data || [];
+  return arr.find(g => String(g.id) === String(id)) || null;
+}
+
+// ─── Speed dial ───────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  // --- Initialize theme toggle ---
+  initThemeToggle();
+
+  // --- Load subject and location mappings ---
+  Promise.all([fetchSubjects(), fetchLocations()]).then(([subjects, locations]) => {
+    subjects.forEach(s => { subjectMap[s.id] = s.code; });
+    locations.forEach(l => { locationMap[l.id] = l.code; });
+  }).catch(err => console.error('Failed to load mappings:', err));
+
+  const dialBtn  = document.querySelector('[data-dial-toggle]');
+  const dialMenu = document.getElementById('speed-dial-menu-horizontal');
+
+  if (dialBtn && dialMenu) {
+    dialBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      const isHidden = dialMenu.style.display === 'none' || dialMenu.style.display === '';
+      dialBtn.setAttribute('aria-expanded', String(isHidden));
+      dialMenu.style.display = isHidden ? 'flex' : 'none';
+      if (isHidden) {
+        dialMenu.style.alignItems = 'center';
       }
-      function hideHelpTextIfPresent(input, helpTexts) {
-        // Remove placeholder from original select
-        input.removeAttribute('placeholder');
-        // Hide next sibling if it contains help text
-        let sibling = input.nextElementSibling;
-        if (sibling && sibling.textContent) {
-          for (const txt of helpTexts) {
-            if (sibling.textContent.trim().includes(txt)) {
-              sibling.style.display = 'none';
-            }
-          }
-        }
+    });
+    document.addEventListener('click', e => {
+      if (!dialBtn.contains(e.target) && !dialMenu.contains(e.target)) {
+        dialMenu.style.display = 'none';
+        dialBtn.setAttribute('aria-expanded', 'false');
       }
-      function initTomSelectFields() {
-        fetchSubjects().then(allSubjects => {
-          const mappedSubjects = allSubjects.map(subject => ({ id: subject.id, text: subject.code }));
-          const subjInput = groupForm.querySelector('#group-subject');
-          if (subjInput) {
-            if (subjInput.tomselect) subjInput.tomselect.destroy();
-            const ts = new TomSelect(subjInput, {
-              valueField: 'id',
-              labelField: 'text',
-              searchField: 'text',
-              maxItems: 1,
-              preload: true,
-              load: function(query, callback) {
-                if (!query.length) return callback(mappedSubjects.slice(0, 50));
-                const filtered = mappedSubjects.filter(subject => subject.text.toLowerCase().includes(query.toLowerCase()));
-                callback(filtered);
-              },
-              plugins: ['dropdown_input']
-            });
-            if (groupSubject) {
-              ts.setValue(groupSubject, true);
-              ts.input.removeAttribute('placeholder');
-              subjInput.removeAttribute('placeholder');
-              hideHelpTextIfPresent(subjInput, ['Select a group']);
-            }
-            subjInput.style.display = 'none';
-            ts.on('change', function() {
-              if (ts.getValue()) {
-                ts.input.removeAttribute('placeholder');
-                subjInput.removeAttribute('placeholder');
-                hideHelpTextIfPresent(subjInput, ['Select a group']);
-              }
-            });
-            ts.on('initialize', function() {
-              if (ts.getValue()) {
-                ts.input.removeAttribute('placeholder');
-                subjInput.removeAttribute('placeholder');
-                hideHelpTextIfPresent(subjInput, ['Select a group']);
-              }
-            });
-          }
-        });
-        fetchLocations().then(allLocations => {
-          const mappedLocations = allLocations.map(location => ({ id: location.id, text: location.code }));
-          const locInput = groupForm.querySelector('#group-location');
-          if (locInput) {
-            if (locInput.tomselect) locInput.tomselect.destroy();
-            const ts = new TomSelect(locInput, {
-              valueField: 'id',
-              labelField: 'text',
-              searchField: 'text',
-              maxItems: 1,
-              preload: true,
-              load: function(query, callback) {
-                if (!query.length) return callback(mappedLocations.slice(0, 50));
-                const filtered = mappedLocations.filter(location => location.text.toLowerCase().includes(query.toLowerCase()));
-                callback(filtered);
-              },
-              plugins: ['dropdown_input']
-            });
-            if (groupLocation) {
-              ts.setValue(groupLocation, true);
-              ts.input.removeAttribute('placeholder');
-              locInput.removeAttribute('placeholder');
-              hideHelpTextIfPresent(locInput, ['e.g S40-1016']);
-            }
-            locInput.style.display = 'none';
-            ts.on('change', function() {
-              if (ts.getValue()) {
-                ts.input.removeAttribute('placeholder');
-                locInput.removeAttribute('placeholder');
-                hideHelpTextIfPresent(locInput, ['e.g S40-1016']);
-              }
-            });
-            ts.on('initialize', function() {
-              if (ts.getValue()) {
-                ts.input.removeAttribute('placeholder');
-                locInput.removeAttribute('placeholder');
-                hideHelpTextIfPresent(locInput, ['e.g S40-1016']);
-              }
-            });
-          }
-        });
-      }
-      // Show modal
-      modalOverlay.style.display = 'flex';
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      // On submit, call updateGroup()
-      groupForm.onsubmit = async function(ev) {
-        ev.preventDefault();
-        const updatedGroup = {
-          id: groupId,
-          name: groupForm.querySelector('#group-name').value.trim(),
-          subject: groupForm.querySelector('#group-subject').value,
-          coverage: groupForm.querySelector('#group-coverage').value.trim(),
-          location: groupForm.querySelector('#group-location').value,
-          start_date: groupForm.querySelector('#datepicker-range-start').value,
-          end_date: groupForm.querySelector('#datepicker-range-end').value,
-          start_time: groupForm.querySelector('#start-time').value,
-          end_time: groupForm.querySelector('#end-time').value,
-          session_repetition: groupForm.querySelector('#group-session-repetition').value,
-          agenda: groupForm.querySelector('#agenda').value,
-        };
-        try {
-          await updateGroup(updatedGroup);
-          alert('Group updated successfully!');
-          modalOverlay.style.display = 'none';
-          location.reload();
-        } catch (err) {
-          alert('Failed to update group.');
-        }
-      };
-      // Optional: close modal when clicking outside the form
-      modalOverlay.addEventListener('click', function(ev) {
-        if (ev.target === modalOverlay) {
-          modalOverlay.style.display = 'none';
-        }
+    });
+  }
+
+  // ─── Star rating ─────────────────────────────────────────────────────────────
+  const starContainer = document.getElementById('star-rating');
+  const ratingLabel   = document.getElementById('rating-label');
+  let currentRating   = 0;
+  const labels        = ['', 'Poor', 'Fair', 'Good', 'Very Good', 'Excellent'];
+
+  if (starContainer) {
+    for (let i = 1; i <= 5; i++) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'star-btn text-gray-300 dark:text-gray-600 text-2xl leading-none focus:outline-none transition-colors';
+      btn.textContent = '★';
+      btn.dataset.value = i;
+      btn.setAttribute('aria-label', `Rate ${i} star${i > 1 ? 's' : ''}`);
+      btn.addEventListener('click', () => {
+        currentRating = i;
+        updateStars(i);
+        if (ratingLabel) ratingLabel.textContent = labels[i];
+      });
+      btn.addEventListener('mouseenter', () => updateStars(i));
+      starContainer.appendChild(btn);
+    }
+    starContainer.addEventListener('mouseleave', () => updateStars(currentRating));
+  }
+
+  function updateStars(rating) {
+    if (!starContainer) return;
+    starContainer.querySelectorAll('.star-btn').forEach(s => {
+      const v = parseInt(s.dataset.value);
+      s.classList.toggle('text-yellow-400', v <= rating);
+      s.classList.toggle('dark:text-yellow-300', v <= rating);
+      s.classList.toggle('text-gray-300', v > rating);
+      s.classList.toggle('dark:text-gray-600', v > rating);
+    });
+  }
+
+  // ─── Char counter ────────────────────────────────────────────────────────────
+  const commentInput = document.getElementById('comment-input');
+  const charCount    = document.getElementById('char-count');
+  commentInput?.addEventListener('input', () => {
+    const len = commentInput.value.length;
+    if (charCount) charCount.textContent = `${len} / 500`;
+  });
+
+  // ─── Comments (localStorage mock) ────────────────────────────────────────────
+  const groupId = getQueryParam('id');
+  const storageKey = `comments_group_${groupId}`;
+  let comments = JSON.parse(localStorage.getItem(storageKey) || '[]');
+
+  function renderComments() {
+    const list = document.getElementById('comments-list');
+    if (!list) return;
+    if (comments.length === 0) {
+      list.innerHTML = '<p class="text-sm text-gray-400 dark:text-gray-500 italic">No comments yet. Be the first!</p>';
+      return;
+    }
+    list.innerHTML = comments.map((c, i) => `
+      <div class="comment-card flex gap-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
+        <div class="shrink-0 w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-blue-600 dark:text-blue-300 font-bold text-sm">
+          ${escapeHtml(c.author?.[0]?.toUpperCase() || 'A')}
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center justify-between gap-2 mb-1">
+            <span class="text-sm font-semibold text-gray-900 dark:text-white">${escapeHtml(c.author || 'Anonymous')}</span>
+            <div class="flex items-center gap-2">
+              <span class="text-yellow-400 text-sm">${'★'.repeat(c.rating)}${'☆'.repeat(5 - c.rating)}</span>
+              <button type="button" data-index="${i}" class="delete-comment text-gray-300 hover:text-red-400 dark:text-gray-600 dark:hover:text-red-400 text-xs transition-colors" aria-label="Delete comment">✕</button>
+            </div>
+          </div>
+          <p class="text-sm text-gray-700 dark:text-gray-300">${escapeHtml(c.text)}</p>
+          <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">${c.date}</p>
+        </div>
+      </div>
+    `).join('');
+
+    list.querySelectorAll('.delete-comment').forEach(btn => {
+      btn.addEventListener('click', () => {
+        comments.splice(parseInt(btn.dataset.index), 1);
+        localStorage.setItem(storageKey, JSON.stringify(comments));
+        renderComments();
       });
     });
   }
 
-  // 2. Delete (Print) - Delete the group
-  if (tooltipPrintBtn) {
-    tooltipPrintBtn.addEventListener('click', async function(e) {
-      e.preventDefault();
-      if (!confirm('Are you sure you want to delete this group?')) return;
-      const groupId = getGroupId();
-      console.log('Attempting to delete group with ID:', groupId);
-      if (!groupId) {
-        alert('Error: No group ID found. Cannot delete.');
-        return;
-      }
-      try {
-        // Ensure deleteGroup is available (import if needed)
-        if (typeof deleteGroup !== 'function') {
-          if (window.deleteGroup) {
-            await window.deleteGroup(groupId);
-          } else if (window.api && typeof window.api.deleteGroup === 'function') {
-            await window.api.deleteGroup(groupId);
-          } else {
-            alert('deleteGroup() function not found.');
-            return;
-          }
-        } else {
-          await deleteGroup(groupId);
-        }
-        alert('Group deleted successfully!');
-        window.location.href = 'study-group-finder.html';
-      } catch (err) {
-        alert('Failed to delete group.');
-        console.error(err);
-      }
-    });
-  }
+  renderComments();
 
-  // 3. Download (Download) - Download page as PDF
-  if (tooltipDownloadBtn) {
-    tooltipDownloadBtn.addEventListener('click', function(e) {
-      e.preventDefault();
-      window.print();
+  document.getElementById('comment-form')?.addEventListener('submit', e => {
+    e.preventDefault();
+    const text = commentInput?.value.trim();
+    if (!text) { showToast('Please write a comment.', 'error'); return; }
+    comments.unshift({
+      author: 'You',
+      text,
+      rating: currentRating,
+      date: new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
     });
-  }
+    localStorage.setItem(storageKey, JSON.stringify(comments));
+    renderComments();
+    if (commentInput) commentInput.value = '';
+    if (charCount) charCount.textContent = '0 / 500';
+    currentRating = 0;
+    updateStars(0);
+    if (ratingLabel) ratingLabel.textContent = '';
+    showToast('Comment posted!', 'success');
+  });
 
-  // 4. Copy (optional, not requested)
-  if (tooltipCopyBtn) {
-    tooltipCopyBtn.addEventListener('click', function(e) {
-      e.preventDefault();
-      navigator.clipboard.writeText(window.location.href);
-      alert('Page URL copied to clipboard!');
-    });
-  }
+  // ─── Join button ─────────────────────────────────────────────────────────────
+  document.getElementById('join-btn')?.addEventListener('click', () => {
+    const groupId = getQueryParam('id');
+    const userInfo = prompt('Enter your name to join this group:');
+    if (!userInfo?.trim()) {
+      showToast('Join cancelled.', 'info');
+      return;
+    }
+    
+    // Store join info in localStorage
+    const joinKey = `joined_groups_${groupId}`;
+    const joinedAt = new Date().toLocaleString();
+    localStorage.setItem(joinKey, JSON.stringify({
+      userId: userInfo.trim(),
+      joinedAt: joinedAt,
+      groupId: groupId
+    }));
+    
+    showToast(`Welcome to the group, ${userInfo}!`, 'success');
+    
+    // Update button state
+    const joinBtn = document.getElementById('join-btn');
+    if (joinBtn) {
+      joinBtn.disabled = true;
+      joinBtn.textContent = '✓ Joined';
+      joinBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700', 'dark:bg-blue-600', 'dark:hover:bg-blue-700');
+      joinBtn.classList.add('bg-green-600', 'cursor-default');
+    }
+  });
+
+  // ─── Speed dial actions ────────────────────────────────────────────────────────
+  // Edit (tooltip-edit button)
+  document.querySelector('[data-tooltip-target="tooltip-edit"]')?.addEventListener('click', async () => {
+    if (!groupId) return;
+    const newName = prompt('Enter new group name:');
+    if (!newName?.trim()) return;
+    try {
+      await updateGroup({ id: groupId, name: newName.trim() });
+      showToast('Group updated!', 'success');
+      document.getElementById('group-title').textContent = newName.trim();
+      document.getElementById('breadcrumb-name').textContent = newName.trim();
+      document.title = `${newName.trim()} – Study Group`;
+    } catch {
+      showToast('Failed to update group.', 'error');
+    }
+  });
+
+  // Delete (tooltip-delete button)
+  document.querySelector('[data-tooltip-target="tooltip-delete"]')?.addEventListener('click', async () => {
+    if (!groupId) return;
+    if (!confirm('Delete this group? This cannot be undone.')) return;
+    try {
+      await deleteGroup(groupId);
+      showToast('Group deleted.', 'success');
+      setTimeout(() => window.location.href = 'study-group-finder.html', 1200);
+    } catch {
+      showToast('Failed to delete group.', 'error');
+    }
+  });
+
+  // Print / download
+  document.querySelector('[data-tooltip-target="tooltip-download"]')?.addEventListener('click', () => window.print());
+
+  // Copy link
+  document.querySelector('[data-tooltip-target="tooltip-copy"]')?.addEventListener('click', () => {
+    navigator.clipboard.writeText(window.location.href).then(() => showToast('Link copied to clipboard!', 'info'));
+  });
 });
 
-// Helper: Get query param by name
-function getQueryParam(name) {
-  const urlParams = new URLSearchParams(window.location.search);
-  return urlParams.get(name);
-}
-
-// Helper: Format date
-function formatDate(dateString) {
-  if (!dateString) return '';
-  const date = new Date(dateString);
-  if (isNaN(date)) return dateString;
-  return date.toLocaleDateString();
-}
-
-// Helper: Format time
-function formatTime(dateString) {
-  if (!dateString) return '';
-  const date = new Date(dateString);
-  if (isNaN(date)) return '';
-  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-}
-
-// Fetch group by ID using the API
-async function fetchGroupById(id) {
-  if (window.fetchGroups) {
-    const groups = await window.fetchGroups();
-    const groupArr = Array.isArray(groups) ? groups : groups.data || [];
-    return groupArr.find(g => String(g.id) === String(id));
-  } else {
-    // Fallback: fetch directly from backend
-    const res = await fetch("https://f7e43c04-432e-44fd-b80d-8887899dbe29-00-3nco8oqvnjjy.worf.replit.dev/group/read.php");
-    const groups = await res.json();
-    const groupArr = Array.isArray(groups) ? groups : groups.data || [];
-    return groupArr.find(g => String(g.id) === String(id));
-  }
-}
-
-// Main logic
+// ─── Main: load group data ─────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', async () => {
   const groupId = getQueryParam('id');
+
   if (!groupId) {
     document.getElementById('group-title').textContent = 'Group not found';
+    document.getElementById('breadcrumb-name').textContent = 'Not found';
     return;
   }
+
   try {
     const group = await fetchGroupById(groupId);
     if (!group) {
       document.getElementById('group-title').textContent = 'Group not found';
+      document.getElementById('breadcrumb-name').textContent = 'Not found';
       return;
     }
-    // Title
-    document.getElementById('group-title').textContent = group.name || 'Untitled Group';
-    // Meta
-    document.getElementById('group-subject').textContent = group.subject || group.subject_id || 'No subject';
-    document.getElementById('group-coverage').textContent = group.coverage || '';
-    // Details
+
+    // Title + meta
+    const title = group.name || 'Untitled Group';
+    document.title = `${title} – Study Group`;
+    document.getElementById('group-title').textContent = title;
+    document.getElementById('breadcrumb-name').textContent = title;
+
+    const subjectEl  = document.getElementById('group-subject');
+    const coverageEl = document.getElementById('group-coverage');
+    if (subjectEl)  subjectEl.textContent  = subjectMap[group.subject_id] || group.subject || group.subject_id || '';
+    if (coverageEl) coverageEl.textContent = group.coverage ? `Coverage: ${group.coverage}` : '';
+    if (coverageEl && !group.coverage) coverageEl.style.display = 'none';
+
+    // Details panel
     const detailsDiv = document.getElementById('group-details');
     if (detailsDiv) {
-      detailsDiv.innerHTML = '';
-      // Agenda heading
-      detailsDiv.innerHTML += `<h2 class='text-2xl font-bold mb-2 mt-2'>Agenda</h2>`;
-      detailsDiv.innerHTML += `<div class='mb-4'>${group.agenda ? group.agenda : '<span class="text-gray-400">No agenda provided.</span>'}</div>`;
-      // Description
-      if (group.description) {
-        detailsDiv.innerHTML += `<div class='mb-2'><span class='font-semibold'>Description:</span> ${group.description}</div>`;
+      let html = '';
+
+      if (group.agenda) {
+        html += `<h2 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Agenda</h2>
+                 <div class="text-gray-700 dark:text-gray-300 whitespace-pre-line mb-6">${escapeHtml(group.agenda)}</div>`;
+      } else {
+        html += `<h2 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Agenda</h2>
+                 <p class="text-gray-400 dark:text-gray-500 italic mb-6">No agenda provided.</p>`;
       }
-      // Attachments heading
-      detailsDiv.innerHTML += `<h2 class='text-2xl font-bold mb-2 mt-4'>Attachments</h2>`;
+
+      if (group.description) {
+        html += `<h2 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Description</h2>
+                 <p class="text-gray-700 dark:text-gray-300 mb-6">${escapeHtml(group.description)}</p>`;
+      }
+
+      html += `<h2 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Attachments</h2>`;
       if (Array.isArray(group.attachments) && group.attachments.length > 0) {
-        detailsDiv.innerHTML += `<ul class='list-disc ml-6 mb-2'>`;
+        html += '<ul class="space-y-1">';
         group.attachments.forEach(att => {
           if (att.url) {
-            detailsDiv.innerHTML += `<li><a href='${att.url}' target='_blank' class='text-blue-600 underline'>${att.name || att.url}</a></li>`;
+            html += `<li><a href="${escapeHtml(att.url)}" target="_blank" rel="noopener" class="text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+              ${escapeHtml(att.name || att.url)}
+            </a></li>`;
           } else {
-            detailsDiv.innerHTML += `<li>${att.name || att}</li>`;
+            html += `<li class="text-gray-600 dark:text-gray-400">${escapeHtml(att.name || att)}</li>`;
           }
         });
-        detailsDiv.innerHTML += '</ul>';
+        html += '</ul>';
       } else {
-        detailsDiv.innerHTML += `<div class='text-gray-400 mb-2'>No attachments provided.</div>`;
+        html += '<p class="text-gray-400 dark:text-gray-500 italic">No attachments.</p>';
       }
+
+      detailsDiv.innerHTML = html;
     }
-    // Side Info
-    document.getElementById('side-location').textContent = group.location || group.location_code || 'N/A';
-    // Date/Time
+
+    // Side info
+    setText('side-subject', subjectMap[group.subject_id] || group.subject || '—');
+    setText('side-location', locationMap[group.location_id] || group.location || group.location_code || '—');
+
     let dateStr = '';
-    if (group.start_date && group.end_date) {
-      if (group.start_date === group.end_date) {
-        dateStr = formatDate(group.start_date);
-      } else {
-        dateStr = `${formatDate(group.start_date)} - ${formatDate(group.end_date)}`;
-      }
+    if (group.start_date && group.end_date && group.start_date !== group.end_date) {
+      dateStr = `${formatDate(group.start_date)} – ${formatDate(group.end_date)}`;
     } else if (group.start_date) {
       dateStr = formatDate(group.start_date);
     } else if (group.end_date) {
       dateStr = formatDate(group.end_date);
     }
-    document.getElementById('side-date').textContent = dateStr || 'N/A';
-    document.getElementById('side-time').textContent = formatTime(group.start_date) || 'N/A';
-    document.getElementById('side-repetition').textContent = group.session_repetition || group.repetition || 'N/A';
-    document.getElementById('side-seats').textContent = group.members_quantity_limit ?? group.seats ?? 'N/A';
+    setText('side-date', dateStr || '—');
+
+    const timeStr = formatTime(group.start_time) + (group.end_time ? ` – ${formatTime(group.end_time)}` : '');
+    setText('side-time', timeStr || '—');
+    setText('side-repetition', group.session_repetition || group.repetition || '—');
+    setText('side-seats', group.members_quantity_limit ?? group.seats ?? '—');
+
     // Members
     const membersList = document.getElementById('members-list');
     if (membersList) {
-      membersList.innerHTML = '';
       if (Array.isArray(group.members) && group.members.length > 0) {
-        group.members.forEach(m => {
-          const li = document.createElement('li');
-          li.textContent = m.name || m;
-          membersList.appendChild(li);
-        });
+        membersList.innerHTML = group.members.map(m => `
+          <li class="flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-blue-600 dark:text-blue-300 text-xs font-bold shrink-0">
+              ${escapeHtml((m.name || m)?.[0]?.toUpperCase() || '?')}
+            </span>
+            <span>${escapeHtml(m.name || m)}</span>
+          </li>`).join('');
       } else {
-        membersList.innerHTML = '<li>No members listed.</li>';
+        membersList.innerHTML = '<li class="text-gray-400 dark:text-gray-500 italic text-sm">No members listed.</li>';
       }
     }
-    // Optionally: handle attachments, comments, etc.
+
+    // Check if user has already joined
+    const joinKey = `joined_groups_${groupId}`;
+    if (localStorage.getItem(joinKey)) {
+      const joinBtn = document.getElementById('join-btn');
+      if (joinBtn) {
+        joinBtn.disabled = true;
+        joinBtn.textContent = '✓ Joined';
+        joinBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700', 'dark:bg-blue-600', 'dark:hover:bg-blue-700');
+        joinBtn.classList.add('bg-green-600', 'cursor-default');
+      }
+    }
+
   } catch (err) {
     document.getElementById('group-title').textContent = 'Error loading group';
     console.error(err);
   }
 });
+
+function setText(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = value;
+}

@@ -140,9 +140,19 @@ location_id: Number(group.location),
   }
 }
 function convertDateToSQLFormat(dateStr) {
-  // Assumes dateStr is "MM/DD/YYYY"
-  const [month, day, year] = dateStr.split('/');
-  return `${year}-${month.padStart(2,'0')}-${day.padStart(2,'0')}`;
+  if (!dateStr) return null;
+  // Handle "DD-MM-YYYY" (flowbite datepicker default)
+  if (/^\d{2}-\d{2}-\d{4}$/.test(dateStr)) {
+    const [day, month, year] = dateStr.split('-');
+    return `${year}-${month}-${day}`;
+  }
+  // Handle "MM/DD/YYYY"
+  if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(dateStr)) {
+    const [month, day, year] = dateStr.split('/');
+    return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+  }
+  // Already in YYYY-MM-DD or other format — pass through
+  return dateStr;
 }
 
 async function fetchGroups() {
