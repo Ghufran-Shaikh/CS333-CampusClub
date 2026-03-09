@@ -379,7 +379,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const seats = group.members_quantity_limit ?? group.seats ?? 0;
 
       const card = document.createElement('div');
-      card.className = 'group w-[215px] h-[204px] bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700 cursor-pointer hover:shadow-md hover:border-blue-400 dark:hover:border-blue-500 transition-all duration-200 overflow-hidden flex flex-col';
+      card.className = 'group w-full bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700 cursor-pointer hover:shadow-md hover:border-blue-400 dark:hover:border-blue-500 transition-all duration-200 overflow-hidden flex flex-col';
       card.setAttribute('role', 'button');
       card.setAttribute('tabindex', '0');
       card.setAttribute('aria-label', `Open group: ${group.name}`);
