@@ -472,4 +472,96 @@ document.addEventListener('DOMContentLoaded', () => {
       });
   }
 
+  // ─── Profile ────────────────────────────────────────────────────────────────
+  const PROFILE_KEY = 'campusclub_profile';
+
+  function getInitials(first, last) {
+    const f = (first || '').trim()[0] || '';
+    const l = (last  || '').trim()[0] || '';
+    return (f + l).toUpperCase() || '?';
+  }
+
+  function updateAvatarDisplay(profile) {
+    const initials = getInitials(profile?.firstName, profile?.lastName);
+    const navBtn   = document.getElementById('profile-avatar-initials');
+    const modalAvatar = document.getElementById('profile-modal-avatar');
+    if (navBtn) navBtn.textContent = initials;
+    if (modalAvatar) modalAvatar.textContent = initials;
+  }
+
+  function openProfileModal() {
+    const modal = document.getElementById('profileModal');
+    if (!modal) return;
+    // Populate fields from saved profile
+    const profile = JSON.parse(localStorage.getItem(PROFILE_KEY) || '{}');
+    document.getElementById('profile-first-name').value = profile.firstName || '';
+    document.getElementById('profile-last-name').value  = profile.lastName  || '';
+    document.getElementById('profile-email').value      = profile.email     || '';
+    document.getElementById('profile-major').value      = profile.major     || '';
+    document.getElementById('profile-year').value       = profile.year      || '';
+    document.getElementById('profile-bio').value        = profile.bio       || '';
+    updateAvatarDisplay(profile);
+    modal.style.display = 'flex';
+    document.getElementById('profile-first-name').focus();
+  }
+
+  function closeProfileModal() {
+    const modal = document.getElementById('profileModal');
+    if (modal) modal.style.display = 'none';
+  }
+
+  // Open
+  document.getElementById('profile-btn')?.addEventListener('click', openProfileModal);
+  // Close buttons
+  document.getElementById('closeProfileBtn')?.addEventListener('click',  closeProfileModal);
+  document.getElementById('closeProfileBtn2')?.addEventListener('click', closeProfileModal);
+  // Click outside
+  document.getElementById('profileModal')?.addEventListener('click', e => {
+    if (e.target === document.getElementById('profileModal')) closeProfileModal();
+  });
+
+  // Save
+  document.getElementById('profile-form')?.addEventListener('submit', e => {
+    e.preventDefault();
+    const firstName = document.getElementById('profile-first-name').value.trim();
+    const lastName  = document.getElementById('profile-last-name').value.trim();
+    if (!firstName || !lastName) {
+      showToast('First and last name are required.', 'error');
+      return;
+    }
+    const profile = {
+      firstName,
+      lastName,
+      email : document.getElementById('profile-email').value.trim(),
+      major : document.getElementById('profile-major').value.trim(),
+      year  : document.getElementById('profile-year').value,
+      bio   : document.getElementById('profile-bio').value.trim(),
+    };
+    localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+    updateAvatarDisplay(profile);
+    closeProfileModal();
+    showToast('Profile saved!', 'success');
+  });
+
+  // Clear
+  document.getElementById('profile-clear-btn')?.addEventListener('click', () => {
+    localStorage.removeItem(PROFILE_KEY);
+    updateAvatarDisplay({});
+    closeProfileModal();
+    showToast('Profile cleared.', 'success');
+  });
+
+  // Live avatar preview while typing
+  ['profile-first-name', 'profile-last-name'].forEach(id => {
+    document.getElementById(id)?.addEventListener('input', () => {
+      const first = document.getElementById('profile-first-name').value;
+      const last  = document.getElementById('profile-last-name').value;
+      const modalAvatar = document.getElementById('profile-modal-avatar');
+      if (modalAvatar) modalAvatar.textContent = getInitials(first, last);
+    });
+  });
+
+  // Initialise avatar from saved profile on page load
+  updateAvatarDisplay(JSON.parse(localStorage.getItem(PROFILE_KEY) || '{}'));
+
 }); // end DOMContentLoaded
