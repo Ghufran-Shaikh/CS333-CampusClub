@@ -213,34 +213,103 @@ document.addEventListener('DOMContentLoaded', () => {
     showToast('Comment posted!', 'success');
   });
 
-  // ─── Join button ─────────────────────────────────────────────────────────────
-  document.getElementById('join-btn')?.addEventListener('click', () => {
-    const groupId = getQueryParam('id');
-    const userInfo = prompt('Enter your name to join this group:');
-    if (!userInfo?.trim()) {
-      showToast('Join cancelled.', 'info');
+  // ─── Join / Unjoin ────────────────────────────────────────────────────────────
+  const PROFILE_KEY   = 'campusclub_profile';
+  const joinGroupId   = getQueryParam('id');
+  const joinKey       = `joined_groups_${joinGroupId}`;
+  const membersKey    = `local_members_${joinGroupId}`;
+
+  function getLocalMembers() {
+    return JSON.parse(localStorage.getItem(membersKey) || '[]');
+  }
+
+  function saveLocalMembers(list) {
+    localStorage.setItem(membersKey, JSON.stringify(list));
+  }
+
+  function setJoinedState(joinBtn) {
+    joinBtn.textContent = '✓ Joined';
+    joinBtn.dataset.state = 'joined';
+    joinBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700', 'dark:bg-blue-600', 'dark:hover:bg-blue-700');
+    joinBtn.classList.add('bg-green-600', 'hover:bg-red-600', 'dark:bg-green-600', 'dark:hover:bg-red-600');
+    joinBtn.title = 'Click to leave the group';
+  }
+
+  function setUnjoinedState(joinBtn) {
+    joinBtn.textContent = 'Join Group';
+    joinBtn.dataset.state = 'unjoined';
+    joinBtn.classList.remove('bg-green-600', 'hover:bg-red-600', 'dark:bg-green-600', 'dark:hover:bg-red-600');
+    joinBtn.classList.add('bg-blue-600', 'hover:bg-blue-700', 'dark:bg-blue-600', 'dark:hover:bg-blue-700');
+    joinBtn.title = '';
+  }
+
+  function renderMembersList(apiMembers) {
+    const membersList = document.getElementById('members-list');
+    if (!membersList) return;
+    // Only include local members if there's an active join record for this group
+    const joinRecord   = JSON.parse(localStorage.getItem(joinKey) || '{}');
+    const joinedName   = joinRecord.userId || null;
+    const localMembers = joinedName ? getLocalMembers().filter(m => m.name === joinedName) : [];
+    const combined = [
+      ...(Array.isArray(apiMembers) ? apiMembers : []),
+      ...localMembers,
+    ];
+    if (combined.length === 0) {
+      membersList.innerHTML = '<li class="text-gray-400 dark:text-gray-500 italic text-sm">No members listed.</li>';
       return;
     }
-    
-    // Store join info in localStorage
-    const joinKey = `joined_groups_${groupId}`;
-    const joinedAt = new Date().toLocaleString();
-    localStorage.setItem(joinKey, JSON.stringify({
-      userId: userInfo.trim(),
-      joinedAt: joinedAt,
-      groupId: groupId
-    }));
-    
-    showToast(`Welcome to the group, ${userInfo}!`, 'success');
-    
-    // Update button state
+    membersList.innerHTML = combined.map(m => {
+      const name    = m.name || m;
+      const isLocal = m._local === true;
+      return `
+        <li class="flex items-center gap-2">
+          <span class="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-blue-600 dark:text-blue-300 text-xs font-bold shrink-0">
+            ${escapeHtml(name?.[0]?.toUpperCase() || '?')}
+          </span>
+          <span class="${isLocal ? 'font-semibold text-blue-600 dark:text-blue-400' : ''}">${escapeHtml(name)}</span>
+          ${isLocal ? '<span class="ml-auto text-xs text-blue-400 dark:text-blue-500">(you)</span>' : ''}
+        </li>`;
+    }).join('');
+  }
+
+  document.getElementById('join-btn')?.addEventListener('click', () => {
     const joinBtn = document.getElementById('join-btn');
-    if (joinBtn) {
-      joinBtn.disabled = true;
-      joinBtn.textContent = '✓ Joined';
-      joinBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700', 'dark:bg-blue-600', 'dark:hover:bg-blue-700');
-      joinBtn.classList.add('bg-green-600', 'cursor-default');
+    if (!joinBtn) return;
+
+    // ── Unjoin ──
+    if (joinBtn.dataset.state === 'joined') {
+      const joinRecord = JSON.parse(localStorage.getItem(joinKey) || '{}');
+      const joinedName = joinRecord.userId || '';
+      const members    = getLocalMembers().filter(m => m.name !== joinedName);
+      saveLocalMembers(members);
+      localStorage.removeItem(joinKey);
+      setUnjoinedState(joinBtn);
+      renderMembersList(window._apiMembers || []);
+      showToast('You have left the group.', 'info');
+      return;
     }
+
+    // ── Join ──
+    const profile = JSON.parse(localStorage.getItem(PROFILE_KEY) || '{}');
+    if (!profile.firstName || !profile.lastName) {
+      showToast('Please fill in your profile before joining a group.', 'error');
+      return;
+    }
+
+    const fullName = `${profile.firstName} ${profile.lastName}`.trim();
+    const joinedAt = new Date().toLocaleString();
+
+    // Add to local members list
+    const members = getLocalMembers();
+    if (!members.find(m => m.name === fullName)) {
+      members.push({ name: fullName, _local: true });
+      saveLocalMembers(members);
+    }
+
+    localStorage.setItem(joinKey, JSON.stringify({ userId: fullName, joinedAt, groupId: joinGroupId }));
+    setJoinedState(joinBtn);
+    renderMembersList(window._apiMembers || []);
+    showToast(`Welcome to the group, ${profile.firstName}!`, 'success');
   });
 
   // ─── Speed dial actions ────────────────────────────────────────────────────────
@@ -370,32 +439,14 @@ window.addEventListener('DOMContentLoaded', async () => {
     setText('side-repetition', group.session_repetition || group.repetition || '—');
     setText('side-seats', group.members_quantity_limit ?? group.seats ?? '—');
 
-    // Members
-    const membersList = document.getElementById('members-list');
-    if (membersList) {
-      if (Array.isArray(group.members) && group.members.length > 0) {
-        membersList.innerHTML = group.members.map(m => `
-          <li class="flex items-center gap-2">
-            <span class="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-blue-600 dark:text-blue-300 text-xs font-bold shrink-0">
-              ${escapeHtml((m.name || m)?.[0]?.toUpperCase() || '?')}
-            </span>
-            <span>${escapeHtml(m.name || m)}</span>
-          </li>`).join('');
-      } else {
-        membersList.innerHTML = '<li class="text-gray-400 dark:text-gray-500 italic text-sm">No members listed.</li>';
-      }
-    }
+    // Members — store API members globally so join/unjoin can re-render
+    window._apiMembers = Array.isArray(group.members) ? group.members : [];
+    renderMembersList(window._apiMembers);
 
-    // Check if user has already joined
-    const joinKey = `joined_groups_${groupId}`;
-    if (localStorage.getItem(joinKey)) {
-      const joinBtn = document.getElementById('join-btn');
-      if (joinBtn) {
-        joinBtn.disabled = true;
-        joinBtn.textContent = '✓ Joined';
-        joinBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700', 'dark:bg-blue-600', 'dark:hover:bg-blue-700');
-        joinBtn.classList.add('bg-green-600', 'cursor-default');
-      }
+    // Restore join button state
+    const joinBtn = document.getElementById('join-btn');
+    if (joinBtn && localStorage.getItem(`joined_groups_${groupId}`)) {
+      setJoinedState(joinBtn);
     }
 
   } catch (err) {

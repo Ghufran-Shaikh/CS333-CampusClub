@@ -564,4 +564,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initialise avatar from saved profile on page load
   updateAvatarDisplay(JSON.parse(localStorage.getItem(PROFILE_KEY) || '{}'));
 
+  // Ensure modal is closed on page load
+  closeProfileModal();
+
 }); // end DOMContentLoaded
