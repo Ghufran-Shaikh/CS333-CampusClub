@@ -70,9 +70,59 @@ function escapeHtml(str) {
 }
 
 async function fetchGroupById(id) {
-  const groups = await fetchGroups();
-  const arr = Array.isArray(groups) ? groups : groups.data || [];
-  return arr.find(g => String(g.id) === String(id)) || null;
+  const response = await fetchGroups();
+  const groups = Array.isArray(response) ? response : (response?.data || []);
+  return groups.find(g => String(g.id) === String(id)) || null;
+}
+
+// ─── Join button state helpers (module-scope so both DOMContentLoaded blocks can use them) ──
+function setJoinedState(joinBtn) {
+  joinBtn.textContent = '✓ Joined';
+  joinBtn.dataset.state = 'joined';
+  joinBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700', 'dark:bg-blue-600', 'dark:hover:bg-blue-700');
+  joinBtn.classList.add('bg-green-600', 'hover:bg-red-600', 'dark:bg-green-600', 'dark:hover:bg-red-600');
+  joinBtn.title = 'Click to leave the group';
+}
+
+function setUnjoinedState(joinBtn) {
+  joinBtn.textContent = 'Join Group';
+  joinBtn.dataset.state = 'unjoined';
+  joinBtn.classList.remove('bg-green-600', 'hover:bg-red-600', 'dark:bg-green-600', 'dark:hover:bg-red-600');
+  joinBtn.classList.add('bg-blue-600', 'hover:bg-blue-700', 'dark:bg-blue-600', 'dark:hover:bg-blue-700');
+  joinBtn.title = '';
+}
+
+// ─── Members list renderer (module-scope so both DOMContentLoaded blocks can use it) ──
+function renderMembersList(apiMembers) {
+  const groupId    = getQueryParam('id');
+  const joinKey    = `joined_groups_${groupId}`;
+  const membersKey = `local_members_${groupId}`;
+  const membersList = document.getElementById('members-list');
+  if (!membersList) return;
+  const localMembers = JSON.parse(localStorage.getItem(membersKey) || '[]');
+  const combined = [
+    ...(Array.isArray(apiMembers) ? apiMembers : []),
+    ...localMembers,
+  ];
+  if (combined.length === 0) {
+    membersList.innerHTML = '<li class="text-gray-400 dark:text-gray-500 italic text-sm">No members listed.</li>';
+    return;
+  }
+  const joinRecord = JSON.parse(localStorage.getItem(joinKey) || '{}');
+  const joinedName = joinRecord.userId || null;
+  membersList.innerHTML = combined.map(m => {
+    const name    = m.name || m;
+    const isLocal = m._local === true;
+    const isYou   = isLocal && name === joinedName;
+    return `
+      <li class="flex items-center gap-2">
+        <span class="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-blue-600 dark:text-blue-300 text-xs font-bold shrink-0">
+          ${escapeHtml(name?.[0]?.toUpperCase() || '?')}
+        </span>
+        <span class="${isYou ? 'font-semibold text-blue-600 dark:text-blue-400' : ''}">${escapeHtml(name)}</span>
+        ${isYou ? '<span class="ml-auto text-xs text-blue-400 dark:text-blue-500">(you)</span>' : ''}
+      </li>`;
+  }).join('');
 }
 
 // ─── Speed dial ───────────────────────────────────────────────────────────────
@@ -225,51 +275,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function saveLocalMembers(list) {
     localStorage.setItem(membersKey, JSON.stringify(list));
-  }
-
-  function setJoinedState(joinBtn) {
-    joinBtn.textContent = '✓ Joined';
-    joinBtn.dataset.state = 'joined';
-    joinBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700', 'dark:bg-blue-600', 'dark:hover:bg-blue-700');
-    joinBtn.classList.add('bg-green-600', 'hover:bg-red-600', 'dark:bg-green-600', 'dark:hover:bg-red-600');
-    joinBtn.title = 'Click to leave the group';
-  }
-
-  function setUnjoinedState(joinBtn) {
-    joinBtn.textContent = 'Join Group';
-    joinBtn.dataset.state = 'unjoined';
-    joinBtn.classList.remove('bg-green-600', 'hover:bg-red-600', 'dark:bg-green-600', 'dark:hover:bg-red-600');
-    joinBtn.classList.add('bg-blue-600', 'hover:bg-blue-700', 'dark:bg-blue-600', 'dark:hover:bg-blue-700');
-    joinBtn.title = '';
-  }
-
-  function renderMembersList(apiMembers) {
-    const membersList = document.getElementById('members-list');
-    if (!membersList) return;
-    // Only include local members if there's an active join record for this group
-    const joinRecord   = JSON.parse(localStorage.getItem(joinKey) || '{}');
-    const joinedName   = joinRecord.userId || null;
-    const localMembers = joinedName ? getLocalMembers().filter(m => m.name === joinedName) : [];
-    const combined = [
-      ...(Array.isArray(apiMembers) ? apiMembers : []),
-      ...localMembers,
-    ];
-    if (combined.length === 0) {
-      membersList.innerHTML = '<li class="text-gray-400 dark:text-gray-500 italic text-sm">No members listed.</li>';
-      return;
-    }
-    membersList.innerHTML = combined.map(m => {
-      const name    = m.name || m;
-      const isLocal = m._local === true;
-      return `
-        <li class="flex items-center gap-2">
-          <span class="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-blue-600 dark:text-blue-300 text-xs font-bold shrink-0">
-            ${escapeHtml(name?.[0]?.toUpperCase() || '?')}
-          </span>
-          <span class="${isLocal ? 'font-semibold text-blue-600 dark:text-blue-400' : ''}">${escapeHtml(name)}</span>
-          ${isLocal ? '<span class="ml-auto text-xs text-blue-400 dark:text-blue-500">(you)</span>' : ''}
-        </li>`;
-    }).join('');
   }
 
   document.getElementById('join-btn')?.addEventListener('click', () => {
