@@ -30,15 +30,16 @@
   <div id="toast-container" class="fixed top-4 right-4 z-[99999] flex flex-col gap-2 pointer-events-none"></div>
 
   <!-- Header with theme toggle -->
-  <div class="flex items-center justify-between bg-gradient-to-r from-blue-900 to-blue-700 dark:from-gray-800 dark:to-gray-900 px-4 py-3 shadow">
-    <a href="study-group-finder.html" class="text-white hover:text-blue-200 transition-colors flex items-center gap-2">
+  <div class="flex items-center justify-between bg-blue-800 dark:bg-gray-900 px-4 py-1 shadow">
+    <a href="study-group-finder.html" class="text-white hover:text-blue-300 dark:hover:text-blue-400 ransition-colors flex items-center gap-2">
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
       Back to Groups
     </a>
     <button id="theme-toggle" type="button" class="text-white hover:text-blue-200 ml-4 p-2 rounded-lg transition-colors" aria-label="Toggle dark/light theme" title="Toggle theme">
-      <svg class="w-5 h-5 hidden dark:block" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/></svg>
-      <svg class="w-5 h-5 dark:hidden" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1hm0 14a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zm4.293-5.293a1 1 0 011.414 0l.707.707a1 1 0 11-1.414 1.414l-.707-.707a1 1 0 010-1.414zm2.828-2.828a1 1 0 011.414 0l.707.707a1 1 0 11-1.414 1.414l-.707-.707a1 1 0 010-1.414zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.707 5.707a1 1 0 010-1.414l.707-.707a1 1 0 011.414 1.414l-.707.707a1 1 0 01-1.414 0zm2.828 2.828a1 1 0 010-1.414l.707-.707a1 1 0 011.414 1.414l-.707.707a1 1 0 01-1.414 0zM3 11a1 1 0 100-2H2a1 1 0 100 2h1z" clip-rule="evenodd"/></svg>
-    </button>
+      <svg class="w-5 h-5 hidden dark:block dark:hover:text-blue-400" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/></svg>
+<svg class="w-6 h-6 text-white dark:hidden hover:text-blue-300" fill="currentColor" viewBox="0 0 20 20aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+              <path fill-rule="evenodd" d="M13 3a1 1 0 1 0-2 0v2a1 1 0 1 0 2 0V3ZM6.343 4.929A1 1 0 0 0 4.93 6.343l1.414 1.414a1 1 0 0 0 1.414-1.414L6.343 4.929Zm12.728 1.414a1 1 0 0 0-1.414-1.414l-1.414 1.414a1 1 0 0 0 1.414 1.414l1.414-1.414ZM12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10Zm-9 4a1 1 0 1 0 0 2h2a1 1 0 1 0 0-2H3Zm16 0a1 1 0 1 0 0 2h2a1 1 0 1 0 0-2h-2ZM7.757 17.657a1 1 0 1 0-1.414-1.414l-1.414 1.414a1 1 0 1 0 1.414 1.414l1.414-1.414Zm9.9-1.414a1 1 0 0 0-1.414 1.414l1.414 1.414a1 1 0 0 0 1.414-1.414l-1.414-1.414ZM13 19a1 1 0 1 0-2 0v2a1 1 0 1 0 2 0v-2Z" clip-rule="evenodd"></path>
+            </svg>    </button>
   </div>
 
   <!-- Banner + Breadcrumb -->
@@ -46,28 +47,10 @@
     <img id="group-banner" class="w-full h-56 object-cover" src="https://cdn.vectorstock.com/i/500p/33/40/study-concept-for-banner-design-vector-42473340.jpg" alt="Study group banner">
     <!-- Gradient overlay -->
     <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-    <!-- Breadcrumb -->
-    <nav class="absolute top-0 left-0 w-full px-4 py-3 z-10" aria-label="Breadcrumb">
-      <ol class="inline-flex items-center space-x-1 text-sm">
-        <li>
-          <a href="../index.html" class="inline-flex items-center text-white/80 hover:text-white transition-colors">
-            <svg class="w-3 h-3 me-2" fill="currentColor" viewBox="0 0 20 20"><path d="m19.707 9.293-2-2-7-7a1 1 0 0 0-1.414 0l-7 7-2 2a1 1 0 0 0 1.414 1.414L2 10.414V18a2 2 0 0 0 2 2h3a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h3a2 2 0 0 0 2-2v-7.586l.293.293a1 1 0 0 0 1.414-1.414Z"/></svg>
-            Home
-          </a>
-        </li>
-        <li class="text-white/50 mx-1">/</li>
-        <li>
-          <a href="study-group-finder.html" class="text-white/80 hover:text-white transition-colors">Study Groups</a>
-        </li>
-        <li class="text-white/50 mx-1">/</li>
-        <li>
-          <span id="breadcrumb-name" class="text-white font-medium">Loading…</span>
-        </li>
-      </ol>
-    </nav>
+   
     <!-- Title overlay -->
-    <div class="absolute bottom-0 left-0 px-6 pb-4">
-      <h1 id="group-title" class="text-3xl sm:text-4xl font-extrabold text-white drop-shadow-lg shadow-2xl">Loading…</h1>
+    <div class="absolute bottom-0 left-0 px-6 pb-10 backdrop-blur-[1px] w-fit rounded-xl">
+      <h1 id="group-title" class="text-3xl sm:text-4xl font-extrabold text-blue-700 dark:text-blue-500">Loading…</h1>
       <div id="group-meta" class="flex flex-wrap gap-3 mt-2">
         <span id="group-subject" class="inline-flex items-center gap-1 text-sm font-medium text-white/90 bg-blue-600/80 rounded-full px-3 py-0.5 shadow-lg"></span>
         <span id="group-coverage" class="inline-flex items-center gap-1 text-sm font-medium text-white/90 bg-gray-800/70 rounded-full px-3 py-0.5 shadow-lg"></span>
