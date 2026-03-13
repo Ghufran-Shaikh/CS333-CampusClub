@@ -125,6 +125,21 @@ function renderMembersList(apiMembers) {
   }).join('');
 }
 
+// ─── Seats display ────────────────────────────────────────────────────────────
+function updateSeatsDisplay() {
+  const el = document.getElementById('side-seats');
+  if (!el) return;
+  const limit = window._seatsLimit;
+  if (limit == null || limit === '—') { el.textContent = '—'; return; }
+  const groupId    = getQueryParam('id');
+  const membersKey = `local_members_${groupId}`;
+  const apiCount   = (window._apiMembers || []).length;
+  const localCount = JSON.parse(localStorage.getItem(membersKey) || '[]').length;
+  const taken      = apiCount + localCount;
+  const remaining  = Math.max(0, Number(limit) - taken);
+  el.textContent   = `${remaining} / ${limit}`;
+}
+
 // ─── Speed dial ───────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   // --- Initialize theme toggle ---
@@ -284,11 +299,22 @@ document.addEventListener('DOMContentLoaded', () => {
       localStorage.removeItem(joinKey);
       setUnjoinedState(joinBtn);
       renderMembersList(window._apiMembers || []);
+      updateSeatsDisplay();
       showToast('You have left the group.', 'info');
       return;
     }
 
     // ── Join ──
+    // Check if group is full
+    if (window._seatsLimit != null) {
+      const membersKey2 = `local_members_${joinGroupId}`;
+      const taken = (window._apiMembers || []).length + JSON.parse(localStorage.getItem(membersKey2) || '[]').length;
+      if (taken >= Number(window._seatsLimit)) {
+        showToast('This group is full.', 'error');
+        return;
+      }
+    }
+
     const profile = JSON.parse(localStorage.getItem(PROFILE_KEY) || '{}');
     if (!profile.firstName || !profile.lastName) {
       showToast('Please fill in your profile before joining a group.', 'error');
@@ -308,6 +334,7 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.setItem(joinKey, JSON.stringify({ userId: fullName, joinedAt, groupId: joinGroupId }));
     setJoinedState(joinBtn);
     renderMembersList(window._apiMembers || []);
+    updateSeatsDisplay();
     showToast(`Welcome to the group, ${profile.firstName}!`, 'success');
   });
 
@@ -442,11 +469,14 @@ window.addEventListener('DOMContentLoaded', async () => {
     const timeStr = formatTime(group.start_time) + (group.end_time ? ` – ${formatTime(group.end_time)}` : '');
     setText('side-time', timeStr || '—');
     setText('side-repetition', group.session_repetition || group.repetition || '—');
-    setText('side-seats', group.members_quantity_limit ?? group.seats ?? '—');
+
+    // Store seat limit globally so join/unjoin can update the display
+    window._seatsLimit = group.members_quantity_limit ?? group.seats ?? null;
 
     // Members — store API members globally so join/unjoin can re-render
     window._apiMembers = Array.isArray(group.members) ? group.members : [];
     renderMembersList(window._apiMembers);
+    updateSeatsDisplay();
 
     // Restore join button state
     const joinBtn = document.getElementById('join-btn');
