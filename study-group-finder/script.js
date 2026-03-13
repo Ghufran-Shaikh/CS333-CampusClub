@@ -79,8 +79,122 @@ document.addEventListener('DOMContentLoaded', () => {
       selectedFiles = [];
       if (input) input.value = '';
       renderPreview();
+      // Reset recurrence panel
+      document.getElementById('form-recurrence-panel')?.classList.add('hidden');
+      document.getElementById('form-weekdays')?.classList.add('hidden');
+      document.getElementById('form-monthly-opts')?.classList.add('hidden');
+      document.getElementById('form-recurrence-interval') && (document.getElementById('form-recurrence-interval').value = '1');
+      document.querySelectorAll('#form-weekday-buttons button[data-day]').forEach(b => {
+        b.dataset.active = 'false';
+        b.className = 'w-8 h-8 text-xs rounded-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium';
+      });
+      const summary = document.getElementById('form-recurrence-summary');
+      if (summary) summary.textContent = '';
     }, 0);
   });
+
+  // --- Recurrence UI (Google Calendar style) ---
+  const DAYS = [
+    { label: 'S', value: 'sun' },
+    { label: 'M', value: 'mon' },
+    { label: 'T', value: 'tue' },
+    { label: 'W', value: 'wed' },
+    { label: 'T', value: 'thu' },
+    { label: 'F', value: 'fri' },
+    { label: 'S', value: 'sat' },
+  ];
+
+  function buildWeekdayPicker(containerId, onChange) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    DAYS.forEach(({ label, value }) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.dataset.day = value;
+      btn.textContent = label;
+      btn.title = value.charAt(0).toUpperCase() + value.slice(1);
+      btn.className = 'w-8 h-8 text-xs rounded-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium';
+      btn.addEventListener('click', () => {
+        const active = btn.dataset.active === 'true';
+        btn.dataset.active = String(!active);
+        btn.className = !active
+          ? 'w-8 h-8 text-xs rounded-full border border-blue-600 bg-blue-600 text-white transition-colors font-medium'
+          : 'w-8 h-8 text-xs rounded-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium';
+        if (onChange) onChange();
+      });
+      container.appendChild(btn);
+    });
+  }
+
+  function getSelectedDays(containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return [];
+    return [...container.querySelectorAll('button[data-day]')]
+      .filter(b => b.dataset.active === 'true')
+      .map(b => b.dataset.day);
+  }
+
+  function buildRecurrenceSummary(freq, interval, days, monthlyType) {
+    if (!freq) return '';
+    const n = interval > 1 ? ` ${interval}` : '';
+    if (freq === 'daily')   return `Every${n} day${interval > 1 ? 's' : ''}`;
+    if (freq === 'monthly') return monthlyType === 'weekday'
+      ? `Every${n} month${interval > 1 ? 's' : ''} on the same weekday`
+      : `Every${n} month${interval > 1 ? 's' : ''} on the same date`;
+    if (freq === 'weekly') {
+      const dayNames = days.map(d => d.charAt(0).toUpperCase() + d.slice(1));
+      const onDays = dayNames.length ? ` on ${dayNames.join(', ')}` : '';
+      return `Every${n} week${interval > 1 ? 's' : ''}${onDays}`;
+    }
+    return '';
+  }
+
+  function initFormRecurrence() {
+    const sel      = document.getElementById('group-session-repetition');
+    const panel    = document.getElementById('form-recurrence-panel');
+    const unitLbl  = document.getElementById('form-recurrence-unit-label');
+    const wdWrap   = document.getElementById('form-weekdays');
+    const moWrap   = document.getElementById('form-monthly-opts');
+    const summary  = document.getElementById('form-recurrence-summary');
+    const interval = document.getElementById('form-recurrence-interval');
+    if (!sel || !panel) return;
+
+    const updateSummary = () => {
+      const freq  = sel.value;
+      const n     = parseInt(interval?.value) || 1;
+      const days  = getSelectedDays('form-weekday-buttons');
+      const moType = document.querySelector('input[name="form-monthly-type"]:checked')?.value || 'day';
+      if (summary) summary.textContent = buildRecurrenceSummary(freq, n, days, moType);
+    };
+
+    buildWeekdayPicker('form-weekday-buttons', updateSummary);
+    interval?.addEventListener('input', updateSummary);
+    document.querySelectorAll('input[name="form-monthly-type"]').forEach(r => r.addEventListener('change', updateSummary));
+
+    sel.addEventListener('change', () => {
+      const freq = sel.value;
+      panel.classList.toggle('hidden', !freq);
+      if (unitLbl) unitLbl.textContent = freq === 'daily' ? 'day(s)' : freq === 'monthly' ? 'month(s)' : 'week(s)';
+      if (wdWrap)  wdWrap.classList.toggle('hidden', freq !== 'weekly');
+      if (moWrap)  moWrap.classList.toggle('hidden', freq !== 'monthly');
+      updateSummary();
+    });
+  }
+
+  function initFilterRepetition() {
+    const sel   = document.getElementById('filter-repetition');
+    const wdWrap = document.getElementById('filter-weekdays');
+    if (!sel) return;
+
+    buildWeekdayPicker('filter-weekday-buttons');
+
+    sel.addEventListener('change', () => {
+      if (wdWrap) wdWrap.classList.toggle('hidden', sel.value !== 'weekly');
+    });
+  }
+
+  initFormRecurrence();
+  initFilterRepetition();
 
   // --- Save time button ---
   document.getElementById('saveTimeButton')?.addEventListener('click', () => {
@@ -227,7 +341,21 @@ document.addEventListener('DOMContentLoaded', () => {
       end_date:               endDate   || null,
       start_time:             startTime || null,
       end_time:               endTime   || null,
-      repetition:             document.getElementById('group-session-repetition')?.value.trim() || null,
+      repetition:             (() => {
+        const freq = document.getElementById('group-session-repetition')?.value || '';
+        if (!freq) return null;
+        const n = parseInt(document.getElementById('form-recurrence-interval')?.value) || 1;
+        const interval = n > 1 ? `:every${n}` : '';
+        if (freq === 'weekly') {
+          const days = getSelectedDays('form-weekday-buttons');
+          return days.length ? `weekly${interval}:${days.join(',')}` : `weekly${interval}`;
+        }
+        if (freq === 'monthly') {
+          const moType = document.querySelector('input[name="form-monthly-type"]:checked')?.value || 'day';
+          return `monthly${interval}:${moType}`;
+        }
+        return `${freq}${interval}`;
+      })(),
       gender_set:             genderSet,
       members_quantity_limit: parseInt(document.getElementById('quantity-limit')?.value) || 5,
       agenda:                 document.getElementById('agenda')?.value.trim() || null,
@@ -288,7 +416,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const dateEnd     = document.getElementById('filter-date-end')?.value || '';
     const timeStart   = document.getElementById('filter-time-start')?.value || '';
     const timeEnd     = document.getElementById('filter-time-end')?.value || '';
-    const repetition  = document.getElementById('filter-repetition')?.value.trim().toLowerCase() || '';
+    const repetitionType = document.getElementById('filter-repetition')?.value || '';
+    const repetitionDays = repetitionType === 'weekly' ? getSelectedDays('filter-weekday-buttons') : null;
     const genderF     = document.getElementById('filter-gender-female')?.checked;
     const genderM     = document.getElementById('filter-gender-male')?.checked;
     const membersLim  = document.getElementById('filter-members-limit')?.value || '';
@@ -305,7 +434,14 @@ document.addEventListener('DOMContentLoaded', () => {
       if (timeStart && timeEnd && g.start_time) {
         if (g.start_time < timeStart || g.start_time > timeEnd) return false;
       }
-      if (repetition && !(g.repetition || '').toLowerCase().includes(repetition)) return false;
+      if (repetitionType) {
+        const gr = (g.repetition || '').toLowerCase();
+        if (!gr.startsWith(repetitionType)) return false;
+        if (repetitionDays && repetitionDays.length > 0) {
+          const grDays = gr.includes(':') ? gr.split(':')[1].split(',') : [];
+          if (!repetitionDays.every(d => grDays.includes(d))) return false;
+        }
+      }
       if (genderF && !genderM && g.gender !== 'female') return false;
       if (genderM && !genderF && g.gender !== 'male')   return false;
       if (membersLim) {
