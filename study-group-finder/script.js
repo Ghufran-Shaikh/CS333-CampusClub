@@ -309,7 +309,10 @@ document.addEventListener('DOMContentLoaded', () => {
       if (genderF && !genderM && g.gender !== 'female') return false;
       if (genderM && !genderF && g.gender !== 'male')   return false;
       if (membersLim) {
-        const seats = g.members_quantity_limit ?? g.seats ?? 0;
+        const limit = g.members_quantity_limit ?? g.seats ?? 0;
+        const apiCount   = Array.isArray(g.members) ? g.members.length : 0;
+        const localCount = JSON.parse(localStorage.getItem(`local_members_${g.id}`) || '[]').length;
+        const seats = Math.max(0, Number(limit) - apiCount - localCount);
         if (seats < parseInt(membersLim)) return false;
       }
       return true;
@@ -376,7 +379,11 @@ document.addEventListener('DOMContentLoaded', () => {
       else if (startDate) dateDisplay = startDate;
       else if (endDate)   dateDisplay = endDate;
 
-      const seats = group.members_quantity_limit ?? group.seats ?? 0;
+      const limit = group.members_quantity_limit ?? group.seats ?? 0;
+      const apiMemberCount   = Array.isArray(group.members) ? group.members.length : 0;
+      const localMemberCount = JSON.parse(localStorage.getItem(`local_members_${group.id}`) || '[]').length;
+      const taken = apiMemberCount + localMemberCount;
+      const seats = Math.max(0, Number(limit) - taken);
 
       const card = document.createElement('div');
       card.className = 'group w-full bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700 cursor-pointer hover:shadow-md hover:border-blue-400 dark:hover:border-blue-500 transition-all duration-200 overflow-hidden flex flex-col';
@@ -391,7 +398,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <p class="text-xs text-gray-600 dark:text-gray-300 font-medium line-clamp-1 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded">${escapeHtml(subjectMap[group.subject_id] || String(group.subject_id || '—'))}</p>
             <p class="text-xs text-gray-600 dark:text-gray-300 font-medium line-clamp-1 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">${escapeHtml(locationMap[group.location_id] || String(group.location_id || '—'))}</p>
             <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-1">${escapeHtml(dateDisplay)}</p>
-            <p class="text-xs font-medium ${seats > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400'}">${seats} seat${seats !== 1 ? 's' : ''} available</p>
+            <p class="text-xs font-medium ${seats > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400'}">${seats > 0 ? `${seats} / ${limit} seat${limit !== 1 ? 's' : ''} available` : 'Full'}</p>
           </div>
         </div>
       `;
