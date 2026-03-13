@@ -130,12 +130,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- Initialize theme toggle ---
   initThemeToggle();
 
-  // --- Load subject and location mappings ---
-  Promise.all([fetchSubjects(), fetchLocations()]).then(([subjects, locations]) => {
-    subjects.forEach(s => { subjectMap[s.id] = s.code; });
-    locations.forEach(l => { locationMap[l.id] = l.code; });
-  }).catch(err => console.error('Failed to load mappings:', err));
-
   const dialBtn  = document.querySelector('[data-dial-toggle]');
   const dialMenu = document.getElementById('speed-dial-menu-horizontal');
 
@@ -327,7 +321,6 @@ document.addEventListener('DOMContentLoaded', () => {
       await updateGroup({ id: groupId, name: newName.trim() });
       showToast('Group updated!', 'success');
       document.getElementById('group-title').textContent = newName.trim();
-      document.getElementById('breadcrumb-name').textContent = newName.trim();
       document.title = `${newName.trim()} – Study Group`;
     } catch {
       showToast('Failed to update group.', 'error');
@@ -362,15 +355,23 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   if (!groupId) {
     document.getElementById('group-title').textContent = 'Group not found';
-    document.getElementById('breadcrumb-name').textContent = 'Not found';
     return;
   }
 
   try {
-    const group = await fetchGroupById(groupId);
+    // Load mappings and group data in parallel
+    const [subjects, locations, group] = await Promise.all([
+      fetchSubjects().catch(() => []),
+      fetchLocations().catch(() => []),
+      fetchGroupById(groupId),
+    ]);
+
+    // Populate maps so subject/location names resolve correctly
+    (Array.isArray(subjects) ? subjects : (subjects?.data || [])).forEach(s => { subjectMap[s.id] = s.code; });
+    (Array.isArray(locations) ? locations : (locations?.data || [])).forEach(l => { locationMap[l.id] = l.code; });
+
     if (!group) {
       document.getElementById('group-title').textContent = 'Group not found';
-      document.getElementById('breadcrumb-name').textContent = 'Not found';
       return;
     }
 
@@ -378,7 +379,6 @@ window.addEventListener('DOMContentLoaded', async () => {
     const title = group.name || 'Untitled Group';
     document.title = `${title} – Study Group`;
     document.getElementById('group-title').textContent = title;
-    document.getElementById('breadcrumb-name').textContent = title;
 
     const subjectEl  = document.getElementById('group-subject');
     const coverageEl = document.getElementById('group-coverage');
@@ -456,6 +456,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   } catch (err) {
     document.getElementById('group-title').textContent = 'Error loading group';
+    document.getElementById('group-details').innerHTML = '<p class="text-red-500 text-sm">Failed to load group data. Please check your connection and try again.</p>';
     console.error(err);
   }
 });
