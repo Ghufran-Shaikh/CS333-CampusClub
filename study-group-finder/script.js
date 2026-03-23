@@ -562,6 +562,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const prevBtn = makePageBtn('‹', currentPage - 1, totalPages, currentPage === 1);
     prevBtn.setAttribute('aria-label', 'Previous page');
+    prevBtn.querySelector('button').style.fontSize = '1.5rem';
+    prevBtn.querySelector('button').style.lineHeight = '1';
     ul.appendChild(prevBtn);
 
     for (let i = 1; i <= totalPages; i++) {
@@ -570,6 +572,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const nextBtn = makePageBtn('›', currentPage + 1, totalPages, currentPage === totalPages);
     nextBtn.setAttribute('aria-label', 'Next page');
+    nextBtn.querySelector('button').style.fontSize = '1.5rem';
+    nextBtn.querySelector('button').style.lineHeight = '1';
     ul.appendChild(nextBtn);
   }
 
