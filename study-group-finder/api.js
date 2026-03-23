@@ -1,6 +1,8 @@
+const BASE_URL = 'https://f7e43c04-432e-44fd-b80d-8887899dbe29-00-3nco8oqvnjjy.worf.replit.dev:5000';
+
 // CREATE
 async function createSubject(subject) {
-  return await fetch('https://f7e43c04-432e-44fd-b80d-8887899dbe29-00-3nco8oqvnjjy.worf.replit.dev/subject/create.php', {
+  return await fetch(`${BASE_URL}/subject/create.php`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(subject)
@@ -9,13 +11,13 @@ async function createSubject(subject) {
 
 // READ
 async function fetchSubjects() {
-  return await fetch('https://f7e43c04-432e-44fd-b80d-8887899dbe29-00-3nco8oqvnjjy.worf.replit.dev/subject/read.php')
+  return await fetch(`${BASE_URL}/subject/read.php`)
     .then(res => res.json());
 }
 
 // UPDATE
 async function updateSubject(subject) {
-  return await fetch('https://f7e43c04-432e-44fd-b80d-8887899dbe29-00-3nco8oqvnjjy.worf.replit.dev/subject/update.php', {
+  return await fetch(`${BASE_URL}/subject/update.php`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(subject)
@@ -24,13 +26,13 @@ async function updateSubject(subject) {
 
 // DELETE
 async function deleteSubject(id) {
-  return await fetch(`https://f7e43c04-432e-44fd-b80d-8887899dbe29-00-3nco8oqvnjjy.worf.replit.dev/subject/delete.php?id=${id}`, {
+  return await fetch(`${BASE_URL}/subject/delete.php?id=${id}`, {
     method: 'DELETE'
   }).then(res => res.json());
 }
 
 async function createLocation(location) {
-  return await fetch('https://f7e43c04-432e-44fd-b80d-8887899dbe29-00-3nco8oqvnjjy.worf.replit.dev/location/create.php', {
+  return await fetch(`${BASE_URL}/location/create.php`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(location)
@@ -38,12 +40,12 @@ async function createLocation(location) {
 }
 
 async function fetchLocations() {
-  return await fetch('https://f7e43c04-432e-44fd-b80d-8887899dbe29-00-3nco8oqvnjjy.worf.replit.dev/location/read.php')
+  return await fetch(`${BASE_URL}/location/read.php`)
     .then(res => res.json());
 }
 
 async function updateLocation(location) {
-  return await fetch('https://f7e43c04-432e-44fd-b80d-8887899dbe29-00-3nco8oqvnjjy.worf.replit.dev/location/update.php', {
+  return await fetch(`${BASE_URL}/location/update.php`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(location)
@@ -51,14 +53,14 @@ async function updateLocation(location) {
 }
 
 async function deleteLocation(id) {
-  return await fetch(`https://f7e43c04-432e-44fd-b80d-8887899dbe29-00-3nco8oqvnjjy.worf.replit.dev/location/delete.php?id=${id}`, {
+  return await fetch(`${BASE_URL}/location/delete.php?id=${id}`, {
     method: 'DELETE'
   }).then(res => res.json());
 }
 
 
 async function createStudent(student) {
-  return await fetch('https://f7e43c04-432e-44fd-b80d-8887899dbe29-00-3nco8oqvnjjy.worf.replit.dev/student/create.php', {
+  return await fetch(`${BASE_URL}/student/create.php`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(student)
@@ -66,13 +68,13 @@ async function createStudent(student) {
 }
 
 async function fetchStudents() {
-  const response = await fetch('https://f7e43c04-432e-44fd-b80d-8887899dbe29-00-3nco8oqvnjjy.worf.replit.dev/student/read.php');
+  const response = await fetch(`${BASE_URL}/student/read.php`);
   const data = await response.json();
   return data;
 }
 
 async function updateStudent(student) {
-  return await fetch('https://f7e43c04-432e-44fd-b80d-8887899dbe29-00-3nco8oqvnjjy.worf.replit.dev/student/update.php', {
+  return await fetch(`${BASE_URL}/student/update.php`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(student)
@@ -80,7 +82,7 @@ async function updateStudent(student) {
 }
 
 async function deleteStudent(id) {
-  return await fetch(`https://f7e43c04-432e-44fd-b80d-8887899dbe29-00-3nco8oqvnjjy.worf.replit.dev/student/delete.php?id=${id}`, {
+  return await fetch(`${BASE_URL}/student/delete.php?id=${id}`, {
     method: 'DELETE'
   }).then(res => res.json());
 }
@@ -110,7 +112,7 @@ location_id: Number(group.location),
   console.log("Sending to server (after fix):", payload);
 
   try {
-    const response = await fetch('https://f7e43c04-432e-44fd-b80d-8887899dbe29-00-3nco8oqvnjjy.worf.replit.dev/group/create.php', {
+    const response = await fetch(`${BASE_URL}/group/create.php`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -156,15 +158,17 @@ function convertDateToSQLFormat(dateStr) {
 }
 
 async function fetchGroups() {
-  const res = await fetch("https://f7e43c04-432e-44fd-b80d-8887899dbe29-00-3nco8oqvnjjy.worf.replit.dev/group/read.php");
-  return await res.json();
+  const res = await fetch(`${BASE_URL}/group/read.php`);
+  const data = await res.json();
+  console.log("fetchGroups raw response:", data);
+  return Array.isArray(data) ? data : [];
 }
 
 
 
 
 async function updateGroup(group) {
-  return await fetch('https://f7e43c04-432e-44fd-b80d-8887899dbe29-00-3nco8oqvnjjy.worf.replit.dev/group/update.php', {
+  return await fetch(`${BASE_URL}/group/update.php`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(group)
@@ -172,7 +176,7 @@ async function updateGroup(group) {
 }
 
 async function deleteGroup(id) {
-  return await fetch(`https://f7e43c04-432e-44fd-b80d-8887899dbe29-00-3nco8oqvnjjy.worf.replit.dev/group/delete.php?id=${id}`, {
+  return await fetch(`${BASE_URL}/group/delete.php?id=${id}`, {
     method: 'DELETE'
   }).then(res => res.json());
 }
